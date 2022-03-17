@@ -8,6 +8,8 @@ import {
   useCatch,
 } from "remix";
 import type { MetaFunction } from "remix";
+import { ThemeProvider } from "styled-components";
+import { useTheme } from "@1hive/1hive-ui";
 
 export const meta: MetaFunction = () => {
   return {
@@ -42,9 +44,13 @@ const Document = ({ children }: DocumentProps) => {
 };
 
 export default function App() {
+  const theme = useTheme();
+
   return (
     <Document>
-      <Outlet />
+      <ThemeProvider theme={theme}>
+        <Outlet />
+      </ThemeProvider>
     </Document>
   );
 }
