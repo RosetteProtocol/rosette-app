@@ -1,3 +1,4 @@
+import { Main } from "@1hive/1hive-ui";
 import {
   Links,
   LiveReload,
@@ -8,8 +9,7 @@ import {
   useCatch,
 } from "remix";
 import type { MetaFunction } from "remix";
-import { ThemeProvider } from "styled-components";
-import { useTheme } from "@1hive/1hive-ui";
+import { App as InnerApp } from "./App";
 
 export const meta: MetaFunction = () => {
   return {
@@ -44,13 +44,18 @@ const Document = ({ children }: DocumentProps) => {
 };
 
 export default function App() {
-  const theme = useTheme();
-
   return (
     <Document>
-      <ThemeProvider theme={theme}>
-        <Outlet />
-      </ThemeProvider>
+      <Main
+        assetsUrl="/aragon-ui/"
+        layout={false}
+        scrollView={false}
+        theme="dark"
+      >
+        <InnerApp>
+          <Outlet />
+        </InnerApp>
+      </Main>
     </Document>
   );
 }

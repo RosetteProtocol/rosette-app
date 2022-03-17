@@ -9,6 +9,7 @@
     "build": "cross-env NODE_ENV=production remix build",
     "dev": "cross-env NODE_ENV=development remix dev",
     "start": "cross-env NODE_ENV=production remix-serve build",
+    "sync-assets": "copy-aragon-ui-assets ./public",
     "postinstall": "remix setup node"
   },
   "dependencies": {
@@ -17,6 +18,7 @@
     "@remix-run/vercel": "^1.2.3",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-spring": "^9.4.4",
     "remix": "^1.2.3",
     "styled-components": "^5.3.3"
   },
