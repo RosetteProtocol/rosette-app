@@ -1,8 +1,9 @@
 import { GU, textStyle } from "@1hive/1hive-ui";
-import { a } from "react-spring";
-import { useAppReady } from "~/providers/AppReady";
 import { NavLink } from "@remix-run/react";
+import { a } from "react-spring";
 import styled from "styled-components";
+import { AccountModule } from "~/components/Account/AccountModule";
+import { useAppReady } from "~/providers/AppReady";
 
 export const TopBar = () => {
   const { appReadyTransition } = useAppReady();
@@ -15,7 +16,7 @@ export const TopBar = () => {
             <AnimatedContainer
               style={{ opacity: progress, transform: topBarTransform }}
             >
-              <ItemsContainer>
+              <NavLinksList>
                 <li>
                   <NavLink to="/">Rosette</NavLink>
                 </li>
@@ -25,7 +26,8 @@ export const TopBar = () => {
                 <li>
                   <NavLink to="/guidelines">Guidelines</NavLink>
                 </li>
-              </ItemsContainer>
+              </NavLinksList>
+              <AccountModule />
             </AnimatedContainer>
           )
       )}
@@ -47,7 +49,7 @@ const AnimatedContainer = styled(a.div)`
   justify-content: space-between;
 `;
 
-const ItemsContainer = styled.ul`
+const NavLinksList = styled.ul`
   display: flex;
   align-items: center;
   gap: ${6 * GU}px;

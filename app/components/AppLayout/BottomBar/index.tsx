@@ -10,7 +10,6 @@ export const BottomBar = () => {
   const theme = useTheme();
   const { appReadyTransition } = useAppReady();
 
-  console.log(theme.surfaceContent);
   return (
     <Container>
       {appReadyTransition(

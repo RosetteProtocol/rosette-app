@@ -1,5 +1,6 @@
 import { Main } from "@1hive/1hive-ui";
 import {
+  json,
   Links,
   LiveReload,
   Meta,
@@ -7,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration,
   useCatch,
+  useLoaderData,
 } from "remix";
 import type { MetaFunction } from "remix";
 import { App as InnerApp } from "./App";
@@ -19,11 +21,22 @@ export const meta: MetaFunction = () => {
   };
 };
 
+export async function loader() {
+  return json({
+    ENV: {
+      CHAIN_ID: process.env.CHAIN_ID,
+      RPC_URL: process.env.RPC_URL,
+    },
+  });
+}
+
 interface DocumentProps {
   children: React.ReactNode;
 }
 
 const Document = ({ children }: DocumentProps) => {
+  const data = useLoaderData();
+
   return (
     <html lang="en">
       <head>
@@ -35,6 +48,11 @@ const Document = ({ children }: DocumentProps) => {
       </head>
       <body>
         {children}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(data.ENV)}`,
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
