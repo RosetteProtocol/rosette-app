@@ -52,7 +52,7 @@ const SpinnerImage = styled.div<{ src: string }>`
   left: 0;
   right: 0;
   bottom: 0;
-  background: 50% 50% / auto 5gu no-repeat url("${(props) => props.src}");
+  background: 50% 50% / auto ${5 * GU}px no-repeat url(${(props) => props.src});
 `;
 
 const Title = styled.h1`
