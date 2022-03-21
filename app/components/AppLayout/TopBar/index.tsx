@@ -2,7 +2,7 @@ import { GU, textStyle } from "@1hive/1hive-ui";
 import { NavLink } from "@remix-run/react";
 import { a } from "react-spring";
 import styled from "styled-components";
-import { AccountModule } from "~/components/Account/AccountModule";
+import { AccountModule } from "~/components/AccountModule";
 import { useAppReady } from "~/providers/AppReady";
 
 export const TopBar = () => {

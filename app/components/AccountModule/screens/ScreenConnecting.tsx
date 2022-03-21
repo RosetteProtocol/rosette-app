@@ -1,15 +1,17 @@
 import { GU, textStyle, useTheme } from "@1hive/1hive-ui";
 import styled from "styled-components";
-import { Connector } from "wagmi";
-import { getWalletIconPath } from "../wallet-icons";
+import { getWalletIconPath } from "../helpers";
 import { LoadingRing } from "../LoadingRing";
+import { useAccountModuleState } from "../useAccountModuleState";
 
-type ScreenConnectingProps = {
-  wallet: Connector;
-};
-
-export const ScreenConnecting = ({ wallet }: ScreenConnectingProps) => {
+export const ScreenConnecting = () => {
   const theme = useTheme();
+  const { selectedConnector: wallet } = useAccountModuleState();
+
+  if (!wallet) {
+    return null;
+  }
+
   const walletIcon = getWalletIconPath(wallet.id);
 
   return (

@@ -3,42 +3,48 @@ import {
   GU,
   IconError,
   Link,
-  noop,
   textStyle,
   useTheme,
 } from "@1hive/1hive-ui";
 import { useMemo } from "react";
-import { useLoaderData } from "remix";
 import styled from "styled-components";
-import { Chain, ChainNotConfiguredError, useNetwork } from "wagmi";
-import { getNetworkLogo, NETWORKS } from "~/utils";
-import { PromptedAction } from "../types";
-
-type ScreenErrorProps = {
-  error?: Error;
-  onBack(): void;
-  onSwitchNetwork?(switchAction: PromptedAction, chain: Chain): void;
-};
+import {
+  Chain,
+  ChainNotConfiguredError,
+  useAccount,
+  useConnect,
+  useNetwork,
+} from "wagmi";
+import { getNetworkLogo } from "~/utils";
+import { getNetworkError } from "../helpers";
+import { PromptedAction } from "../useAccountModuleState";
 
 const buildSwitchAction = (chain: Chain): PromptedAction => ({
   title: `Connecting to ${chain.name} network`,
-  subtitle: `Creating and/or switching to the ${chain.name} network (${chain.id}) in your wallet. You may be temporarily redirected to a new screen.`,
+  subtitle: `Creating and/or switching to the ${chain.name} network (id: ${chain.id}) in your wallet. You may be temporarily redirected to a new screen.`,
   image: getNetworkLogo(chain.id),
 });
 
-export const ScreenError = ({
-  error,
-  onBack,
-  onSwitchNetwork = noop,
-}: ScreenErrorProps) => {
-  const data = useLoaderData();
-  console.log("here");
-  console.log(data);
+type ScreenErrorProps = {
+  onSwitchNetwork(switchAction: PromptedAction, chain: Chain): void;
+  onBack(): void;
+};
+
+export const ScreenError = ({ onSwitchNetwork, onBack }: ScreenErrorProps) => {
   const theme = useTheme();
-  const [{ data: networkData }, switchNetwork] = useNetwork();
+  const [{ data: networkData, error: networkError }, switchNetwork] =
+    useNetwork();
+  const [{ error: connectError }] = useConnect();
+  const [{ error: accountError }] = useAccount();
+
+  const error =
+    getNetworkError(networkError, networkData) || connectError || accountError;
 
   const [title, secondary] = useMemo(() => {
-    if (error instanceof ChainNotConfiguredError) {
+    if (
+      error instanceof ChainNotConfiguredError ||
+      networkData.chain?.unsupported
+    ) {
       return [
         "Wrong network",
         <span key="">
@@ -70,7 +76,7 @@ export const ScreenError = ({
   return (
     <Container>
       <ErrorContainer>
-        <div style={{ marginBottom: `${-2 * GU}px` }}>
+        <div style={{ marginBottom: -2 * GU }}>
           <IconError
             style={{ width: "130px", height: "130px" }}
             color={theme.negative}
@@ -79,7 +85,7 @@ export const ScreenError = ({
         <Title>{title}</Title>
         <p
           style={{
-            width: `${36 * GU}px`,
+            width: 36 * GU,
             color: theme.surfaceContentSecondary,
           }}
         >

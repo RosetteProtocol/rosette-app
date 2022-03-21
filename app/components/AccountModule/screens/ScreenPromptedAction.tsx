@@ -1,14 +1,15 @@
-import { GU, Link, noop, textStyle } from "@1hive/1hive-ui/";
+import { GU, textStyle } from "@1hive/1hive-ui/";
 import styled from "styled-components";
 import { LoadingRing } from "../LoadingRing";
-import { PromptedAction } from "../types";
+import { useAccountModuleState } from "../useAccountModuleState";
 
-type ScreenActionProps = {
-  promptedAction: PromptedAction;
-  onCancel?(): void;
-};
+export const ScreenPromptedAction = () => {
+  const { promptedAction } = useAccountModuleState();
 
-export const ScreenPromptedAction = ({ promptedAction }: ScreenActionProps) => {
+  if (!promptedAction) {
+    return null;
+  }
+
   const { title, subtitle, image } = promptedAction;
 
   return (

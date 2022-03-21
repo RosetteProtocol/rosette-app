@@ -61,7 +61,7 @@ type AccountButtonProps = {
 
 export const AccountButton = ({ onClick }: AccountButtonProps) => {
   const theme = useTheme();
-  const [{ data: accountData, loading }] = useAccount({ fetchEns: true });
+  const [{ data: accountData }] = useAccount({ fetchEns: true });
   const [{ data: networkData }] = useNetwork();
   const { address, ens } = accountData || {};
 
@@ -77,7 +77,7 @@ export const AccountButton = ({ onClick }: AccountButtonProps) => {
       }
       content={
         <>
-          {!loading && (
+          {!!address && (
             <LabelWrapper>
               <LabelInnerWrapper>
                 {ens?.name || shortenAddress(address ?? "")}

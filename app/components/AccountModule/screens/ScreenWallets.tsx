@@ -1,28 +1,31 @@
 import { ButtonBase, GU, Link, RADIUS, textStyle } from "@1hive/1hive-ui";
 import styled from "styled-components";
-import { Connector } from "wagmi";
-import { getWalletIconPath } from "../wallet-icons";
+import { Connector, useConnect } from "wagmi";
+import { getWalletIconPath } from "../helpers";
 
-type ScreenWalletsProps = {
-  wallets: Connector[];
-  onClick: (wallet: Connector) => void;
-};
+export const ScreenWallets = ({
+  onConnect,
+}: {
+  onConnect(connector: Connector): void;
+}) => {
+  const [{ data: connectData }] = useConnect();
 
-export const ScreenWallets = ({ wallets, onClick }: ScreenWalletsProps) => {
   return (
     <div>
       <MainHeader>Ethereum Wallets</MainHeader>
       <Container>
         <WalletButtonsContainer>
-          {wallets.map((wallet) => (
-            <WalletButton
-              key={wallet.id}
-              icon={getWalletIconPath(wallet.id)}
-              name={wallet.name}
-              ready={wallet.ready}
-              onClick={() => onClick(wallet)}
-            />
-          ))}
+          {connectData.connectors.map((connector) => {
+            return (
+              <WalletButton
+                key={connector.id}
+                icon={getWalletIconPath(connector.id)}
+                name={connector.name}
+                ready={connector.ready}
+                onClick={() => onConnect(connector)}
+              />
+            );
+          })}
         </WalletButtonsContainer>
         <LinkContainer>
           <Link href="https://ethereum.org/wallets/" external>

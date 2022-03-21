@@ -9,29 +9,38 @@ import {
   textStyle,
   useTheme,
 } from "@1hive/1hive-ui";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import styled from "styled-components";
-import { Chain, Connector } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
-import { getWalletIconPath } from "../wallet-icons";
+import { getWalletIconPath } from "../helpers";
+import { ScreenType, useAccountModuleState } from "../useAccountModuleState";
 
 type ScreenConnectedProps = {
-  account: string;
-  chain: Chain;
-  wallet: Connector;
-  onDisconnect: () => void;
+  onBack(): void;
 };
 
-export const ScreenConnected = ({
-  account,
-  chain,
-  wallet,
-  onDisconnect,
-}: ScreenConnectedProps) => {
+export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
   const theme = useTheme();
   const copy = useCopyToClipboard();
+  const [{ data: networkData }] = useNetwork();
+  const [{ data: accountData }] = useAccount();
+  const { goToScreen } = useAccountModuleState();
 
-  const handleCopyAddress = useCallback(() => copy(account), [account, copy]);
+  const chain = networkData.chain;
+  const wallet = accountData?.connector;
+  const accountAddress = accountData?.address;
+
+  useEffect(() => {
+    if (networkData.chain?.unsupported || !accountAddress) {
+      goToScreen(ScreenType.Error);
+    }
+  }, [goToScreen, networkData.chain, accountAddress]);
+
+  const handleCopyAddress = useCallback(
+    () => copy(accountAddress),
+    [accountAddress, copy]
+  );
 
   return (
     <div
@@ -48,13 +57,17 @@ export const ScreenConnected = ({
             marginRight: 3 * GU,
           }}
         >
-          <WalletIcon src={getWalletIconPath(wallet.id)} alt="" size={3 * GU} />
-          <span>{wallet.id === "unknown" ? "Wallet" : wallet.name}</span>
+          <WalletIcon
+            src={getWalletIconPath(wallet?.id)}
+            alt=""
+            size={3 * GU}
+          />
+          <span>{wallet?.id === "unknown" ? "Wallet" : wallet?.name}</span>
         </div>
         <div style={{ width: "100%" }}>
           <CopyButton onClick={handleCopyAddress} focusRingRadius={RADIUS}>
             <IdentityBadge
-              entity={account}
+              entity={accountAddress}
               compact
               badgeOnly
               style={{ cursor: "pointer" }}
@@ -63,17 +76,15 @@ export const ScreenConnected = ({
           </CopyButton>
         </div>
       </div>
-      {chain.name && (
-        <div style={{ padding: `${2 * GU}px 0` }}>
-          <NetworkInfo>
-            <IconCheck size="small" />
-            <span style={{ marginLeft: 0.5 * GU }}>
-              {`Connected to ${chain.name} Network`}
-            </span>
-          </NetworkInfo>
-        </div>
-      )}
-      <Button onClick={onDisconnect} wide style={{ marginTop: 1 * GU }}>
+      <div style={{ padding: `${2 * GU}px 0` }}>
+        <NetworkInfo>
+          <IconCheck size="small" />
+          <span style={{ marginLeft: 0.5 * GU }}>
+            {`Connected to ${chain ? chain.name : "Unknown"} Network`}
+          </span>
+        </NetworkInfo>
+      </div>
+      <Button onClick={onBack} wide style={{ marginTop: 1 * GU }}>
         Disconnect wallet
       </Button>
     </div>
