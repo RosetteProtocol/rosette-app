@@ -6,7 +6,7 @@
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "build": "cross-env NODE_ENV=production remix build",
+    "build": "yarn sync-assets && cross-env NODE_ENV=production remix build",
     "dev": "cross-env NODE_ENV=development remix dev",
     "start": "cross-env NODE_ENV=production remix-serve build",
     "sync-assets": "copy-aragon-ui-assets ./public",
