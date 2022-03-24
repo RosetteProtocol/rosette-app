@@ -2,8 +2,9 @@ import { GU, textStyle } from "@1hive/1hive-ui";
 import { NavLink } from "@remix-run/react";
 import { a } from "react-spring";
 import styled from "styled-components";
-import { AccountModule } from "~/components/AccountModule";
+
 import { useAppReady } from "~/providers/AppReady";
+import { AccountModule } from "~/components/AccountModule";
 
 export const TopBar = () => {
   const { appReadyTransition } = useAppReady();

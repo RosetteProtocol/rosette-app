@@ -1,6 +1,7 @@
 import { ButtonBase, GU, Link, RADIUS, textStyle } from "@1hive/1hive-ui";
 import styled from "styled-components";
 import { Connector, useConnect } from "wagmi";
+
 import { getWalletIconPath } from "../helpers";
 
 export const ScreenWallets = ({

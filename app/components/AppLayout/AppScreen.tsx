@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import { a } from "react-spring";
 import styled from "styled-components";
-import { useAppReady } from "../../providers/AppReady";
+
+import { useAppReady } from "~/providers/AppReady";
 
 export const AppScreen = ({ children }: { children: ReactNode }) => {
   const { appReadyTransition } = useAppReady();

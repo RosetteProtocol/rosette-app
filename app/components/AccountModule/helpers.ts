@@ -3,6 +3,7 @@ import {
   ChainNotConfiguredError,
   UserRejectedRequestError,
 } from "wagmi";
+
 import metamask from "./assets/metamask.svg";
 import walletconnect from "./assets/walletconnect.svg";
 
@@ -14,7 +15,7 @@ export const getWalletIconPath = (
   switch (id) {
     case "injected":
       return metamask;
-    case "walletconnect":
+    case "walletConnect":
       return walletconnect;
     default:
       return;

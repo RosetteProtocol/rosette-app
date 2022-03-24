@@ -1,5 +1,6 @@
-import { ReactNode } from "react";
 import styled from "styled-components";
+import type { ReactNode } from "react";
+
 import { BottomBar } from "./BottomBar";
 import { TopBar } from "./TopBar";
 

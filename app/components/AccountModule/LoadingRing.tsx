@@ -1,4 +1,5 @@
 import styled, { keyframes } from "styled-components";
+
 import loadingRing from "./assets/loading-ring.svg";
 
 const spin = keyframes`

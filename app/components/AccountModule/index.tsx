@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Chain, Connector, useAccount, useConnect, useNetwork } from "wagmi";
 import shallow from "zustand/shallow";
+
 import { AccountButton } from "./AccountButton";
 import { HeaderPopover } from "./HeaderPopover";
 import { getNetworkError } from "./helpers";

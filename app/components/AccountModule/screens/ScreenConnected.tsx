@@ -12,6 +12,7 @@ import {
 import { useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useAccount, useNetwork } from "wagmi";
+
 import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
 import { getWalletIconPath } from "../helpers";
 import { ScreenType, useAccountModuleState } from "../useAccountModuleState";

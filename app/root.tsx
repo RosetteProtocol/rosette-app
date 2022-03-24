@@ -11,11 +11,12 @@ import {
   useLoaderData,
 } from "remix";
 import type { MetaFunction } from "remix";
-import { App as InnerApp } from "./App";
+
+import { App as InnerApp } from "~/App";
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Remix with Emotion",
+    title: "Rosette",
     charset: "utf-8",
     viewport: "width=device-width,initial-scale=1",
   };
@@ -26,6 +27,7 @@ export async function loader() {
     ENV: {
       CHAIN_ID: process.env.CHAIN_ID,
       RPC_URL: process.env.RPC_URL,
+      INFURA_ID: process.env.INFURA_ID,
     },
   });
 }
@@ -40,8 +42,6 @@ const Document = ({ children }: DocumentProps) => {
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
         {typeof document === "undefined" ? "__STYLES__" : null}
