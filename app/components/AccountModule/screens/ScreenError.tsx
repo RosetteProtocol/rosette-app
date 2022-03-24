@@ -15,6 +15,7 @@ import {
   useConnect,
   useNetwork,
 } from "wagmi";
+
 import { getNetworkLogo } from "~/utils";
 import { getNetworkError } from "../helpers";
 import { PromptedAction } from "../useAccountModuleState";

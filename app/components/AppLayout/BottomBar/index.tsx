@@ -2,7 +2,7 @@ import { GU, useTheme } from "@1hive/1hive-ui";
 import { a } from "react-spring";
 import styled from "styled-components";
 import { useAppReady } from "~/providers/AppReady";
-import { BlossomLabsLogo } from "../../BlossomLabsLogo";
+import { BlossomLabsLogo } from "~/components/BlossomLabsLogo";
 
 const OPACITY = 0.65;
 
@@ -22,7 +22,6 @@ export const BottomBar = () => {
                 Made by <BlossomLabsLogo /> with{" "}
                 <span
                   style={{
-                    fontSize: "25px",
                     color: theme.red.alpha(OPACITY),
                   }}
                 >

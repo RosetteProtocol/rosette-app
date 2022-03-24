@@ -9,14 +9,15 @@ import {
   useTheme,
   useViewport,
 } from "@1hive/1hive-ui";
-import React from "react";
+import { Fragment } from "react";
+import type { ReactNode } from "react";
 import styled from "styled-components";
 import { useAccount, useNetwork } from "wagmi";
 
 type AccountButtonWrapperProps = {
-  content: React.ReactNode;
+  content: ReactNode;
   hasPopover: boolean;
-  icon?: string | React.ReactNode;
+  icon?: string | ReactNode;
   onClick?: () => void;
 };
 
@@ -35,7 +36,7 @@ const AccountButtonWrapper = ({
         <>
           {icon}
           {above("medium") && (
-            <React.Fragment>
+            <Fragment>
               <div
                 style={{
                   paddingLeft: `${1 * GU}px`,
@@ -47,7 +48,7 @@ const AccountButtonWrapper = ({
               {hasPopover && (
                 <IconDown size="small" color={theme.surfaceIcon} />
               )}
-            </React.Fragment>
+            </Fragment>
           )}
         </>
       </InnerContainer>

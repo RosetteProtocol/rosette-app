@@ -1,5 +1,6 @@
-import { Connector } from "wagmi";
+import type { Connector } from "wagmi";
 import create from "zustand";
+
 import {
   ScreenConnected,
   ScreenConnecting,

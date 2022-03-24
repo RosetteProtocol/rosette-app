@@ -1,9 +1,10 @@
 import { useTheme } from "@1hive/1hive-ui";
-import { ReactNode } from "react";
 import { ThemeProvider } from "styled-components";
-import { AppLayout } from "./components/AppLayout";
-import { AppReady } from "./providers/AppReady";
-import Wagmi from "./providers/Wagmi";
+import type { ReactNode } from "react";
+
+import { AppReady } from "~/providers/AppReady";
+import Wagmi from "~/providers/Wagmi";
+import { AppLayout } from "~/components/AppLayout";
 
 export const App = ({ children }: { children: ReactNode }) => {
   const theme = useTheme();

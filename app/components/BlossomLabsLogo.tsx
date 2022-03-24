@@ -1,5 +1,6 @@
 import { GU } from "@1hive/1hive-ui/";
 import styled from "styled-components";
+
 import blossomLabsIcon from "~/assets/blossom-labs.svg";
 
 type BlossomLabsLogoProps = {

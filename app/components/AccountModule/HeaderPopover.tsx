@@ -1,5 +1,6 @@
 import { GU, Popover, springs } from "@1hive/1hive-ui";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { a, Spring, useTransition } from "react-spring";
 import styled from "styled-components";
 

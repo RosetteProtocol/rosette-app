@@ -11,11 +11,12 @@ import {
   useLoaderData,
 } from "remix";
 import type { MetaFunction } from "remix";
-import { App as InnerApp } from "./App";
+
+import { App as InnerApp } from "~/App";
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Remix with Emotion",
+    title: "Rosette",
     charset: "utf-8",
     viewport: "width=device-width,initial-scale=1",
   };
@@ -40,8 +41,6 @@ const Document = ({ children }: DocumentProps) => {
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
         {typeof document === "undefined" ? "__STYLES__" : null}
