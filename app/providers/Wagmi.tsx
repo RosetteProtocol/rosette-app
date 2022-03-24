@@ -1,34 +1,9 @@
 import { providers } from "ethers";
 import { useMemo } from "react";
 import type { ReactNode } from "react";
-import { allChains, Connector, WagmiProvider } from "wagmi";
-import { InjectedConnector } from "wagmi/connectors/injected";
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
+import { WagmiProvider } from "wagmi";
 
-const getConnectors = (chainId: string): Connector[] => {
-  const chain = allChains.find((chain) => chain.id === Number(chainId));
-
-  if (!chain) {
-    throw new Error("CHAIN_ID not found: " + chainId);
-  }
-
-  return [
-    new InjectedConnector({
-      chains: [chain],
-      options: { shimDisconnect: true },
-    }),
-    new WalletConnectConnector({
-      chains: [chain],
-      options: {
-        infuraId: "",
-        rpc: {
-          4: window.ENV.CHAIN_ID,
-        },
-        qrcode: true,
-      },
-    }),
-  ];
-};
+import { getConnectors } from "~/utils/connectors.client";
 
 const Wagmi = ({ children }: { children: ReactNode }) => {
   const connectors = useMemo(() => getConnectors(window.ENV.CHAIN_ID), []);
