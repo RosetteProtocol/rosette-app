@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { ReactNode } from "react";
 import { WagmiProvider } from "wagmi";
 
-import { getConnectors } from "~/utils/connectors.client";
+import { getConnectors } from "~/utils/client/connectors.client";
 
 const Wagmi = ({ children }: { children: ReactNode }) => {
   const connectors = useMemo(() => getConnectors(window.ENV.CHAIN_ID), []);
