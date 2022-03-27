@@ -2,10 +2,10 @@ import { GU, textStyle } from "@1hive/1hive-ui/";
 import styled from "styled-components";
 
 import { LoadingRing } from "../LoadingRing";
-import { useAccountModuleState } from "../useAccountModuleState";
+import { useAccounModuleStore } from "../use-account-module-store";
 
 export const ScreenPromptedAction = () => {
-  const { promptedAction } = useAccountModuleState();
+  const { promptedAction } = useAccounModuleStore();
 
   if (!promptedAction) {
     return null;

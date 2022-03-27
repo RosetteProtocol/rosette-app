@@ -15,7 +15,7 @@ import { useAccount, useNetwork } from "wagmi";
 
 import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
 import { getWalletIconPath } from "../helpers";
-import { ScreenType, useAccountModuleState } from "../useAccountModuleState";
+import { ScreenType, actions } from "../use-account-module-store";
 
 type ScreenConnectedProps = {
   onBack(): void;
@@ -26,7 +26,6 @@ export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
   const copy = useCopyToClipboard();
   const [{ data: networkData }] = useNetwork();
   const [{ data: accountData }] = useAccount();
-  const { goToScreen } = useAccountModuleState();
 
   const chain = networkData.chain;
   const wallet = accountData?.connector;
@@ -34,9 +33,9 @@ export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
 
   useEffect(() => {
     if (networkData.chain?.unsupported || !accountAddress) {
-      goToScreen(ScreenType.Error);
+      actions.goToScreen(ScreenType.Error);
     }
-  }, [goToScreen, networkData.chain, accountAddress]);
+  }, [networkData.chain, accountAddress]);
 
   const handleCopyAddress = useCallback(
     () => copy(accountAddress),

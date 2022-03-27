@@ -18,7 +18,7 @@ import {
 
 import { getNetworkLogo } from "~/utils";
 import { getNetworkError } from "../helpers";
-import { PromptedAction } from "../useAccountModuleState";
+import type { PromptedAction } from "../use-account-module-store";
 
 const buildSwitchAction = (chain: Chain): PromptedAction => ({
   title: `Connecting to ${chain.name} network`,

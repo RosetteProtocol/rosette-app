@@ -2,17 +2,30 @@ import { Button, GU, IconConnect } from "@1hive/1hive-ui";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Chain, Connector, useAccount, useConnect, useNetwork } from "wagmi";
-import shallow from "zustand/shallow";
-
-import { AccountButton } from "./AccountButton";
-import { HeaderPopover } from "./HeaderPopover";
 import { getNetworkError } from "./helpers";
 import {
   PromptedAction,
-  SCREENS,
   ScreenType,
-  useAccountModuleState,
-} from "./useAccountModuleState";
+  actions,
+  useAccounModuleStore,
+} from "./use-account-module-store";
+import { AccountButton } from "./AccountButton";
+import { HeaderPopover } from "./HeaderPopover";
+import {
+  ScreenConnected,
+  ScreenConnecting,
+  ScreenError,
+  ScreenPromptedAction,
+  ScreenWallets,
+} from "./screens";
+
+const SCREENS = [
+  ScreenWallets,
+  ScreenConnecting,
+  ScreenError,
+  ScreenPromptedAction,
+  ScreenConnected,
+];
 
 const { Connecting, Error, Action, Connected } = ScreenType;
 
@@ -23,34 +36,12 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
   const [{ error: connectError }, connect] = useConnect();
   const [{ data: networkData, error: networkError }, switchNetwork] =
     useNetwork();
-  const [
-    currentScreen,
-    screenDirection,
-    opened,
-    toggleOpened,
-    updateOpened,
-    updateSelectedConnector,
-    goToScreen,
-    updatePromptedAction,
-    goToInitialScreen,
-  ] = useAccountModuleState(
-    (state) => [
-      state.currentScreen,
-      state.screenDirection,
-      state.opened,
-      state.toggleOpened,
-      state.updateOpened,
-      state.updateSelectedConnector,
-      state.goToScreen,
-      state.updatePromptedAction,
-      state.goToInitialScreen,
-    ],
-    shallow
-  );
   const [promptedActionSucceeded, setPromptedActionSucceeded] = useState(false);
-
   const error =
     getNetworkError(networkError, networkData) || accountError || connectError;
+
+  const { currentScreen, opened, screenDirection } = useAccounModuleStore();
+
   const displayAccountButton =
     currentScreen === Connected && !error && accountData?.address;
 
@@ -65,21 +56,21 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
       // Reject closing the popover
       return false;
     }
-    updateOpened(false);
+    actions.opened(false);
   };
 
   const handleSwitchNetwork = (switchAction: PromptedAction, chain: Chain) => {
     if (switchNetwork) {
-      updatePromptedAction(switchAction);
-      goToScreen(Action);
+      actions.promptedAction(switchAction);
+      actions.goToScreen(Action);
       switchNetwork(chain.id)
         .then(({ data, error }) => {
           if (data) {
             setPromptedActionSucceeded(true);
           } else {
             console.error(error);
-            goToInitialScreen();
-            updatePromptedAction(null);
+            actions.goToInitialScreen();
+            actions.promptedAction(null);
           }
         })
         .catch((err) => console.error(err));
@@ -87,8 +78,8 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
   };
 
   const handleConnect = (connector: Connector) => {
-    updateSelectedConnector(connector);
-    goToScreen(Connecting);
+    actions.selectedConnector(connector);
+    actions.goToScreen(Connecting);
     /**
      * Set a timer to always display connecting screen for
      * a period of time
@@ -96,16 +87,16 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
     timer.current = setTimeout(() => {
       connect(connector).then(({ data, error }) => {
         if (data?.chain?.unsupported || error) {
-          goToScreen(Error);
+          actions.goToScreen(Error);
         } else {
-          goToScreen(Connected);
+          actions.goToScreen(Connected);
         }
       });
     }, 500);
   };
 
   const handleBack = () => {
-    goToInitialScreen();
+    actions.goToInitialScreen();
     disconnect();
   };
 
@@ -123,26 +114,21 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
    */
   useEffect(() => {
     if (promptedActionSucceeded && !networkData.chain?.unsupported) {
-      goToScreen(Connected);
-      updatePromptedAction(null);
+      actions.goToScreen(Connected);
+      actions.promptedAction(null);
       setPromptedActionSucceeded(false);
     }
-  }, [
-    updatePromptedAction,
-    promptedActionSucceeded,
-    networkData.chain,
-    goToScreen,
-  ]);
+  }, [promptedActionSucceeded, networkData.chain]);
 
   return (
     <Container ref={buttonRef}>
       {displayAccountButton ? (
-        <AccountButton onClick={toggleOpened} />
+        <AccountButton onClick={actions.toggleOpened} />
       ) : (
         <Button
           icon={<IconConnect />}
           label="Connect account"
-          onClick={toggleOpened}
+          onClick={actions.toggleOpened}
           display={compact ? "icon" : "all"}
         />
       )}

@@ -1382,6 +1382,13 @@
     "@typescript-eslint/types" "5.15.0"
     eslint-visitor-keys "^3.0.0"
 
+"@udecode/zustood@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@udecode/zustood/-/zustood-0.4.4.tgz#0f3467f1ec3656623c16bb803d64e6dc55ea7b42"
+  integrity sha512-OtkRGu8TKBkidOOf28TY4tqYJRhMAiVt+BF6lHbF/FnXRmOa8eLal8Q/k9sqQcGzQAHBaZYcx0pR1+wlQzaurg==
+  dependencies:
+    immer "9.0.6"
+
 "@walletconnect/browser-utils@^1.7.5":
   version "1.7.5"
   resolved "https://registry.yarnpkg.com/@walletconnect/browser-utils/-/browser-utils-1.7.5.tgz#a12ff382310bfbb02509a69565dacf14aa744461"
@@ -4169,6 +4176,11 @@ ignore@^5.1.1, ignore@^5.1.8, ignore@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.0.tgz#6d3bac8fa7fe0d45d9f9be7bac2fc279577e345a"
   integrity sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ==
+
+immer@9.0.6:
+  version "9.0.6"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.6.tgz#7a96bf2674d06c8143e327cbf73539388ddf1a73"
+  integrity sha512-G95ivKpy+EvVAnAab4fVa4YGYn24J1SpEktnJX7JJ45Bd7xqME/SCplFzYFmTbrkwZbQ4xJK1xMTUYBkN6pWsQ==
 
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"

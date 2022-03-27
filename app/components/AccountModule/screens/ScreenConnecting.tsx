@@ -3,11 +3,11 @@ import styled from "styled-components";
 
 import { getWalletIconPath } from "../helpers";
 import { LoadingRing } from "../LoadingRing";
-import { useAccountModuleState } from "../useAccountModuleState";
+import { useAccounModuleStore } from "../use-account-module-store";
 
 export const ScreenConnecting = () => {
   const theme = useTheme();
-  const { selectedConnector: wallet } = useAccountModuleState();
+  const { selectedConnector: wallet } = useAccounModuleStore();
 
   if (!wallet) {
     return null;
