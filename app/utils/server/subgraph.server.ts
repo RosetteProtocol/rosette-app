@@ -1,6 +1,6 @@
 import { utils } from "ethers";
 
-type Entry = { notice: string; sigHash: string; submitter: string };
+export type Entry = { notice: string; sigHash: string; submitter: string };
 
 type SubgraphResponse = {
   data: {

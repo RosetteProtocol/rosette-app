@@ -1,16 +1,17 @@
 import { GU, useViewport } from "@1hive/1hive-ui";
 import { useCallback, useEffect, useState, useRef, ReactNode } from "react";
-import { a, config, useSpring } from "react-spring";
+import { a, useSpring } from "react-spring";
 import styled from "styled-components";
 import { PrevNext } from "./PrevNext";
 
 type CarouselProps = {
   items: ReactNode[];
+  selected: number;
   compactMode?: boolean;
   direction?: "horizontal" | "vertical";
-  size: string;
   itemSpacing?: number;
   customSideSpace?: number;
+  showPrevNext?: boolean;
   onItemSelected?(selected: number): void;
 };
 
@@ -18,14 +19,14 @@ const DEFAULT_SIZE = { width: 0, height: 0 };
 
 export const Carousel = ({
   items,
+  selected = 0,
   compactMode = false,
   direction = "vertical",
-  size,
   itemSpacing = 3 * GU,
   customSideSpace,
+  showPrevNext = false,
   onItemSelected = () => {},
 }: CarouselProps) => {
-  const [selected, setSelected] = useState(0);
   const [containerSize, setContainerSize] = useState({ ...DEFAULT_SIZE });
   const container = useRef(null);
   const { width: vw } = useViewport();
@@ -63,14 +64,6 @@ export const Carousel = ({
     [updateContainerSize]
   );
 
-  const prev = useCallback(() => {
-    setSelected((selected) => Math.max(0, selected - 1));
-  }, []);
-
-  const next = useCallback(() => {
-    setSelected((selected) => Math.min(items.length - 1, selected + 1));
-  }, [items.length]);
-
   // Get the container x position from an item index
   const xFromItem = useCallback(
     (index) => {
@@ -88,7 +81,6 @@ export const Carousel = ({
   // Handles the actual x position, with the drag
   const [{ x, drag }, setX] = useSpring(() => ({
     x: selectedX,
-    config: config.gentle,
     drag: Number(false),
     immediate: true,
   }));
@@ -143,13 +135,28 @@ export const Carousel = ({
   }, [selectedX, setX]);
 
   return (
-    <Container ref={handleContainerRef} isHorizontal={isHorizontal} size={size}>
-      {selected > 0 && (
-        <PrevNext type="previous" onClick={prev} isHorizontal={isHorizontal} />
+    <Container ref={handleContainerRef} isHorizontal={isHorizontal}>
+      {showPrevNext && (
+        <>
+          {selected > 0 && (
+            <PrevNext
+              type="previous"
+              onClick={() => onItemSelected(Math.max(0, selected - 1))}
+              isHorizontal={isHorizontal}
+            />
+          )}
+          {selected < items.length - 1 && (
+            <PrevNext
+              type="next"
+              onClick={() =>
+                onItemSelected(Math.min(items.length - 1, selected + 1))
+              }
+              isHorizontal={isHorizontal}
+            />
+          )}
+        </>
       )}
-      {selected < items.length - 1 && (
-        <PrevNext type="next" onClick={next} isHorizontal={isHorizontal} />
-      )}
+
       <AnimatedContainer
         // {...bindDrag()}
         /**
@@ -190,29 +197,20 @@ export const Carousel = ({
 
 const Container = styled.div<{
   isHorizontal: boolean;
-  size: string;
 }>`
   position: relative;
   overflow: hidden;
-  box-sizing: border-box;
-  margin: ${2.5 * GU}px;
   touch-action: none;
-  ${({ isHorizontal, size }) =>
-    isHorizontal
-      ? `
-      height: ${size};
-      width: 100%; 
-    `
-      : `
-      height: 100%;
-      width: ${size};
-    `}
+  height: 100%;
+  width: 100%;
 `;
 
 const AnimatedContainer = styled(a.div)<{ $isHorizontal: boolean }>`
   position: absolute;
   display: flex;
   width: 100%;
+  box-sizing: border-box;
+
   align-items: center;
   touch-action: none;
   ${(props) =>

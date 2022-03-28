@@ -1,13 +1,7 @@
-import { GU, LoadingRing, useViewport } from "@1hive/1hive-ui";
-import { utils } from "ethers";
-import { Fragment } from "ethers/lib/utils";
-import { useMemo } from "react";
 import { json, LoaderFunction, useCatch, useLoaderData } from "remix";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
-import { Carousel } from "~/components/Carousel";
-import { FunctionDescription } from "~/components/FunctionDescription";
-import { getFnSelector } from "~/utils";
+import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
 import { fetchContractData } from "~/utils/server/contract-data.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -28,45 +22,13 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json(contractData);
 };
 
-export default function DescribeScreen() {
+export default function Describe() {
   const contractData = useLoaderData();
-  const { below } = useViewport();
-  const fnFragments = useMemo(
-    () =>
-      new utils.Interface(contractData.abi).fragments.filter(
-        (f: Fragment) => f.type === "function"
-      ),
-    [contractData.abi]
-  );
-  const compactMode = below("large");
 
   return (
     <AppScreen>
       <Container>
-        {!contractData ? (
-          <div style={{ display: "flex", gap: GU }}>
-            {" "}
-            <LoadingRing mode="half-circle" />
-            Loading...
-          </div>
-        ) : (
-          <Carousel
-            items={fnFragments.map((f) => {
-              const key = getFnSelector(f);
-              return (
-                <FunctionDescription
-                  key={key}
-                  description={""}
-                  fragment={f}
-                  onEntryChange={() => {}}
-                />
-              );
-            })}
-            direction={compactMode ? "horizontal" : "vertical"}
-            itemSpacing={450}
-            size="527px"
-          />
-        )}
+        <ContractDescriptorScreen contractData={contractData} />
       </Container>
     </AppScreen>
   );
