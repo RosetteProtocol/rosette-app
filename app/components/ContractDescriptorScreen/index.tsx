@@ -1,10 +1,11 @@
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
 import { utils } from "ethers";
 import { Fragment } from "ethers/lib/utils";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
+import { useDebounce } from "~/hooks/useDebounce";
 import { getFnSelector } from "~/utils";
 import type { Entry } from "~/utils/server/subgraph.server";
 import { Carousel } from "./Carousel";
@@ -40,14 +41,25 @@ export const ContractDescriptorScreen = ({
   );
   const compactMode = below("large");
   const fnDescriptionsLength = Object.values(fnDescriptions).length;
+  /**
+   * Debounce wheel event to avoid fast changing pages on scroll.
+   */
+  const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
+  const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
+
+  useEffect(() => {
+    if (debouncedWheelEvent) {
+      if (debouncedWheelEvent.deltaY < 0) {
+        actions.goToPrevFn();
+      } else {
+        actions.goToNextFn(fnFragments.length);
+      }
+    }
+  }, [debouncedWheelEvent, fnFragments.length]);
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
-      if (e.deltaY < 0) {
-        actions.goToPrevFn();
-      } else if (e.deltaY > 0) {
-        actions.goToNextFn(fnFragments.length);
-      }
+      setWheelEvent(e);
     };
 
     window.addEventListener("wheel", onWheel);
@@ -55,7 +67,7 @@ export const ContractDescriptorScreen = ({
     return () => {
       window.removeEventListener("wheel", onWheel);
     };
-  }, [fnFragments.length]);
+  }, []);
 
   return (
     <Layout compactMode={compactMode}>
