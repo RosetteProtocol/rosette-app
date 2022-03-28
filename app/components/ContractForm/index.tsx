@@ -18,7 +18,7 @@ const DEFAULT_NETWORK_ID_INDEX = -1;
 
 type ContractFormProps = {
   availableNetworks: Chain[];
-  onSubmit(contractAddress: string, networkId: number): void;
+  onSubmit(contractAddress: string, networkIndex: number): void;
 };
 
 export const ContractForm = ({

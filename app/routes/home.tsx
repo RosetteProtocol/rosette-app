@@ -1,13 +1,19 @@
 import { LoadingRing, GU } from "@1hive/1hive-ui";
-import { json, useLoaderData, useNavigate, useTransition } from "remix";
+import {
+  json,
+  LoaderFunction,
+  useLoaderData,
+  useNavigate,
+  useTransition,
+} from "remix";
 import styled from "styled-components";
-import { allChains } from "wagmi";
+import { allChains, Chain } from "wagmi";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractForm } from "~/components/ContractForm";
 
 const networkExplorerRegex = /([A-Z]+)_EXPLORER_API_KEY/;
 
-export async function loader() {
+export const loader: LoaderFunction = async () => {
   const availableExplorers = Object.keys(process.env)
     .filter((key) => networkExplorerRegex.test(key))
     .map((key) => key.split("_")[0].toLowerCase());
@@ -21,10 +27,10 @@ export async function loader() {
         )
     )
   );
-}
+};
 
 export default function Home() {
-  const availableNetworks = useLoaderData();
+  const availableNetworks: Chain[] = useLoaderData();
   const navigate = useNavigate();
   const t = useTransition();
 
@@ -40,9 +46,9 @@ export default function Home() {
         ) : (
           <ContractForm
             availableNetworks={availableNetworks}
-            onSubmit={(contractAddress, networkId) =>
+            onSubmit={(contractAddress, networkIndex) =>
               navigate(
-                `/describe?contract=${contractAddress}&networkId=${networkId}`
+                `/describe?contract=${contractAddress}&networkId=${availableNetworks[networkIndex].id}`
               )
             }
           />

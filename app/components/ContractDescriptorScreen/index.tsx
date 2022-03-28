@@ -76,7 +76,7 @@ export const ContractDescriptorScreen = ({
       </PaginationContainer>
       <CarouselContainer>
         <Carousel
-          selected={Math.min(fnFragments.length - 1, fnSelected)}
+          selected={fnSelected}
           items={fnFragments.map((f) => {
             const key = getFnSelector(f);
             return (

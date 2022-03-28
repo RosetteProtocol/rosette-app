@@ -11,9 +11,10 @@ const STATIC_PROVIDERS_CACHE = new Map<
   providers.StaticJsonRpcProvider
 >();
 
-export const fetchContractData = async (contractAddress: string) => {
-  const networkId = 137;
-
+export const fetchContractData = async (
+  contractAddress: string,
+  networkId: number
+) => {
   const rpcEndpoint = allChains.find(({ id }) => id === networkId)?.rpcUrls[0];
   const provider = STATIC_PROVIDERS_CACHE.has(networkId)
     ? STATIC_PROVIDERS_CACHE.get(networkId)

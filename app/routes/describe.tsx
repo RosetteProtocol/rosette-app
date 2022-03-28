@@ -17,7 +17,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
   }
 
-  const contractData = await fetchContractData(contractAddress);
+  const contractData = await fetchContractData(contractAddress, networkId);
 
   return json(contractData);
 };
