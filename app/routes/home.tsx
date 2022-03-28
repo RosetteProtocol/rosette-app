@@ -1,4 +1,5 @@
-import { json, useLoaderData } from "remix";
+import { LoadingRing, GU } from "@1hive/1hive-ui";
+import { json, useLoaderData, useNavigate, useTransition } from "remix";
 import styled from "styled-components";
 import { allChains } from "wagmi";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
@@ -23,10 +24,29 @@ export async function loader() {
 }
 
 export default function Home() {
+  const availableNetworks = useLoaderData();
+  const navigate = useNavigate();
+  const t = useTransition();
+
   return (
     <AppScreen>
       <MainContainer>
-        <ContractForm availableNetworks={useLoaderData()} onSubmit={() => {}} />
+        {t.state === "loading" ? (
+          <div style={{ display: "flex", gap: GU }}>
+            {" "}
+            <LoadingRing mode="half-circle" />
+            Fetching contract data...
+          </div>
+        ) : (
+          <ContractForm
+            availableNetworks={availableNetworks}
+            onSubmit={(contractAddress, networkId) =>
+              navigate(
+                `/describe?contract=${contractAddress}&networkId=${networkId}`
+              )
+            }
+          />
+        )}
       </MainContainer>
     </AppScreen>
   );

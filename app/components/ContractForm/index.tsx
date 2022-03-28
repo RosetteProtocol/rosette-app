@@ -33,7 +33,6 @@ export const ContractForm = ({
   const disableSubmit =
     networkIdIndex === DEFAULT_NETWORK_ID_INDEX || !contractAddress.length;
 
-  console.log(availableNetworks)
   useEffect(() => {
     setErrorMsg("");
   }, [contractAddress, networkIdIndex]);
