@@ -1,5 +1,5 @@
 import { Field, GU, RADIUS, textStyle } from "@1hive/1hive-ui";
-import { FocusEventHandler } from "react";
+import { ChangeEventHandler, FocusEventHandler } from "react";
 import styled from "styled-components";
 
 type DescriptionFieldProps = {
@@ -8,7 +8,8 @@ type DescriptionFieldProps = {
   height?: string;
   placeholder?: string;
   textSize?: string;
-  onChange?: FocusEventHandler;
+  onBlur?: FocusEventHandler;
+  onChange?: ChangeEventHandler<HTMLTextAreaElement>;
 };
 
 export const DescriptionField = ({
@@ -17,6 +18,7 @@ export const DescriptionField = ({
   height = `${10 * GU}px`,
   textSize = "body2",
   placeholder = "Type in description…",
+  onBlur,
   onChange,
 }: DescriptionFieldProps) => {
   return (
@@ -26,7 +28,8 @@ export const DescriptionField = ({
         textSize={textSize}
         value={value}
         placeholder={placeholder}
-        onBlur={onChange}
+        onBlur={onBlur}
+        onChange={onChange}
         disabled={disabled}
       />
     </Field>

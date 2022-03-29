@@ -13,6 +13,7 @@ import { FunctionDescription } from "./FunctionDescription";
 import { Pagination } from "./Pagination";
 import {
   actions,
+  selectors,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
 
@@ -31,7 +32,7 @@ export const ContractDescriptorScreen = ({
   contractData,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
-  const { fnSelected, fnDescriptions } = useContractDescriptorStore();
+  const { fnSelected } = useContractDescriptorStore();
   const fnFragments = useMemo(
     () =>
       new utils.Interface(contractData.abi).fragments.filter(
@@ -40,7 +41,7 @@ export const ContractDescriptorScreen = ({
     [contractData.abi]
   );
   const compactMode = below("large");
-  const fnDescriptionsLength = Object.values(fnDescriptions).length;
+  const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
   /**
    * Debounce wheel event to avoid fast changing pages on scroll.
    */
@@ -94,9 +95,8 @@ export const ContractDescriptorScreen = ({
             return (
               <FunctionDescription
                 key={key}
-                description={""}
                 fragment={f}
-                onEntryChange={() => {}}
+                onEntryChange={actions.upsertFnDescription}
               />
             );
           })}
@@ -105,7 +105,7 @@ export const ContractDescriptorScreen = ({
         />
       </CarouselContainer>
       <SubmitContainer>
-        <SubmitButton label={`Submit  (${fnDescriptionsLength})`} wide />
+        <SubmitButton label={`Submit  (${fnDescriptionsCounter})`} wide />
       </SubmitContainer>
     </Layout>
   );

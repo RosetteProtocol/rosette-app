@@ -1,7 +1,8 @@
 import { Button, textStyle, IdentityBadge, GU } from "@1hive/1hive-ui";
 import { Fragment } from "ethers/lib/utils";
-import { FocusEvent } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
+import { useDebounce } from "~/hooks/useDebounce";
 import { getFnSelector } from "~/utils";
 import { DescriptionField } from "./DescriptionField";
 
@@ -10,7 +11,6 @@ type Entry = { notice: string; sigHash: string; submitter: string };
 type FunctionDescriptionProps = {
   fragment: Fragment;
   entry?: Entry;
-  description?: string;
   onEntryChange(sigHash: string, description: string): void;
   isCompleted?: boolean;
 };
@@ -22,17 +22,24 @@ export const FunctionDescription = ({
 }: FunctionDescriptionProps) => {
   const isCompleted = !!entry;
   const { notice, submitter } = entry || {};
+  const [description, setDescription] = useState<string>();
+  const debouncedDescription = useDebounce<string | undefined>(
+    description,
+    350
+  );
 
-  const handleDescriptionChange = (e: FocusEvent<HTMLInputElement>) => {
-    onEntryChange(getFnSelector(fragment), e.target.value);
-  };
+  useEffect(() => {
+    if (debouncedDescription !== undefined) {
+      onEntryChange(getFnSelector(fragment), debouncedDescription);
+    }
+  }, [fragment, debouncedDescription, onEntryChange]);
 
   return (
     <div>
       <DescriptionField
         height={`${23.5 * GU}px`}
         value={notice}
-        onChange={handleDescriptionChange}
+        onChange={(e) => setDescription(e.target.value)}
       />
       {isCompleted && (
         <InfoSection>
