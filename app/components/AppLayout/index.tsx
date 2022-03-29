@@ -1,22 +1,33 @@
 import styled from "styled-components";
-import type { ReactNode } from "react";
+import { ReactNode } from "react";
 
 import { BottomBar } from "./BottomBar";
 import { TopBar } from "./TopBar";
 
-export const AppLayout = ({ children }: { children: ReactNode }) => {
-  return (
-    <Container>
+type AppLayoutProps = {
+  children: ReactNode;
+  displayTopBar?: boolean;
+  displayBottomBar?: boolean;
+};
+export const AppLayout = ({
+  children,
+  displayTopBar = true,
+  displayBottomBar = true,
+}: AppLayoutProps) => (
+  <Container>
+    {displayTopBar && (
       <div style={{ flex: "none" }}>
         <TopBar />
       </div>
-      <ChildrenWrapper>{children}</ChildrenWrapper>
+    )}
+    <ChildrenWrapper>{children}</ChildrenWrapper>
+    {displayBottomBar && (
       <div style={{ flex: "none" }}>
         <BottomBar />
       </div>
-    </Container>
-  );
-};
+    )}
+  </Container>
+);
 
 const Container = styled.div`
   position: relative;

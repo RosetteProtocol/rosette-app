@@ -4,15 +4,13 @@ import {
   Links,
   LiveReload,
   Meta,
-  Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
   useLoaderData,
 } from "remix";
 import type { MetaFunction } from "remix";
-
-import { App as InnerApp } from "~/App";
+import { App } from "~/App";
 
 export const meta: MetaFunction = () => {
   return {
@@ -61,7 +59,7 @@ const Document = ({ children }: DocumentProps) => {
   );
 };
 
-export default function App() {
+export default function WrapperApp() {
   return (
     <Document>
       <Main
@@ -70,9 +68,7 @@ export default function App() {
         scrollView={false}
         theme="dark"
       >
-        <InnerApp>
-          <Outlet />
-        </InnerApp>
+        <App />
       </Main>
     </Document>
   );
@@ -103,21 +99,19 @@ export function CatchBoundary() {
   }
 
   return (
-    <Document>
-      <div>
-        <h1>
-          {caught.status}: {caught.statusText}
-        </h1>
-        {message}
-      </div>
-    </Document>
+    <div>
+      <h1>
+        {caught.status}: {caught.statusText}
+      </h1>
+      {message}
+    </div>
   );
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <Document>
+    <div>
       <p>[ErrorBoundary]: There was an error: {error.message}</p>
-    </Document>
+    </div>
   );
 }

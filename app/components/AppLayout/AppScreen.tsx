@@ -1,11 +1,33 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { a } from "react-spring";
+import { useOutletContext } from "remix";
 import styled from "styled-components";
-
 import { useAppReady } from "~/providers/AppReady";
+import { AppContext } from "~/App";
 
-export const AppScreen = ({ children }: { children: ReactNode }) => {
+type AppScreenProps = {
+  children: ReactNode;
+  hideBottomBar?: boolean;
+  hideTopBar?: boolean;
+};
+
+export const AppScreen = ({
+  children,
+  hideBottomBar = false,
+  hideTopBar = false,
+}: AppScreenProps) => {
   const { appReadyTransition } = useAppReady();
+  const { displayBottomBar, displayTopBar } = useOutletContext<AppContext>();
+
+  useEffect(() => {
+    if (hideBottomBar) {
+      displayBottomBar(false);
+    }
+    if (hideTopBar) {
+      displayTopBar(false);
+    }
+  }, [hideBottomBar, hideTopBar, displayBottomBar, displayTopBar]);
+
   return appReadyTransition(
     ({ progress, screenTransform }, ready) =>
       ready && (

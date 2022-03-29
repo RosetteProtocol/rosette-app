@@ -19,7 +19,7 @@ export const TopBar = () => {
             >
               <NavLinksList>
                 <li>
-                  <NavLink to="/">Rosette</NavLink>
+                  <NavLink to="/home">Rosette</NavLink>
                 </li>
                 <li>
                   <NavLink to="/entries">Entries</NavLink>
