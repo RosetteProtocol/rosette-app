@@ -31,7 +31,9 @@ const initialState: AccountModuleState = {
   screenDirection: -1,
 };
 
-const accountModuleStore = createStore("account-module")(initialState)
+const accountModuleStore = createStore("account-module")(initialState, {
+  devtools: { enabled: process.env.NODE_ENV === "development" },
+})
   .extendActions((set, get) => ({
     toggleOpened: () => set.opened(!get.opened()),
     reset: () => {

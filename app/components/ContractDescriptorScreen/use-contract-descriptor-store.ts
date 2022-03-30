@@ -21,7 +21,12 @@ const initialState: ContractDescriptorState = {
   userFnDescriptions: {},
 };
 
-const contractDescriptorStore = createStore("contract-descriptor")(initialState)
+const contractDescriptorStore = createStore("contract-descriptor")(
+  initialState,
+  {
+    devtools: { enabled: process.env.NODE_ENV === "development" },
+  }
+)
   .extendActions((set, get) => ({
     setUpFnDescriptorEntries: (abi: string, entries: FnEntry[]) => {
       const abiInterface = new utils.Interface(abi);
