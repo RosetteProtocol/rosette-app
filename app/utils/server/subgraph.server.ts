@@ -1,11 +1,21 @@
 import { utils } from "ethers";
+import { FnDescriptionStatus, FnEntry } from "~/types";
 
-export type Entry = { notice: string; sigHash: string; submitter: string };
+type FunctionResult = {
+  notice: string;
+  sigHash: string;
+  submitter: string;
+  disputed: boolean;
+  guideline: {
+    cooldownPeriod: number;
+  };
+  upsertAt: number;
+};
 
-type SubgraphResponse = {
+type QueryResult = {
   data: {
     contract: {
-      functions: Entry[];
+      functions: FunctionResult[];
     };
   };
 };
@@ -26,9 +36,38 @@ const fetchFromGraphQL = async (query: string) => {
   });
 };
 
-export const fetchContractEntries = async (
+const getEntryStatus = (fnResult: FunctionResult): FnDescriptionStatus => {
+  const date = Date.now() / 1000;
+
+  if (fnResult.disputed) {
+    return FnDescriptionStatus.Challenged;
+  }
+
+  const timeSince = fnResult.upsertAt + fnResult.guideline.cooldownPeriod;
+
+  if (timeSince > date) {
+    return FnDescriptionStatus.Added;
+  } else {
+    return FnDescriptionStatus.Pending;
+  }
+};
+
+const parseFnResult = (fnResult: FunctionResult): FnEntry => {
+  const { notice, sigHash, submitter, disputed, upsertAt } = fnResult;
+
+  return {
+    notice,
+    disputed,
+    sigHash,
+    status: getEntryStatus(fnResult),
+    submitter,
+    upsertAt,
+  };
+};
+
+export const fetchContractFnEntries = async (
   contractBytecode: string
-): Promise<Entry[]> => {
+): Promise<FnEntry[]> => {
   const contractId = utils.id(
     `${process.env.ROSETTE_STONE_ADDRESS}-${utils.id(contractBytecode)}`
   );
@@ -42,18 +81,23 @@ export const fetchContractEntries = async (
               notice
               sigHash
               submitter
+              disputed
+              guideline {
+                cooldownPeriod
+              }
+              upsertAt
             }
           }
         }
       `
     );
-    const result = (await rawResponse.json()) as SubgraphResponse;
+    const result = (await rawResponse.json()) as QueryResult;
 
     if (!result.data.contract) {
       return [];
     }
 
-    return result.data.contract.functions;
+    return result.data.contract.functions.map(parseFnResult);
   } catch (err) {
     throw new Response(
       "There was an error fetching the contract's current function descriptions",

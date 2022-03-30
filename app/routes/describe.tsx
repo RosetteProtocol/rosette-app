@@ -1,16 +1,8 @@
-import { useEffect } from "react";
-import {
-  json,
-  LoaderFunction,
-  useCatch,
-  useLoaderData,
-  useOutletContext,
-} from "remix";
+import { json, LoaderFunction, useCatch, useLoaderData } from "remix";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
 import { fetchContractData } from "~/utils/server/contract-data.server";
-import type { AppContext } from "~/App";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const { searchParams } = new URL(request.url);

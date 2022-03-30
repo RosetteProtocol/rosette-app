@@ -1,21 +1,18 @@
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
-import { utils } from "ethers";
-import { Fragment } from "ethers/lib/utils";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
 import { useDebounce } from "~/hooks/useDebounce";
-import { getFnSelector } from "~/utils";
-import type { Entry } from "~/utils/server/subgraph.server";
 import { Carousel } from "./Carousel";
-import { FunctionDescription } from "./FunctionDescription";
+import { FunctionDescriptor } from "./FunctionDescriptor";
 import { Pagination } from "./Pagination";
 import {
   actions,
   selectors,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
+import { FnEntry } from "~/types";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
@@ -24,22 +21,15 @@ type ContractDescriptorScreenProps = {
     abi: string;
     bytecode: string;
     contractName: string;
-    entries: Entry[];
+    currentFnEntries: FnEntry[];
   };
 };
 
 export const ContractDescriptorScreen = ({
-  contractData,
+  contractData: { abi, currentFnEntries },
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
-  const { fnSelected } = useContractDescriptorStore();
-  const fnFragments = useMemo(
-    () =>
-      new utils.Interface(contractData.abi).fragments.filter(
-        (f: Fragment) => f.type === "function"
-      ),
-    [contractData.abi]
-  );
+  const { fnSelected, fnDescriptorEntries } = useContractDescriptorStore();
   const compactMode = below("large");
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
   /**
@@ -49,14 +39,20 @@ export const ContractDescriptorScreen = ({
   const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
 
   useEffect(() => {
+    if (abi && currentFnEntries) {
+      actions.setUpFnDescriptorEntries(abi, currentFnEntries);
+    }
+  }, [abi, currentFnEntries]);
+
+  useEffect(() => {
     if (debouncedWheelEvent) {
       if (debouncedWheelEvent.deltaY < 0) {
         actions.goToPrevFn();
       } else {
-        actions.goToNextFn(fnFragments.length);
+        actions.goToNextFn();
       }
     }
-  }, [debouncedWheelEvent, fnFragments.length]);
+  }, [debouncedWheelEvent]);
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -76,7 +72,7 @@ export const ContractDescriptorScreen = ({
       <PaginationContainer>
         <Pagination
           direction={compactMode ? "horizontal" : "vertical"}
-          pages={fnFragments.length}
+          pages={fnDescriptorEntries.length}
           selected={fnSelected}
           onChange={actions.fnSelected}
           touchMode={compactMode}
@@ -90,16 +86,13 @@ export const ContractDescriptorScreen = ({
       <CarouselContainer>
         <Carousel
           selected={fnSelected}
-          items={fnFragments.map((f) => {
-            const key = getFnSelector(f);
-            return (
-              <FunctionDescription
-                key={key}
-                fragment={f}
-                onEntryChange={actions.upsertFnDescription}
-              />
-            );
-          })}
+          items={fnDescriptorEntries.map((f) => (
+            <FunctionDescriptor
+              key={f.sigHash}
+              fnDescriptorEntry={f}
+              onEntryChange={actions.upsertFnDescription}
+            />
+          ))}
           direction={compactMode ? "horizontal" : "vertical"}
           itemSpacing={450}
         />

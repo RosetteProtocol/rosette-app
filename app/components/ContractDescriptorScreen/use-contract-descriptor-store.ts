@@ -1,28 +1,57 @@
 import { createStore } from "@udecode/zustood";
+import { utils } from "ethers";
+import { FnEntry } from "~/types";
+import { getFnSelector } from "~/utils";
+
+export type Function = {
+  fullName: string;
+  sigHash: string;
+  entry?: FnEntry;
+};
 
 type ContractDescriptorState = {
   fnSelected: number;
-  fnDescriptions: Record<string, string>;
+  fnDescriptorEntries: Function[];
+  userFnDescriptions: Record<string, string>;
 };
 
 const initialState: ContractDescriptorState = {
   fnSelected: 0,
-  fnDescriptions: {},
+  fnDescriptorEntries: [],
+  userFnDescriptions: {},
 };
 
 const contractDescriptorStore = createStore("contract-descriptor")(initialState)
   .extendActions((set, get) => ({
-    goToNextFn: (maximum: number) => {
-      const prevFnSelected = get.fnSelected();
+    setUpFnDescriptorEntries: (abi: string, entries: FnEntry[]) => {
+      const abiInterface = new utils.Interface(abi);
+      const fnFragments = abiInterface.fragments.filter(
+        (f) => f.type === "function"
+      );
 
-      set.fnSelected(Math.min(maximum - 1, prevFnSelected + 1));
+      const fns = fnFragments.map((f) => {
+        const sigHash = getFnSelector(f);
+        return {
+          fullName: f.format("full"),
+          sigHash,
+          entry: entries.find((e) => e.sigHash === sigHash),
+        };
+      });
+
+      set.fnDescriptorEntries(fns);
+    },
+    goToNextFn: () => {
+      const prevFnSelected = get.fnSelected();
+      const fns = get.fnDescriptorEntries();
+
+      set.fnSelected(Math.min(fns.length - 1, prevFnSelected + 1));
     },
     goToPrevFn: () => {
       const prevFnSelected = get.fnSelected();
       set.fnSelected(Math.max(0, prevFnSelected - 1));
     },
     upsertFnDescription: (sigHash: string, description: string) => {
-      const prevFnDescriptions = get.fnDescriptions();
+      const prevFnDescriptions = get.userFnDescriptions();
       const prevDescription = prevFnDescriptions[sigHash];
 
       if (prevDescription === description) {
@@ -33,19 +62,19 @@ const contractDescriptorStore = createStore("contract-descriptor")(initialState)
         const newFnDescriptions = { ...prevFnDescriptions };
         delete newFnDescriptions[sigHash];
 
-        set.fnDescriptions(newFnDescriptions);
+        set.userFnDescriptions(newFnDescriptions);
 
         return;
       }
 
-      set.fnDescriptions({
+      set.userFnDescriptions({
         ...prevFnDescriptions,
         [sigHash]: description,
       });
     },
   }))
   .extendSelectors((set, get) => ({
-    fnDescriptionsCounter: () => Object.keys(get.fnDescriptions()).length,
+    fnDescriptionsCounter: () => Object.keys(get.userFnDescriptions()).length,
   }));
 
 export const useContractDescriptorStore = contractDescriptorStore.useStore;

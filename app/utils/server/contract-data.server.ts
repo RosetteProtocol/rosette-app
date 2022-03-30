@@ -4,7 +4,7 @@ import {
   buildExplorerFetchRequest,
   processExplorerResponse,
 } from "./blockchain-explorers.server";
-import { fetchContractEntries } from "./subgraph.server";
+import { fetchContractFnEntries } from "./subgraph.server";
 
 const STATIC_PROVIDERS_CACHE = new Map<
   number,
@@ -37,12 +37,12 @@ export const fetchContractData = async (
     throw new Response("Contract bytecode not found", { status: 500 });
   }
 
-  const entries = await fetchContractEntries(bytecode);
+  const currentFnEntries = await fetchContractFnEntries(bytecode);
 
   return {
     abi: explorerResult.ABI,
     bytecode,
     contractName: explorerResult.ContractName,
-    entries,
+    currentFnEntries,
   };
 };

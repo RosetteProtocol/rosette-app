@@ -1,25 +1,21 @@
 import { Button, textStyle, IdentityBadge, GU } from "@1hive/1hive-ui";
-import { Fragment } from "ethers/lib/utils";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "~/hooks/useDebounce";
-import { getFnSelector } from "~/utils";
+import type { Function } from "../use-contract-descriptor-store";
 import { DescriptionField } from "./DescriptionField";
 
-type Entry = { notice: string; sigHash: string; submitter: string };
-
-type FunctionDescriptionProps = {
-  fragment: Fragment;
-  entry?: Entry;
+type FunctionDescriptorProps = {
+  fnDescriptorEntry: Function;
   onEntryChange(sigHash: string, description: string): void;
   isCompleted?: boolean;
 };
 
-export const FunctionDescription = ({
-  fragment,
-  entry,
+export const FunctionDescriptor = ({
+  fnDescriptorEntry,
   onEntryChange,
-}: FunctionDescriptionProps) => {
+}: FunctionDescriptorProps) => {
+  const entry = fnDescriptorEntry.entry;
   const isCompleted = !!entry;
   const { notice, submitter } = entry || {};
   const [description, setDescription] = useState<string>();
@@ -30,15 +26,15 @@ export const FunctionDescription = ({
 
   useEffect(() => {
     if (debouncedDescription !== undefined) {
-      onEntryChange(getFnSelector(fragment), debouncedDescription);
+      onEntryChange(fnDescriptorEntry.sigHash, debouncedDescription);
     }
-  }, [fragment, debouncedDescription, onEntryChange]);
+  }, [fnDescriptorEntry.sigHash, debouncedDescription, onEntryChange]);
 
   return (
     <div>
       <DescriptionField
         height={`${23.5 * GU}px`}
-        value={notice}
+        value={notice || description}
         onChange={(e) => setDescription(e.target.value)}
       />
       {isCompleted && (
@@ -50,7 +46,7 @@ export const FunctionDescription = ({
           <Button label="Dispute" />
         </InfoSection>
       )}
-      <div style={{ marginBottom: 2 * GU }}>{fragment.format("full")}</div>
+      <div style={{ marginBottom: 2 * GU }}>{fnDescriptorEntry.fullName}</div>
       <Button label="Test function" wide onClick={() => {}} />
     </div>
   );
