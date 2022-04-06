@@ -10,7 +10,8 @@
     "dev": "cross-env NODE_ENV=development remix dev",
     "start": "cross-env NODE_ENV=production remix-serve build",
     "sync-assets": "copy-aragon-ui-assets ./public",
-    "postinstall": "npx patch-package && remix setup node"
+    "postinstall": "npx patch-package && remix setup node",
+    "lint": "eslint ./app"
   },
   "dependencies": {
     "@1hive/1hive-ui": "^1.0.18",

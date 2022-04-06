@@ -20,12 +20,9 @@ export const AppScreen = ({
   const { displayBottomBar, displayTopBar } = useOutletContext<AppContext>();
 
   useEffect(() => {
-    if (hideBottomBar) {
-      displayBottomBar(false);
-    }
-    if (hideTopBar) {
-      displayTopBar(false);
-    }
+    displayBottomBar(!hideBottomBar);
+
+    displayTopBar(!hideTopBar);
   }, [hideBottomBar, hideTopBar, displayBottomBar, displayTopBar]);
 
   return appReadyTransition(
