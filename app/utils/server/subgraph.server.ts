@@ -18,6 +18,7 @@ type QueryResult = {
       functions: FunctionResult[];
     };
   };
+  errors?: { message: string }[];
 };
 
 const gql = String.raw;
@@ -53,11 +54,10 @@ const getEntryStatus = (fnResult: FunctionResult): FnDescriptionStatus => {
 };
 
 const parseFnResult = (fnResult: FunctionResult): FnEntry => {
-  const { notice, sigHash, submitter, disputed, upsertAt } = fnResult;
+  const { notice, sigHash, submitter, upsertAt } = fnResult;
 
   return {
     notice,
-    disputed,
     sigHash,
     status: getEntryStatus(fnResult),
     submitter,
@@ -66,10 +66,10 @@ const parseFnResult = (fnResult: FunctionResult): FnEntry => {
 };
 
 export const fetchContractFnEntries = async (
-  contractBytecode: string
+  bytecodeHash: string
 ): Promise<FnEntry[]> => {
   const contractId = utils.id(
-    `${process.env.ROSETTE_STONE_ADDRESS}-${utils.id(contractBytecode)}`
+    `${process.env.ROSETTE_STONE_ADDRESS}-${bytecodeHash}`
   );
 
   try {
@@ -93,6 +93,12 @@ export const fetchContractFnEntries = async (
     );
     const result = (await rawResponse.json()) as QueryResult;
 
+    if (result.errors?.length) {
+      const err = result.errors[0];
+      console.error(err);
+      throw new Error(err.message);
+    }
+
     if (!result.data.contract) {
       return [];
     }
@@ -100,7 +106,7 @@ export const fetchContractFnEntries = async (
     return result.data.contract.functions.map(parseFnResult);
   } catch (err) {
     throw new Response(
-      "There was an error fetching the contract's current function descriptions",
+      "There was an error fetching the contract's function descriptions",
       { status: 500, statusText: "Subgraph Error" }
     );
   }

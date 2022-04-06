@@ -16,7 +16,7 @@ import {
   useNetwork,
 } from "wagmi";
 
-import { getNetworkLogo } from "~/utils";
+import { getNetworkLogo } from "~/utils/client/icons.client";
 import { getNetworkError } from "../helpers";
 import type { PromptedAction } from "../use-account-module-store";
 

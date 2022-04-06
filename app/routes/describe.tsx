@@ -1,34 +1,79 @@
-import { json, LoaderFunction, useCatch, useLoaderData } from "remix";
+import { utils } from "ethers";
+import { useEffect, useState } from "react";
+import {
+  json,
+  LoaderFunction,
+  useCatch,
+  useFetcher,
+  useLoaderData,
+} from "remix";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
-import { fetchContractData } from "~/utils/server/contract-data.server";
+import { ContractSelectorScreen } from "~/components/ContractSelectorScreen";
+import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
+import { ContractData, AggregateContract } from "~/types";
+import { fetchContracts } from "~/utils/server/contract-data.server";
+
+type LoaderData = {
+  contractAddress: string;
+  contracts: AggregateContract[];
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   const { searchParams } = new URL(request.url);
   const contractAddress = searchParams.get("contract");
-  const networkId = Number(searchParams.get("networkId"));
 
-  if (!contractAddress || !networkId) {
-    const message = `Expected  ${!networkId ? "networkId" : "contract"} param`;
-    throw new Response(message, {
+  if (!contractAddress) {
+    throw new Response("Expected contract param", {
       status: 400,
       statusText: "Expected search params",
     });
   }
 
-  const contractData = await fetchContractData(contractAddress, networkId);
+  const contracts = await fetchContracts(contractAddress);
 
-  return json(contractData);
+  return json({ contracts });
 };
 
 export default function Describe() {
-  const contractData = useLoaderData();
+  const { contracts } = useLoaderData<LoaderData>();
+  const contractDescriptionsFetcher = useFetcher();
+  const [selectedContractData, setSelectedContractData] =
+    useState<ContractData>();
+
+  useEffect(() => {
+    if (
+      !selectedContractData?.bytecode ||
+      contractDescriptionsFetcher.type !== "init"
+    ) {
+      return;
+    }
+
+    contractDescriptionsFetcher.load(
+      `/contract-descriptions?bytecodeHash=${utils.id(
+        utils.id(selectedContractData.bytecode)
+      )}`
+    );
+  }, [selectedContractData?.bytecode, contractDescriptionsFetcher]);
 
   return (
     <AppScreen hideBottomBar>
       <Container>
-        <ContractDescriptorScreen contractData={contractData} />
+        {selectedContractData && contractDescriptionsFetcher.type === "done" ? (
+          <SmoothDisplayContainer>
+            <ContractDescriptorScreen
+              contractData={selectedContractData}
+              currentFnEntries={contractDescriptionsFetcher.data}
+            />
+          </SmoothDisplayContainer>
+        ) : (
+          <ContractSelectorScreen
+            contracts={contracts}
+            loaderText="Fetching descriptions…"
+            onContractDataSelected={setSelectedContractData}
+          />
+        )}
       </Container>
     </AppScreen>
   );
@@ -37,7 +82,7 @@ export default function Describe() {
 const Container = styled.div`
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   height: 100%;
   width: 100%;
 `;

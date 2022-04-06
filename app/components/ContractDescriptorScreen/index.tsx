@@ -12,21 +12,18 @@ import {
   selectors,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
-import { FnEntry } from "~/types";
+import { ContractData, FnEntry } from "~/types";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
 type ContractDescriptorScreenProps = {
-  contractData: {
-    abi: string;
-    bytecode: string;
-    contractName: string;
-    currentFnEntries: FnEntry[];
-  };
+  contractData: ContractData;
+  currentFnEntries: FnEntry[];
 };
 
 export const ContractDescriptorScreen = ({
-  contractData: { abi, currentFnEntries },
+  contractData: { abi },
+  currentFnEntries,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
   const { fnSelected, fnDescriptorEntries } = useContractDescriptorStore();

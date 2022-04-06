@@ -1,8 +1,10 @@
+import { Chain } from "wagmi";
+
 export enum FnDescriptionStatus {
-  Available,
-  Pending,
-  Added,
-  Challenged,
+  Available = "available",
+  Pending = "pending",
+  Added = "added",
+  Challenged = "challenged",
 }
 
 export type FnEntry = {
@@ -10,6 +12,18 @@ export type FnEntry = {
   sigHash: string;
   status: FnDescriptionStatus;
   submitter: string;
-  disputed: boolean;
   upsertAt: number;
+};
+
+export type ContractData = {
+  abi: string;
+  address: string;
+  bytecode: string;
+  name: string;
+  network: Chain;
+};
+
+export type AggregateContract = {
+  proxy?: ContractData;
+  implementation?: ContractData;
 };

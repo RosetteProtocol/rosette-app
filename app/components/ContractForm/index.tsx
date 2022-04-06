@@ -1,55 +1,38 @@
 import {
   Box,
   Button,
-  DropDown,
   Field,
   GU,
   Info,
+  LoadingRing,
   TextInput,
 } from "@1hive/1hive-ui";
 import { utils } from "ethers";
-import { ChangeEvent, FormEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, FormEventHandler, useState } from "react";
+import { useTransition } from "remix";
 import styled from "styled-components";
-import { Chain } from "wagmi";
-import { getNetworkLogo } from "~/utils";
-import { NetworkItem } from "./NetworkItem";
-
-const DEFAULT_NETWORK_ID_INDEX = -1;
 
 type ContractFormProps = {
-  availableNetworks: Chain[];
-  onSubmit(contractAddress: string, networkIndex: number): void;
+  onSubmit(contractAddress: string): void;
 };
 
-export const ContractForm = ({
-  availableNetworks = [],
-  onSubmit,
-}: ContractFormProps) => {
+export const ContractForm = ({ onSubmit }: ContractFormProps) => {
   const [contractAddress, setContractAddress] = useState("");
-  const [networkIdIndex, setNetworkIdIndex] = useState(
-    DEFAULT_NETWORK_ID_INDEX
-  );
   const [errorMsg, setErrorMsg] = useState("");
-  const disableSubmit =
-    networkIdIndex === DEFAULT_NETWORK_ID_INDEX || !contractAddress.length;
+  const transition = useTransition();
 
-  useEffect(() => {
-    setErrorMsg("");
-  }, [contractAddress, networkIdIndex]);
+  const disableSubmit =
+    !contractAddress.length || transition.state === "loading";
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
-    if (
-      !contractAddress ||
-      !utils.isAddress(contractAddress) ||
-      networkIdIndex === DEFAULT_NETWORK_ID_INDEX
-    ) {
+    if (!contractAddress || !utils.isAddress(contractAddress)) {
       setErrorMsg("Invalid contract address.");
       return;
     }
 
-    onSubmit(contractAddress, networkIdIndex);
+    onSubmit(contractAddress);
   };
 
   return (
@@ -73,32 +56,21 @@ export const ContractForm = ({
                 wide
               />
             </Field>
-            <Field label="Network" required>
-              <DropDown
-                placeholder="Select a network"
-                header="Network"
-                items={availableNetworks.map(({ id, name, testnet }) => (
-                  <NetworkItem
-                    key={id}
-                    label={name}
-                    icon={getNetworkLogo(id)}
-                    isTestnet={testnet}
-                  />
-                ))}
-                selected={networkIdIndex}
-                onChange={setNetworkIdIndex}
-                wide
-              />
-            </Field>
             {errorMsg && <Info mode="error">{errorMsg}</Info>}
           </div>
-          <Button
-            type="submit"
-            label="Describe"
-            mode="strong"
-            disabled={disableSubmit}
-            wide
-          />
+          <Button type="submit" mode="strong" disabled={disableSubmit} wide>
+            {transition.state === "loading" ? (
+              <>
+                <LoadingRing
+                  style={{ marginRight: 1 * GU }}
+                  mode="half-circle"
+                />
+                Loading…
+              </>
+            ) : (
+              <>Describe</>
+            )}
+          </Button>
         </form>
       </div>
     </StyledBox>
