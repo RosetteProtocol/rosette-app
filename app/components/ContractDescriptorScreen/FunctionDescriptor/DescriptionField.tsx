@@ -1,4 +1,4 @@
-import { Field, GU, RADIUS, textStyle } from "@1hive/1hive-ui";
+import { GU, RADIUS, textStyle } from "@1hive/1hive-ui";
 import { ChangeEventHandler, FocusEventHandler } from "react";
 import styled from "styled-components";
 
@@ -17,24 +17,20 @@ export const DescriptionField = ({
   disabled = false,
   height = `${10 * GU}px`,
   textSize = "body2",
-  placeholder = "Type in description…",
+  placeholder = "Add description…",
   onBlur,
   onChange,
-}: DescriptionFieldProps) => {
-  return (
-    <Field label="Description">
-      <DescriptionTextArea
-        height={height}
-        textSize={textSize}
-        value={value}
-        placeholder={placeholder}
-        onBlur={onBlur}
-        onChange={onChange}
-        disabled={disabled}
-      />
-    </Field>
-  );
-};
+}: DescriptionFieldProps) => (
+  <DescriptionTextArea
+    height={height}
+    textSize={textSize}
+    value={value}
+    placeholder={placeholder}
+    onBlur={onBlur}
+    onChange={onChange}
+    disabled={disabled}
+  />
+);
 
 const DescriptionTextArea = styled.textarea<{
   height: string;
@@ -61,7 +57,7 @@ const DescriptionTextArea = styled.textarea<{
   }
   &::placeholder {
     color: ${(props) => props.theme.hint};
-    opacity: 1;
+    opacity: 0.5;
   }
   &:invalid {
     box-shadow: none;
