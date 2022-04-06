@@ -65,7 +65,7 @@ export default function WrapperApp() {
       <Main
         assetsUrl="/aragon-ui/"
         layout={false}
-        scrollView={false}
+        scrollView={true}
         theme="dark"
       >
         <App />
