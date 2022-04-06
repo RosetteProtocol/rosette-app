@@ -21,6 +21,7 @@ export const ContractItem = ({
   const contractData = displayProxy ? proxy : implementation;
   const { address, name, network } = contractData!;
   const implementationFound = !!implementation;
+  const displaySwitch = !!proxy && !!implementation;
 
   const clickTransition = useTransition(itemClicked, {
     from: {
@@ -75,7 +76,7 @@ export const ContractItem = ({
                   />
                 }
               />
-              {implementationFound && (
+              {displaySwitch && (
                 <>
                   <ProxySwitchWrapper>
                     Show proxy:{" "}
