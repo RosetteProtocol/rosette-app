@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   Field,
   GU,
@@ -21,13 +20,14 @@ export const ContractForm = ({ onSubmit }: ContractFormProps) => {
   const [errorMsg, setErrorMsg] = useState("");
   const transition = useTransition();
 
-  const disableSubmit =
-    !contractAddress.length || transition.state === "loading";
-
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
 
-    if (!contractAddress || !utils.isAddress(contractAddress)) {
+    if (!contractAddress) {
+      setErrorMsg("Type in a contract address.");
+      return;
+    }
+    if (!utils.isAddress(contractAddress)) {
       setErrorMsg("Invalid contract address.");
       return;
     }
@@ -36,47 +36,60 @@ export const ContractForm = ({ onSubmit }: ContractFormProps) => {
   };
 
   return (
-    <StyledBox>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <form onSubmit={handleSubmit}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              marginBottom: 3 * GU,
-            }}
-          >
-            <Field label="Contract to describe" required>
-              <TextInput
-                value={contractAddress}
-                placeholder="Type in contract address…"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setContractAddress(e.target.value);
-                }}
-                wide
-              />
-            </Field>
-            {errorMsg && <Info mode="error">{errorMsg}</Info>}
-          </div>
-          <Button type="submit" mode="strong" disabled={disableSubmit} wide>
-            {transition.state === "loading" ? (
-              <>
-                <LoadingRing
-                  style={{ marginRight: 1 * GU }}
-                  mode="half-circle"
-                />
-                Loading…
-              </>
-            ) : (
-              <>Describe</>
-            )}
-          </Button>
-        </form>
-      </div>
-    </StyledBox>
+    <Container>
+      <form onSubmit={handleSubmit}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginBottom: 3 * GU,
+          }}
+        >
+          <Field label="Contract address">
+            <MainTextInput
+              value={contractAddress}
+              placeholder="0x…"
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setErrorMsg("");
+                setContractAddress(e.target.value);
+              }}
+              wide
+            />
+          </Field>
+          {errorMsg && <Info mode="error">{errorMsg}</Info>}
+        </div>
+        <NextButton
+          type="submit"
+          mode="strong"
+          disabled={transition.state === "loading"}
+          wide
+        >
+          {transition.state === "loading" ? (
+            <>
+              <LoadingRing style={{ marginRight: 1 * GU }} mode="half-circle" />
+              Loading…
+            </>
+          ) : (
+            <>Next</>
+          )}
+        </NextButton>
+      </form>
+    </Container>
   );
 };
 
-const StyledBox = styled(Box)`
-  width: 25%;
+const Container = styled.div`
+  width: 100%;
+  max-width: 440px;
+  margin: 0 ${3 * GU}px;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MainTextInput = styled(TextInput)`
+  height: ${8 * GU}px;
+`;
+
+const NextButton = styled(Button)`
+  height: ${8 * GU}px;
 `;
