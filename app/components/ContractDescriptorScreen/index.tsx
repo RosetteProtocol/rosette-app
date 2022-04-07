@@ -66,20 +66,23 @@ export const ContractDescriptorScreen = ({
   return (
     <Layout compactMode={compactMode}>
       <FiltersContainer>FILTERS</FiltersContainer>
-      <PaginationContainer>
-        <Pagination
-          direction={compactMode ? "horizontal" : "vertical"}
-          pages={fnDescriptorEntries.length}
-          selected={fnSelected}
-          onChange={actions.fnSelected}
-          touchMode={compactMode}
-        />
-        <PaginationIcon
-          size={compactMode ? 34 : 45}
-          src={compactMode ? handIcon : scrollIcon}
-          alt=""
-        />
-      </PaginationContainer>
+      {fnDescriptorEntries.length > 1 && (
+        <PaginationContainer>
+          <Pagination
+            direction={compactMode ? "horizontal" : "vertical"}
+            pages={fnDescriptorEntries.length}
+            selected={fnSelected}
+            size={(compactMode ? 3 : 4) * GU}
+            onChange={actions.fnSelected}
+            touchMode={compactMode}
+          />
+          <PaginationIcon
+            size={compactMode ? 34 : 45}
+            src={compactMode ? handIcon : scrollIcon}
+            alt=""
+          />
+        </PaginationContainer>
+      )}
       <CarouselContainer>
         <Carousel
           selected={fnSelected}

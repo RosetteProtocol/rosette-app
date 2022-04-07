@@ -6,47 +6,54 @@ import { PaginationSeparator } from "./PaginationSeparator";
 function paginationItems(
   pages: number,
   selected: number,
-  visibleItemsLength: number
+  inbetweenRange: number
 ): number[] {
+  // visibleItems + first and final item + ellipses
+  const totalVisibleItems = inbetweenRange + 2 + 2;
   const all = [...Array(pages)].map((_, i) => i);
   /**
-   * When having odd lengths use the previous odd length number to get
+   * When having odd lengths use the previous number to get
    * an even distribution amount of visible items on both sides of the
    * selected number.
    */
   const normalizedLength =
-    visibleItemsLength % 2 === 0 ? visibleItemsLength : visibleItemsLength - 1;
+    inbetweenRange % 2 === 0 ? inbetweenRange : inbetweenRange - 1;
 
-  if (all.length <= normalizedLength) {
+  if (all.length <= totalVisibleItems) {
     return all;
   }
 
   const first = 0;
   const last = all.length - 1;
-  const amountBySide = Math.floor(normalizedLength / 2);
+  const amountBySide = Math.floor(inbetweenRange / 2);
   const itemsToLast = last - selected;
   const prevSize =
     Math.min(amountBySide, Math.max(0, selected - first)) +
     /**
-     * Add the missing items on one side to the other to keep
+     * Add the missing items on one side or the other to keep
      * the visible items length at all times.
      */
     (itemsToLast < amountBySide ? amountBySide - itemsToLast : 0);
   const nextSize = normalizedLength - prevSize;
 
-  const lowerPrevBound = Math.min(all.length, Math.max(0, selected - prevSize));
-  const upperNextBound = Math.min(all.length, Math.max(0, selected + nextSize));
+  let lowerPrevBound = Math.min(all.length, selected - prevSize);
+  let upperNextBound = Math.min(all.length, selected + nextSize);
 
   const items = [];
 
   items.push(...all.slice(lowerPrevBound, upperNextBound + 1));
 
-  // Ellipsises
+  // Add ellipses
+  let leftEllipsisAdded = false,
+    rightEllipsisAdded = false;
+
   if (lowerPrevBound > first + 1) {
     items.unshift(-1);
+    leftEllipsisAdded = true;
   }
   if (upperNextBound < last - 1) {
     items.push(-1);
+    rightEllipsisAdded = true;
   }
 
   // Always display the first & last items
@@ -57,14 +64,40 @@ function paginationItems(
     items.push(all[all.length - 1]);
   }
 
+  const missingItems = totalVisibleItems - items.length;
+
+  /**
+   * To keep a constant pagination size we always add enough items
+   * to reach the total total amount of visible items.
+   * We add them on the left or right side of the selected item based on
+   * where we put the ellipsis.
+   */
+  if (missingItems > 0 && !(leftEllipsisAdded && rightEllipsisAdded)) {
+    if (leftEllipsisAdded) {
+      items.splice(
+        2,
+        0,
+        ...all.slice(lowerPrevBound - missingItems, lowerPrevBound)
+      );
+    } else {
+      items.splice(
+        items.length - 2,
+        0,
+        ...all.slice(upperNextBound + 1, upperNextBound + missingItems + 1)
+      );
+    }
+  }
+
   return items;
 }
 
 type PaginationProps = {
   direction?: "horizontal" | "vertical";
   pages: number;
-  visibleItems?: number;
+  // Length of elements between ellipses.
+  inbetweenRange?: number;
   selected: number;
+  size: number;
   touchMode?: boolean;
   onChange(index: number): void;
 };
@@ -72,12 +105,13 @@ type PaginationProps = {
 export const Pagination = ({
   direction = "horizontal",
   pages,
-  visibleItems = 9,
+  inbetweenRange = 9,
   selected,
+  size,
   touchMode = false,
   onChange,
 }: PaginationProps) => {
-  const items = paginationItems(pages, selected, visibleItems);
+  const items = paginationItems(pages, selected, inbetweenRange);
   const isHorizontal = direction === "horizontal";
 
   return (
@@ -87,6 +121,7 @@ export const Pagination = ({
           <PaginationSeparator
             isHorizontal={isHorizontal}
             key={`separator-${i}`}
+            size={size}
           />
         ) : (
           <PaginationItem
@@ -96,6 +131,7 @@ export const Pagination = ({
             selected={selected === pageIndex}
             onChange={onChange}
             touchMode={touchMode}
+            size={size}
           />
         )
       )}

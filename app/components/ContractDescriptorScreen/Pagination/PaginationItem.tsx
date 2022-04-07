@@ -1,4 +1,4 @@
-import { ButtonBase, GU, RADIUS, textStyle } from "@1hive/1hive-ui";
+import { ButtonBase, RADIUS, textStyle } from "@1hive/1hive-ui";
 import { useCallback } from "react";
 import styled from "styled-components";
 
@@ -8,6 +8,7 @@ type PaginationItemProps = {
   direction?: Direction;
   index: number;
   selected: boolean;
+  size: number;
   touchMode: boolean;
   onChange(index: number): void;
 };
@@ -16,6 +17,7 @@ export const PaginationItem = ({
   direction = "horizontal",
   touchMode,
   selected,
+  size,
   index,
   onChange,
 }: PaginationItemProps) => {
@@ -32,6 +34,7 @@ export const PaginationItem = ({
         disabled={selected}
         touchMode={touchMode}
         selected={selected}
+        size={size}
       >
         <span>{index + 1}</span>
       </StyledButtonBase>
@@ -61,9 +64,9 @@ const StyledButtonBase = styled(ButtonBase)<{
   touchMode: boolean;
 }>`
   border-radius: ${RADIUS}px;
-  ${({ selected, theme, touchMode }) => `
-    width: ${(touchMode ? 4 : 5) * GU}px;
-    height: ${(touchMode ? 4 : 5) * GU}px;
+  ${({ selected, theme, touchMode, size }) => `
+    width: ${size}px;
+    height: ${size}px;
     color: ${theme.surfaceContent};
     ${textStyle(touchMode ? "body1" : "title2")};
 
