@@ -37,7 +37,7 @@ export const BlossomLabsLogo = ({
           src={blossomLabsIcon}
           alt=""
         />{" "}
-        {!showIconOnly && "Blossom Labs"}
+        {!showIconOnly && "Blossom"}
       </div>
     </a>
   </OutterWrapper>

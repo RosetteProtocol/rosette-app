@@ -1,14 +1,15 @@
-import { GU, useTheme } from "@1hive/1hive-ui";
+import { GU, useTheme, useViewport } from "@1hive/1hive-ui";
 import { a } from "react-spring";
 import styled from "styled-components";
 import { useAppReady } from "~/providers/AppReady";
 import { BlossomLabsLogo } from "~/components/BlossomLabsLogo";
 
-const OPACITY = 0.65;
-
+const OPACITY = 0.8;
 export const BottomBar = () => {
+  const { below } = useViewport();
   const theme = useTheme();
   const { appReadyTransition } = useAppReady();
+  const compactMode = below("large");
 
   return (
     <Container>
@@ -17,16 +18,10 @@ export const BottomBar = () => {
           ready && (
             <AnimatedContainer
               style={{ opacity: progress, transform: bottomBarTransform }}
+              $compactMode={compactMode}
             >
               <div style={{ color: theme.surfaceContent, opacity: OPACITY }}>
-                Made by <BlossomLabsLogo /> with{" "}
-                <span
-                  style={{
-                    color: theme.red.alpha(OPACITY),
-                  }}
-                >
-                  &hearts;
-                </span>
+                powered by &nbsp; <BlossomLabsLogo />
               </div>
             </AnimatedContainer>
           )
@@ -40,10 +35,12 @@ const Container = styled.div`
   height: ${7 * GU}px;
 `;
 
-const AnimatedContainer = styled(a.div)`
+const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
   position: absolute;
   inset: 0;
   display: flex;
-  justify-content: flex-end;
-  padding-right: ${7 * GU}px;
+  padding: 0 ${7 * GU}px;
+
+  justify-content: ${({ $compactMode }) =>
+    $compactMode ? "center" : "flex-start"};
 `;
