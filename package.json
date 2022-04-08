@@ -21,6 +21,7 @@
     "buffer": "^6.0.3",
     "clipboard-polyfill": "^4.0.0-rc1",
     "ethers": "^5.6.1",
+    "ipfs-http-client": "^55.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-spring": "^9.4.4",

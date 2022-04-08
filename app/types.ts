@@ -15,6 +15,12 @@ export type FnEntry = {
   upsertAt: number;
 };
 
+export type UserFnDescription = {
+  sigHash: string;
+  minimalName: string;
+  description: string;
+};
+
 export type ContractData = {
   abi: string;
   address: string;
