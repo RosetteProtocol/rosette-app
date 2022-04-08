@@ -1,5 +1,6 @@
 import { utils } from "ethers";
-import { FnDescriptionStatus, FnEntry } from "~/types";
+import type { FnEntry } from "~/types";
+import { FnDescriptionStatus } from "~/types";
 
 type FunctionResult = {
   notice: string;
@@ -81,7 +82,6 @@ export const fetchContractFnEntries = async (
               notice
               sigHash
               submitter
-              disputed
               guideline {
                 cooldownPeriod
               }
