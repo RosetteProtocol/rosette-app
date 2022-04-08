@@ -51,7 +51,7 @@ export default function Describe() {
     }
 
     contractDescriptionsFetcher.load(
-      `/contract-descriptions?bytecodeHash=${utils.id(
+      `/contract-descriptions-search?bytecodeHash=${utils.id(
         utils.id(selectedContractData.bytecode)
       )}`
     );
