@@ -1,10 +1,11 @@
 import { createStore } from "@udecode/zustood";
 import { utils } from "ethers";
-import { FnEntry } from "~/types";
+import { FnEntry, UserFnDescription } from "~/types";
 import { getFnSelector } from "~/utils";
 
 export type Function = {
   fullName: string;
+  minimalName: string;
   sigHash: string;
   entry?: FnEntry;
 };
@@ -12,7 +13,11 @@ export type Function = {
 type ContractDescriptorState = {
   fnSelected: number;
   fnDescriptorEntries: Function[];
-  userFnDescriptions: Record<string, string>;
+  /**
+   * Use an object to index descriptions to ease state updates at
+   * the expense of having some fn data duplication (sigHash, minimalName, etc)
+   */
+  userFnDescriptions: Record<string, UserFnDescription>;
 };
 
 const initialState: ContractDescriptorState = {
@@ -38,6 +43,7 @@ const contractDescriptorStore = createStore("contract-descriptor")(
         const sigHash = getFnSelector(f);
         return {
           fullName: f.format("full"),
+          minimalName: f.format("minimal"),
           sigHash,
           entry: entries.find((e) => e.sigHash === sigHash),
         };
@@ -55,30 +61,31 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       const prevFnSelected = get.fnSelected();
       set.fnSelected(Math.max(0, prevFnSelected - 1));
     },
-    upsertFnDescription: (sigHash: string, description: string) => {
-      const prevFnDescriptions = get.userFnDescriptions();
-      const prevDescription = prevFnDescriptions[sigHash];
+    upsertFnDescription: (userFnDescription: UserFnDescription) => {
+      const { sigHash, description } = userFnDescription;
+      const prevUserFnDescriptions = get.userFnDescriptions();
 
-      if (prevDescription === description) {
+      if (prevUserFnDescriptions[sigHash]?.description === description) {
         return;
       }
 
-      if (!description && prevFnDescriptions.hasOwnProperty(sigHash)) {
-        const newFnDescriptions = { ...prevFnDescriptions };
-        delete newFnDescriptions[sigHash];
+      if (!description && prevUserFnDescriptions.hasOwnProperty(sigHash)) {
+        const newUserFnDescriptions = { ...prevUserFnDescriptions };
+        delete newUserFnDescriptions[sigHash];
 
-        set.userFnDescriptions(newFnDescriptions);
+        set.userFnDescriptions(newUserFnDescriptions);
 
         return;
       }
 
       set.userFnDescriptions({
-        ...prevFnDescriptions,
-        [sigHash]: description,
+        ...prevUserFnDescriptions,
+
+        [sigHash]: userFnDescription,
       });
     },
   }))
-  .extendSelectors((set, get) => ({
+  .extendSelectors((_, get) => ({
     fnDescriptionsCounter: () => Object.keys(get.userFnDescriptions()).length,
   }));
 

@@ -2,14 +2,14 @@ import { Button, textStyle, GU } from "@1hive/1hive-ui";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "~/hooks/useDebounce";
-import { FnDescriptionStatus } from "~/types";
+import { FnDescriptionStatus, UserFnDescription } from "~/types";
 import { getFnEntryStatusIconData } from "~/utils/client/icons.client";
 import type { Function } from "../use-contract-descriptor-store";
 import { DescriptionField } from "./DescriptionField";
 
 type FunctionDescriptorProps = {
   fnDescriptorEntry: Function;
-  onEntryChange(sigHash: string, description: string): void;
+  onEntryChange(userFnDescription: UserFnDescription): void;
   isCompleted?: boolean;
 };
 
@@ -32,9 +32,18 @@ export const FunctionDescriptor = ({
 
   useEffect(() => {
     if (debouncedDescription !== undefined) {
-      onEntryChange(fnDescriptorEntry.sigHash, debouncedDescription);
+      onEntryChange({
+        sigHash: fnDescriptorEntry.sigHash,
+        minimalName: fnDescriptorEntry.minimalName,
+        description: debouncedDescription,
+      });
     }
-  }, [fnDescriptorEntry.sigHash, debouncedDescription, onEntryChange]);
+  }, [
+    fnDescriptorEntry.sigHash,
+    fnDescriptorEntry.minimalName,
+    debouncedDescription,
+    onEntryChange,
+  ]);
 
   return (
     <Container>
