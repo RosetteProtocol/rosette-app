@@ -1,4 +1,3 @@
-import { utils } from "ethers";
 import type { FnEntry } from "~/types";
 import { FnDescriptionStatus } from "~/types";
 
@@ -69,9 +68,7 @@ const parseFnResult = (fnResult: FunctionResult): FnEntry => {
 export const fetchContractFnEntries = async (
   bytecodeHash: string
 ): Promise<FnEntry[]> => {
-  const contractId = utils.id(
-    `${process.env.ROSETTE_STONE_ADDRESS}-${bytecodeHash}`
-  );
+  const contractId = `${process.env.ROSETTE_STONE_ADDRESS}-${bytecodeHash}`;
 
   try {
     const rawResponse = await fetchFromGraphQL(
@@ -91,6 +88,7 @@ export const fetchContractFnEntries = async (
         }
       `
     );
+
     const result = (await rawResponse.json()) as QueryResult;
 
     if (result.errors?.length) {

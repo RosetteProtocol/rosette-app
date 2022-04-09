@@ -7,8 +7,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "yarn sync-assets && cross-env NODE_ENV=production remix build",
-    "dev": "cross-env NODE_ENV=development remix dev",
-    "start": "cross-env NODE_ENV=production remix-serve build",
+    "dev": "yarn sync-assets && cross-env NODE_ENV=development remix dev",
+    "start": "yarn sync-assets && cross-env NODE_ENV=production remix-serve build",
     "sync-assets": "copy-aragon-ui-assets ./public",
     "postinstall": "npx patch-package && remix setup node",
     "lint": "eslint ./app"

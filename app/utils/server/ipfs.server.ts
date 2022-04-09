@@ -1,4 +1,5 @@
-import { create, IPFSHTTPClient, Options } from "ipfs-http-client";
+import type { IPFSHTTPClient, Options } from "ipfs-http-client";
+import { create } from "ipfs-http-client";
 
 declare global {
   var __ipfs: IPFSHTTPClient | undefined;

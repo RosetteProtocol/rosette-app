@@ -1,5 +1,6 @@
-import { BigNumber, constants, Contract, providers, utils } from "ethers";
-import { ContractData } from "~/types";
+import type { providers } from "ethers";
+import { BigNumber, constants, Contract, utils } from "ethers";
+import type { ContractData } from "~/types";
 import { getProvider } from "./web3.server";
 
 enum ProxyPattern {

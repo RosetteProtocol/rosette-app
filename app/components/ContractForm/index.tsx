@@ -7,7 +7,8 @@ import {
   TextInput,
 } from "@1hive/1hive-ui";
 import { utils } from "ethers";
-import { ChangeEvent, FormEventHandler, useState } from "react";
+import type { ChangeEvent, FormEventHandler } from "react";
+import { useState } from "react";
 import { useTransition } from "remix";
 import styled from "styled-components";
 

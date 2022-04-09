@@ -1,4 +1,4 @@
-import { ContractData, AggregateContract } from "~/types";
+import type { ContractData, AggregateContract } from "~/types";
 import { getProvider, NETWORKS } from "./web3.server";
 import {
   buildExplorerFetchRequest,
@@ -9,7 +9,7 @@ import {
   getProxyPattern,
 } from "./proxy-patterns.server";
 import { constants } from "ethers";
-import { Chain } from "wagmi";
+import type { Chain } from "wagmi";
 
 const processBytecodeRequest = (response: any): string => {
   const bytecode = response as string;
