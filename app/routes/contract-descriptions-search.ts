@@ -1,4 +1,4 @@
-import { LoaderFunction } from "remix";
+import type { LoaderFunction } from "remix";
 import { fetchContractFnEntries } from "~/utils/server/subgraph.server";
 
 export const loader: LoaderFunction = ({ request }) => {

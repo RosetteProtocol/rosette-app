@@ -12,7 +12,7 @@ import {
   selectors,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
-import { ContractData, FnEntry } from "~/types";
+import type { ContractData, FnEntry } from "~/types";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 

@@ -1,5 +1,5 @@
 import { GU, RADIUS, textStyle } from "@1hive/1hive-ui";
-import { ChangeEventHandler, FocusEventHandler } from "react";
+import type { ChangeEventHandler, FocusEventHandler } from "react";
 import styled from "styled-components";
 
 type DescriptionFieldProps = {

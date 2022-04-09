@@ -1,5 +1,6 @@
 import { GU, useViewport } from "@1hive/1hive-ui";
-import { useCallback, useEffect, useState, useRef, ReactNode } from "react";
+import type { ReactNode } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { a, useSpring } from "react-spring";
 import styled from "styled-components";
 import { PrevNext } from "./PrevNext";
