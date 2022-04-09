@@ -1,8 +1,7 @@
 import { providers } from "ethers";
 import { useMemo } from "react";
 import type { ReactNode } from "react";
-import { WagmiProvider } from "wagmi";
-import { allChains } from "wagmi";
+import { allChains, WagmiProvider } from "wagmi";
 import type { Connector } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
