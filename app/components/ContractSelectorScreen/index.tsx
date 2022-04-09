@@ -1,7 +1,7 @@
 import { GU, textStyle } from "@1hive/1hive-ui";
 import styled from "styled-components";
 import { a, useTransition } from "react-spring";
-import { ContractData, AggregateContract } from "~/types";
+import type { ContractData, AggregateContract } from "~/types";
 import { ContractItem } from "./ContractItem";
 
 type ContractSelectorScreenProps = {

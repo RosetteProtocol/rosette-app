@@ -28,7 +28,7 @@ export const getExplorerAPIData = (networkId: number): ExplorerAPIData => {
       baseUrl = "https://api-rinkeby.etherscan.io/api";
       break;
     case 100:
-      apiKey = process.env.BLOCKSCOUT_EXPLORER_API_KEY;
+      apiKey = "";
       baseUrl = "https://blockscout.com/xdai/mainnet/api";
       break;
     case 137:

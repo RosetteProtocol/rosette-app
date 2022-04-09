@@ -1,5 +1,6 @@
-import { json, ActionFunction } from "remix";
-import { UserFnDescription } from "~/types";
+import type { ActionFunction } from "remix";
+import { json } from "remix";
+import type { UserFnDescription } from "~/types";
 import { ipfs } from "~/utils/server/ipfs.server";
 
 type IPFSResponseData = Record<string, string>;
