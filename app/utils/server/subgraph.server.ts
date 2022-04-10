@@ -2,6 +2,7 @@ import type { FnEntry } from "~/types";
 import { FnDescriptionStatus } from "~/types";
 
 type FunctionResult = {
+  cid: string;
   notice: string;
   sigHash: string;
   submitter: string;
@@ -54,9 +55,10 @@ const getEntryStatus = (fnResult: FunctionResult): FnDescriptionStatus => {
 };
 
 const parseFnResult = (fnResult: FunctionResult): FnEntry => {
-  const { notice, sigHash, submitter, upsertAt } = fnResult;
+  const { cid, notice, sigHash, submitter, upsertAt } = fnResult;
 
   return {
+    cid,
     notice,
     sigHash,
     status: getEntryStatus(fnResult),
@@ -76,9 +78,12 @@ export const fetchContractFnEntries = async (
         {
           contract(id: "${contractId}") {
             functions {
+              cid
               notice
               sigHash
-              submitter
+              submitter {
+                address
+              }
               guideline {
                 cooldownPeriod
               }
