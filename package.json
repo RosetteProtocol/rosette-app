@@ -27,7 +27,7 @@
     "react-spring": "^9.4.4",
     "remix": "^1.2.3",
     "styled-components": "^5.3.3",
-    "wagmi": "^0.2.21",
+    "wagmi": "^0.2.26",
     "zustand": "^3.7.1"
   },
   "devDependencies": {
