@@ -33,11 +33,17 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const contracts = await fetchContracts(contractAddress);
 
-  return json({ contracts });
+  return json({
+    contracts,
+    contractAddress,
+    rosetteContractAddress: process.env.ROSETTE_STONE_ADDRESS,
+  });
 };
 
 export default function Describe() {
-  const { contracts } = useLoaderData<LoaderData>();
+  const { contracts, contractAddress, rosetteContractAddress } =
+    useLoaderData<LoaderData>();
+  const actionFetcher = useFetcher();
   const contractDescriptionsFetcher = useFetcher();
   const [selectedContractData, setSelectedContractData] =
     useState<ContractData>();
@@ -62,10 +68,19 @@ export default function Describe() {
       <Container>
         {selectedContractData && contractDescriptionsFetcher.type === "done" ? (
           <SmoothDisplayContainer>
-            <ContractDescriptorScreen
-              contractData={selectedContractData}
-              currentFnEntries={contractDescriptionsFetcher.data}
-            />
+            <actionFetcher.Form
+              method="post"
+              action={`/contract-entries-upload?bytecodeHash=${utils.id(
+                selectedContractData.bytecode
+              )}`}
+            >
+              <ContractDescriptorScreen
+                contractAddress={contractAddress}
+                contractData={selectedContractData}
+                currentFnEntries={contractDescriptionsFetcher.data}
+                rosetteContractAddress={rosetteContractAddress}
+              />
+            </actionFetcher.Form>
           </SmoothDisplayContainer>
         ) : (
           <ContractSelectorScreen

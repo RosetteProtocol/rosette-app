@@ -1,5 +1,5 @@
+import { useCallback, useEffect, useState } from "react";
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
-import { useEffect, useState } from "react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
@@ -13,20 +13,26 @@ import {
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
 import { ContractData, FnEntry } from "~/types";
+import useRosetteActions from "./useRosetteActions";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
 type ContractDescriptorScreenProps = {
+  contractAddress: string;
   contractData: ContractData;
   currentFnEntries: FnEntry[];
+  rosetteContractAddress: string;
 };
 
 export const ContractDescriptorScreen = ({
+  contractAddress,
   contractData: { abi },
   currentFnEntries,
+  rosetteContractAddress,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
-  const { fnSelected, fnDescriptorEntries } = useContractDescriptorStore();
+  const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
+    useContractDescriptorStore();
   const compactMode = below("large");
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
   /**
@@ -34,6 +40,22 @@ export const ContractDescriptorScreen = ({
    */
   const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
   const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
+
+  const { upsertEntries } = useRosetteActions(rosetteContractAddress);
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const sigs = Object.values(userFnDescriptions).map(
+        ({ sigHash }) => sigHash
+      );
+      const scopes = new Array(sigs.length).fill(contractAddress);
+      const cids: string[] = [];
+
+      upsertEntries(scopes, sigs, cids);
+    },
+    [contractAddress, upsertEntries, userFnDescriptions]
+  );
 
   useEffect(() => {
     if (abi && currentFnEntries) {
@@ -64,43 +86,50 @@ export const ContractDescriptorScreen = ({
   }, []);
 
   return (
-    <Layout compactMode={compactMode}>
-      <FiltersContainer>FILTERS</FiltersContainer>
-      {fnDescriptorEntries.length > 1 && (
-        <PaginationContainer>
-          <Pagination
-            direction={compactMode ? "horizontal" : "vertical"}
-            pages={fnDescriptorEntries.length}
-            selected={fnSelected}
-            size={(compactMode ? 3 : 4) * GU}
-            onChange={actions.fnSelected}
-            touchMode={compactMode}
-          />
-          <PaginationIcon
-            size={compactMode ? 34 : 45}
-            src={compactMode ? handIcon : scrollIcon}
-            alt=""
-          />
-        </PaginationContainer>
-      )}
-      <CarouselContainer>
-        <Carousel
-          selected={fnSelected}
-          items={fnDescriptorEntries.map((f) => (
-            <FunctionDescriptor
-              key={f.sigHash}
-              fnDescriptorEntry={f}
-              onEntryChange={actions.upsertFnDescription}
+    <form onSubmit={handleSubmit}>
+      <Layout compactMode={compactMode}>
+        <FiltersContainer>FILTERS</FiltersContainer>
+        {fnDescriptorEntries.length > 1 && (
+          <PaginationContainer>
+            <Pagination
+              direction={compactMode ? "horizontal" : "vertical"}
+              pages={fnDescriptorEntries.length}
+              selected={fnSelected}
+              size={(compactMode ? 3 : 4) * GU}
+              onChange={actions.fnSelected}
+              touchMode={compactMode}
             />
-          ))}
-          direction={compactMode ? "horizontal" : "vertical"}
-          itemSpacing={450}
-        />
-      </CarouselContainer>
-      <SubmitContainer>
-        <SubmitButton label={`Submit  (${fnDescriptionsCounter})`} wide />
-      </SubmitContainer>
-    </Layout>
+            <PaginationIcon
+              size={compactMode ? 34 : 45}
+              src={compactMode ? handIcon : scrollIcon}
+              alt=""
+            />
+          </PaginationContainer>
+        )}
+        <CarouselContainer>
+          <Carousel
+            selected={fnSelected}
+            items={fnDescriptorEntries.map((f, i) => (
+              <FunctionDescriptor
+                index={i}
+                key={f.sigHash}
+                fnDescriptorEntry={f}
+                onEntryChange={actions.upsertFnDescription}
+              />
+            ))}
+            direction={compactMode ? "horizontal" : "vertical"}
+            itemSpacing={450}
+          />
+        </CarouselContainer>
+        <SubmitContainer>
+          <SubmitButton
+            label={`Submit  (${fnDescriptionsCounter})`}
+            type="submit"
+            wide
+          />
+        </SubmitContainer>
+      </Layout>
+    </form>
   );
 };
 
