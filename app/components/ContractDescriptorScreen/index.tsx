@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
@@ -12,23 +12,20 @@ import {
   selectors,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
-import useRosetteActions from "./useRosetteActions";
 import type { ContractData, FnEntry } from "~/types";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
 type ContractDescriptorScreenProps = {
-  contractAddress: string;
   contractData: ContractData;
   currentFnEntries: FnEntry[];
-  rosetteContractAddress: string;
+  onUpsertEntries: FormEventHandler<HTMLFormElement>;
 };
 
 export const ContractDescriptorScreen = ({
-  contractAddress,
   contractData: { abi },
   currentFnEntries,
-  rosetteContractAddress,
+  onUpsertEntries,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
   const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
@@ -40,22 +37,6 @@ export const ContractDescriptorScreen = ({
    */
   const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
   const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
-
-  const { upsertEntries } = useRosetteActions(rosetteContractAddress);
-  const handleSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
-
-      const sigs = Object.values(userFnDescriptions).map(
-        ({ sigHash }) => sigHash
-      );
-      const scopes = new Array(sigs.length).fill(contractAddress);
-      const cids: string[] = [];
-
-      upsertEntries(scopes, sigs, cids);
-    },
-    [contractAddress, upsertEntries, userFnDescriptions]
-  );
 
   useEffect(() => {
     if (abi && currentFnEntries) {
@@ -86,7 +67,7 @@ export const ContractDescriptorScreen = ({
   }, []);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={onUpsertEntries}>
       <Layout compactMode={compactMode}>
         <FiltersContainer>FILTERS</FiltersContainer>
         {fnDescriptorEntries.length > 1 && (
@@ -109,9 +90,8 @@ export const ContractDescriptorScreen = ({
         <CarouselContainer>
           <Carousel
             selected={fnSelected}
-            items={fnDescriptorEntries.map((f, i) => (
+            items={fnDescriptorEntries.map((f) => (
               <FunctionDescriptor
-                index={i}
                 key={f.sigHash}
                 fnDescriptorEntry={f}
                 onEntryChange={actions.upsertFnDescription}

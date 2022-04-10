@@ -9,13 +9,19 @@ const FN_DESCRIPTIONS_KEY = "fnDescriptions";
 
 export const action: ActionFunction = async ({ request }) => {
   const data = await request.formData();
+  console.log("Got to server", data);
 
   if (!data.has(FN_DESCRIPTIONS_KEY)) {
+    console.log("No data");
+
+    if (!data.has("hola")) {
+      console.log("Nor hola");
+    }
     return new Response("Function descriptions not provided", { status: 400 });
   }
 
   const fnDescriptions = JSON.parse(
-    data.get(FN_DESCRIPTIONS_KEY)!.toString()
+    data.get(FN_DESCRIPTIONS_KEY).toString()
   ) as UserFnDescription[];
   const uploadRequests = fnDescriptions.map(({ description, minimalName }) => {
     const descriptionJson = JSON.stringify({

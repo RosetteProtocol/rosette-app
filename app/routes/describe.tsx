@@ -1,10 +1,13 @@
+import { useSubmit } from "@remix-run/react";
 import { utils } from "ethers";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { LoaderFunction } from "remix";
 import { json, useCatch, useFetcher, useLoaderData } from "remix";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
+import { useContractDescriptorStore } from "~/components/ContractDescriptorScreen/use-contract-descriptor-store";
+import useRosetteActions from "~/components/ContractDescriptorScreen/useRosetteActions";
 import { ContractSelectorScreen } from "~/components/ContractSelectorScreen";
 import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
 import type { ContractData, AggregateContract } from "~/types";
@@ -38,10 +41,36 @@ export const loader: LoaderFunction = async ({ request }) => {
 export default function Describe() {
   const { contracts, contractAddress, rosetteContractAddress } =
     useLoaderData<LoaderData>();
-  const actionFetcher = useFetcher();
   const contractDescriptionsFetcher = useFetcher();
   const [selectedContractData, setSelectedContractData] =
     useState<ContractData>();
+
+  // Submit entries handler
+  const { userFnDescriptions } = useContractDescriptorStore();
+  const { upsertEntries } = useRosetteActions(rosetteContractAddress);
+  const actionFetcher = useFetcher();
+  const handleUpsertEntries = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      console.log("submitting");
+      actionFetcher.submit(
+        { hola: "hola" },
+        {
+          method: "post",
+          action: "/fn-descriptions-upload",
+        }
+      );
+      const sigs = Object.values(userFnDescriptions).map(
+        ({ sigHash }) => sigHash
+      );
+      const scopes = new Array(sigs.length).fill(contractAddress);
+      const cids: string[] = [];
+
+      upsertEntries(scopes, sigs, cids);
+    },
+    [actionFetcher, contractAddress, upsertEntries, userFnDescriptions]
+  );
 
   useEffect(() => {
     if (
@@ -63,19 +92,11 @@ export default function Describe() {
       <Container>
         {selectedContractData && contractDescriptionsFetcher.type === "done" ? (
           <SmoothDisplayContainer>
-            <actionFetcher.Form
-              method="post"
-              action={`/contract-entries-upload?bytecodeHash=${utils.id(
-                selectedContractData.bytecode
-              )}`}
-            >
-              <ContractDescriptorScreen
-                contractAddress={contractAddress}
-                contractData={selectedContractData}
-                currentFnEntries={contractDescriptionsFetcher.data}
-                rosetteContractAddress={rosetteContractAddress}
-              />
-            </actionFetcher.Form>
+            <ContractDescriptorScreen
+              contractData={selectedContractData}
+              currentFnEntries={contractDescriptionsFetcher.data}
+              onUpsertEntries={handleUpsertEntries}
+            />
           </SmoothDisplayContainer>
         ) : (
           <ContractSelectorScreen
