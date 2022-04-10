@@ -1,8 +1,9 @@
 import { GU, LoadingRing, Switch, Tag, textStyle } from "@1hive/1hive-ui";
-import { MouseEventHandler, useEffect, useState } from "react";
+import type { MouseEventHandler } from "react";
+import { useEffect, useState } from "react";
 import { a, useTransition } from "react-spring";
 import styled from "styled-components";
-import { ContractData, AggregateContract } from "~/types";
+import type { ContractData, AggregateContract } from "~/types";
 import { getNetworkLogo } from "~/utils/client/icons.client";
 
 type ContractItemProps = {

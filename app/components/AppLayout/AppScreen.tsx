@@ -1,9 +1,10 @@
-import { ReactNode, useEffect } from "react";
+import type { ReactNode } from "react";
+import { useEffect } from "react";
 import { a } from "react-spring";
 import { useOutletContext } from "remix";
 import styled from "styled-components";
 import { useAppReady } from "~/providers/AppReady";
-import { AppContext } from "~/App";
+import type { AppContext } from "~/App";
 
 type AppScreenProps = {
   children: ReactNode;

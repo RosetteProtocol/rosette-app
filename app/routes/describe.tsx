@@ -1,18 +1,13 @@
 import { utils } from "ethers";
 import { useEffect, useState } from "react";
-import {
-  json,
-  LoaderFunction,
-  useCatch,
-  useFetcher,
-  useLoaderData,
-} from "remix";
+import type { LoaderFunction } from "remix";
+import { json, useCatch, useFetcher, useLoaderData } from "remix";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
 import { ContractSelectorScreen } from "~/components/ContractSelectorScreen";
 import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
-import { ContractData, AggregateContract } from "~/types";
+import type { ContractData, AggregateContract } from "~/types";
 import { fetchContracts } from "~/utils/server/contract-data.server";
 
 type LoaderData = {
@@ -58,7 +53,7 @@ export default function Describe() {
 
     contractDescriptionsFetcher.load(
       `/contract-descriptions-search?bytecodeHash=${utils.id(
-        utils.id(selectedContractData.bytecode)
+        selectedContractData.bytecode
       )}`
     );
   }, [selectedContractData?.bytecode, contractDescriptionsFetcher]);

@@ -1,6 +1,7 @@
 import { createStore } from "@udecode/zustood";
 import { utils } from "ethers";
-import { FnEntry, UserFnDescription } from "~/types";
+import type { FunctionFragment } from "ethers/lib/utils";
+import type { FnEntry, UserFnDescription } from "~/types";
 import { getFnSelector } from "~/utils";
 
 export type Function = {
@@ -37,17 +38,19 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       const abiInterface = new utils.Interface(abi);
       const fnFragments = abiInterface.fragments.filter(
         (f) => f.type === "function"
-      );
+      ) as FunctionFragment[];
 
-      const fns = fnFragments.map((f) => {
-        const sigHash = getFnSelector(f);
-        return {
-          fullName: f.format("full"),
-          minimalName: f.format("minimal"),
-          sigHash,
-          entry: entries.find((e) => e.sigHash === sigHash),
-        };
-      });
+      const fns = fnFragments
+        .filter((f) => !f.constant) // Only consider functions that does not change state
+        .map((f) => {
+          const sigHash = getFnSelector(f);
+          return {
+            fullName: f.format("full"),
+            minimalName: f.format("minimal"),
+            sigHash,
+            entry: entries.find((e) => e.sigHash === sigHash),
+          };
+        });
 
       set.fnDescriptorEntries(fns);
     },

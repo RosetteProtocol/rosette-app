@@ -1,18 +1,19 @@
 import { providers } from "ethers";
-import { allChains, Chain } from "wagmi";
-
-const networkExplorerRegex = /([A-Z]+)_EXPLORER_API_KEY/;
+import type { Chain } from "wagmi";
+import { allChains } from "wagmi";
 
 const INFURA_PROJECT_ID = process.env.INFURA_PROJECT_ID;
-
-const availableExplorers = Object.keys(process.env)
-  .filter((key) => networkExplorerRegex.test(key))
-  .map((key) => key.split("_")[0].toLowerCase());
 
 const STATIC_PROVIDERS_CACHE = new Map<
   number,
   providers.StaticJsonRpcProvider
 >();
+
+const networkExplorerRegex = /([A-Z]+)_EXPLORER_API_KEY/;
+
+const availableExplorers = Object.keys(process.env)
+  .filter((key) => networkExplorerRegex.test(key))
+  .map((key) => key.split("_")[0].toLowerCase());
 
 export const NETWORKS = allChains.filter(
   (chain) =>
@@ -41,8 +42,12 @@ export const getProvider = (networkId: number): providers.Provider => {
 
   const network = NETWORKS.find((n) => n.id === networkId)!;
 
-  return new providers.StaticJsonRpcProvider(
+  const provider = new providers.StaticJsonRpcProvider(
     buildRpcEndpoint(network),
     networkId
   );
+
+  STATIC_PROVIDERS_CACHE.set(networkId, provider);
+
+  return provider;
 };
