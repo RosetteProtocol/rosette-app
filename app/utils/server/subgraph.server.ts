@@ -36,6 +36,13 @@ type QueryFnsResult = {
   errors?: { message: string }[];
 };
 
+type QueryFnResult = {
+  data: {
+    function: FunctionResult;
+  };
+  errors?: { message: string }[];
+};
+
 const gql = String.raw;
 
 const fetchFromGraphQL = async (query: string) => {
@@ -176,6 +183,55 @@ export const fetchFnEntries = async (): Promise<FnEntry[]> => {
     }
 
     return result.data.functions.map(parseFnResult);
+  } catch (err) {
+    throw new Response(
+      "There was an error fetching the contract's function descriptions",
+      { status: 500, statusText: "Subgraph Error" }
+    );
+  }
+};
+
+export const fetchFnEntry = async (
+  entryId: string
+): Promise<FnEntry | undefined> => {
+  try {
+    const rawResponse = await fetchFromGraphQL(
+      gql`
+        {
+          function(id: "${entryId}") {
+            id
+            abi
+            contract {
+              scope
+            }
+            cid
+            notice
+            sigHash
+            submitter {
+              address
+            }
+            guideline {
+              cooldownPeriod
+            }
+            upsertAt
+          }
+        }
+      `
+    );
+
+    const result = (await rawResponse.json()) as QueryFnResult;
+
+    if (result.errors?.length) {
+      const err = result.errors[0];
+      console.error(err);
+      throw new Error(err.message);
+    }
+
+    if (!result.data.function) {
+      return undefined;
+    }
+
+    return parseFnResult(result.data.function);
   } catch (err) {
     throw new Response(
       "There was an error fetching the contract's function descriptions",
