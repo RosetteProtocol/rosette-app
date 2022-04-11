@@ -2,10 +2,17 @@ import type { FnEntry } from "~/types";
 import { FnDescriptionStatus } from "~/types";
 
 type FunctionResult = {
+  id: string;
+  abi: string;
   cid: string;
+  contract: {
+    scope: string;
+  };
   notice: string;
   sigHash: string;
-  submitter: string;
+  submitter: {
+    address: string;
+  };
   disputed: boolean;
   guideline: {
     cooldownPeriod: number;
@@ -13,11 +20,18 @@ type FunctionResult = {
   upsertAt: number;
 };
 
-type QueryResult = {
+type QueryContractResult = {
   data: {
     contract: {
       functions: FunctionResult[];
     };
+  };
+  errors?: { message: string }[];
+};
+
+type QueryFnsResult = {
+  data: {
+    functions: FunctionResult[];
   };
   errors?: { message: string }[];
 };
@@ -55,14 +69,18 @@ const getEntryStatus = (fnResult: FunctionResult): FnDescriptionStatus => {
 };
 
 const parseFnResult = (fnResult: FunctionResult): FnEntry => {
-  const { cid, notice, sigHash, submitter, upsertAt } = fnResult;
+  const { id, abi, cid, contract, notice, sigHash, submitter, upsertAt } =
+    fnResult;
 
   return {
+    id,
+    abi,
     cid,
+    contract: contract.scope,
     notice,
     sigHash,
     status: getEntryStatus(fnResult),
-    submitter,
+    submitter: submitter.address,
     upsertAt,
   };
 };
@@ -78,7 +96,11 @@ export const fetchContractFnEntries = async (
         {
           contract(id: "${contractId}") {
             functions {
+              id
               cid
+              contract {
+                scope
+              }
               notice
               sigHash
               submitter {
@@ -94,7 +116,7 @@ export const fetchContractFnEntries = async (
       `
     );
 
-    const result = (await rawResponse.json()) as QueryResult;
+    const result = (await rawResponse.json()) as QueryContractResult;
 
     if (result.errors?.length) {
       const err = result.errors[0];
@@ -107,6 +129,53 @@ export const fetchContractFnEntries = async (
     }
 
     return result.data.contract.functions.map(parseFnResult);
+  } catch (err) {
+    throw new Response(
+      "There was an error fetching the contract's function descriptions",
+      { status: 500, statusText: "Subgraph Error" }
+    );
+  }
+};
+
+export const fetchFnEntries = async (): Promise<FnEntry[]> => {
+  try {
+    const rawResponse = await fetchFromGraphQL(
+      gql`
+        {
+          functions {
+            id
+            abi
+            contract {
+              scope
+            }
+            cid
+            notice
+            sigHash
+            submitter {
+              address
+            }
+            guideline {
+              cooldownPeriod
+            }
+            upsertAt
+          }
+        }
+      `
+    );
+
+    const result = (await rawResponse.json()) as QueryFnsResult;
+
+    if (result.errors?.length) {
+      const err = result.errors[0];
+      console.error(err);
+      throw new Error(err.message);
+    }
+
+    if (!result.data.functions) {
+      return [];
+    }
+
+    return result.data.functions.map(parseFnResult);
   } catch (err) {
     throw new Response(
       "There was an error fetching the contract's function descriptions",

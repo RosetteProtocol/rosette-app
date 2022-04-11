@@ -1,31 +1,39 @@
-import { GU, useViewport } from "@1hive/1hive-ui";
-import { useNavigate } from "remix";
+import { utils } from "ethers";
+import type { LoaderFunction } from "remix";
+import { json } from "remix";
+import { useLoaderData, useParams } from "remix";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
-import { ContractForm } from "~/components/ContractForm";
+import type { FnEntry } from "~/types";
+import { fetchFnEntries } from "~/utils/server/subgraph.server";
 
-export default function Home() {
-  const { below } = useViewport();
-  const navigate = useNavigate();
+export const loader: LoaderFunction = async () => {
+  const fns = await fetchFnEntries();
+
+  return json({ fns });
+};
+
+type LoaderData = {
+  fns: FnEntry[];
+};
+
+export default function EntryRoute() {
+  const { fns } = useLoaderData<LoaderData>();
+  const { entryId } = useParams();
+
+  const entry = fns.find((f) => utils.id(f.id) === entryId);
 
   return (
-    <AppScreen>
-      <MainContainer compactMode={below("medium")}>
-        <ContractForm
-          onSubmit={(contractAddress) =>
-            navigate(`/describe?contract=${contractAddress}`)
-          }
-        />
-      </MainContainer>
+    <AppScreen hideBottomBar>
+      <Container>{entry?.sigHash}</Container>
     </AppScreen>
   );
 }
 
-const MainContainer = styled.div<{ compactMode: boolean }>`
+const Container = styled.div`
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: ${({ compactMode }) => (compactMode ? 5 * GU : 17 * GU)}px;
-  width: 100%;
+  align-items: start;
   height: 100%;
+  width: 100%;
 `;
