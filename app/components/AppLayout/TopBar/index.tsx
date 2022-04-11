@@ -1,13 +1,23 @@
-import { GU, textStyle } from "@1hive/1hive-ui";
+import {
+  ButtonBase,
+  GU,
+  IconMenu,
+  textStyle,
+  useViewport,
+} from "@1hive/1hive-ui";
 import { NavLink } from "@remix-run/react";
 import { a } from "react-spring";
 import styled from "styled-components";
 
 import { useAppReady } from "~/providers/AppReady";
 import { AccountModule } from "~/components/AccountModule";
+import { CompactMenu } from "./CompactMenu";
 
 export const TopBar = () => {
   const { appReadyTransition } = useAppReady();
+  const { below } = useViewport();
+  const compactMode = below("large");
+  const mobileMode = below("medium");
 
   return (
     <NavContainer>
@@ -15,20 +25,28 @@ export const TopBar = () => {
         ({ progress, topBarTransform }, ready) =>
           ready && (
             <AnimatedContainer
-              style={{ opacity: progress, transform: topBarTransform }}
+              style={{
+                opacity: progress,
+                transform: topBarTransform,
+              }}
+              $compactMode={compactMode}
             >
-              <NavLinksList>
-                <li>
-                  <NavLink to="/home">Rosette</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/entries">Entries</NavLink>
-                </li>
-                <li>
-                  <NavLink to="/guidelines">Guidelines</NavLink>
-                </li>
-              </NavLinksList>
-              <AccountModule />
+              {compactMode ? (
+                <CompactMenu />
+              ) : (
+                <NavLinksList>
+                  <li>
+                    <NavLink to="/home">Rosette</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/entries">Entries</NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/guidelines">Guidelines</NavLink>
+                  </li>
+                </NavLinksList>
+              )}
+              <AccountModule compact={mobileMode} />
             </AnimatedContainer>
           )
       )}
@@ -42,10 +60,19 @@ const NavContainer = styled.nav`
   height: ${8 * GU}px;
 `;
 
-const AnimatedContainer = styled(a.div)`
+const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
   position: absolute;
   inset: 0;
-  padding: ${1.7 * GU}px ${5 * GU}px;
+  border-bottom: 1px solid ${({ theme }) => theme.border};
+  ${({ $compactMode }) =>
+    $compactMode
+      ? `
+    padding-right: ${1 * GU}px;
+  `
+      : `
+    padding-right: ${5 * GU}px;
+    padding-left: ${5 * GU}px;
+  `};
   display: flex;
   justify-content: space-between;
 `;
