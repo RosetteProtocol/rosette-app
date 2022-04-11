@@ -1,9 +1,7 @@
-import { GU, RootPortal } from "@1hive/1hive-ui";
+import { RootPortal } from "@1hive/1hive-ui";
 import type { ReactNode } from "react";
 import { a, useTransition } from "react-spring";
 import styled from "styled-components";
-
-const SIDEBAR_WIDTH = 40 * GU;
 
 type SidebarProps = {
   children: ReactNode;
@@ -15,7 +13,7 @@ type SidebarProps = {
 export const Sidebar = ({ children, show, width, onToggle }: SidebarProps) => {
   const sidebarTransition = useTransition(show, {
     from: {
-      marginLeft: `-${SIDEBAR_WIDTH}px`,
+      marginLeft: `-${width}px`,
       opacity: 0,
     },
     enter: {
@@ -23,7 +21,7 @@ export const Sidebar = ({ children, show, width, onToggle }: SidebarProps) => {
       opacity: 1,
     },
     leave: {
-      marginLeft: `-${SIDEBAR_WIDTH}px`,
+      marginLeft: `-${width}px`,
       opacity: 0,
     },
     unique: true,
@@ -35,7 +33,11 @@ export const Sidebar = ({ children, show, width, onToggle }: SidebarProps) => {
     return (
       show && (
         <RootPortal>
-          <AnimatedSidebar style={styles} width={width} $zIndex={3}>
+          <AnimatedSidebar
+            style={{ marginLeft: styles.marginLeft }}
+            width={width}
+            $zIndex={3}
+          >
             {children}
           </AnimatedSidebar>
           <OpaqueBackground

@@ -1,17 +1,10 @@
-import {
-  ButtonBase,
-  GU,
-  IconMenu,
-  textStyle,
-  useViewport,
-} from "@1hive/1hive-ui";
-import { NavLink } from "@remix-run/react";
+import { GU, useViewport } from "@1hive/1hive-ui";
 import { a } from "react-spring";
 import styled from "styled-components";
 
 import { useAppReady } from "~/providers/AppReady";
 import { AccountModule } from "~/components/AccountModule";
-import { CompactMenu } from "./CompactMenu";
+import { NavSection } from "./NavSection";
 
 export const TopBar = () => {
   const { appReadyTransition } = useAppReady();
@@ -31,21 +24,7 @@ export const TopBar = () => {
               }}
               $compactMode={compactMode}
             >
-              {compactMode ? (
-                <CompactMenu />
-              ) : (
-                <NavLinksList>
-                  <li>
-                    <NavLink to="/home">Rosette</NavLink>
-                  </li>
-                  <li>
-                    <NavLink to="/entries">Entries</NavLink>
-                  </li>
-                  <li>
-                    <NavLink to="/guidelines">Guidelines</NavLink>
-                  </li>
-                </NavLinksList>
-              )}
+              <NavSection compact={compactMode} />
               <AccountModule compact={mobileMode} />
             </AnimatedContainer>
           )
@@ -75,26 +54,4 @@ const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
   `};
   display: flex;
   justify-content: space-between;
-`;
-
-const NavLinksList = styled.ul`
-  display: flex;
-  align-items: center;
-  gap: ${6 * GU}px;
-  list-style: none;
-
-  li:first-child {
-    ${textStyle("title2")};
-  }
-
-  > li {
-    transition: all 200ms ease-out;
-    &:hover {
-      color: ${(props) => props.theme.surfaceHighlight};
-    }
-  }
-
-  li > * {
-    text-decoration: none;
-  }
 `;

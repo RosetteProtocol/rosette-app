@@ -1,6 +1,9 @@
 import { ButtonBase, GU, IconMenu, useViewport } from "@1hive/1hive-ui";
 import { useState } from "react";
+import { useLocation } from "remix";
 import styled from "styled-components";
+import type { NavigationItem } from "..";
+import { MenuItem } from "./MenuItem";
 import { Sidebar } from "./Sidebar";
 
 const MenuButton = ({ onClick }: { onClick(): void }) => (
@@ -17,9 +20,14 @@ const MenuButton = ({ onClick }: { onClick(): void }) => (
   </ButtonContainer>
 );
 
-export const CompactMenu = () => {
+const MIN_SIDEBAR_WIDTH = 240;
+
+export const CompactMenu = ({ items }: { items: NavigationItem[] }) => {
+  const { pathname } = useLocation();
   const { width } = useViewport();
   const [displaySidebar, setDisplaySidebar] = useState(false);
+
+  const sidebarWidth = Math.min(MIN_SIDEBAR_WIDTH, width * 0.6);
 
   const toggleSidebar = () => setDisplaySidebar((prev) => !prev);
 
@@ -27,10 +35,22 @@ export const CompactMenu = () => {
     <div>
       <MenuButton onClick={toggleSidebar} />
       <Sidebar
-        width={width - 20 * GU}
+        width={sidebarWidth}
         show={displaySidebar}
         onToggle={toggleSidebar}
-      ></Sidebar>
+      >
+        <NavContainer>
+          {items.map((i) => (
+            <li key={i.label}>
+              <MenuItem
+                item={i}
+                active={pathname === i.to}
+                onClick={toggleSidebar}
+              />
+            </li>
+          ))}
+        </NavContainer>
+      </Sidebar>
     </div>
   );
 };
@@ -48,4 +68,8 @@ const ButtonContainer = styled.div`
 const StyledMenuIcon = styled(IconMenu)`
   width: ${4 * GU}px;
   height: ${4 * GU}px;
+`;
+
+const NavContainer = styled.ul`
+  list-style: none;
 `;
