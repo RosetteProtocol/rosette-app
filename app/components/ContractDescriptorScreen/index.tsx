@@ -1,5 +1,8 @@
-import { FormEventHandler, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAccount } from "wagmi";
+import { utils } from "ethers";
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
+import { useFetcher } from "@remix-run/react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
@@ -13,30 +16,70 @@ import {
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
 import type { ContractData, FnEntry } from "~/types";
+import useRosetteActions from "./useRosetteActions";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
 type ContractDescriptorScreenProps = {
+  contractAddress: string;
   contractData: ContractData;
   currentFnEntries: FnEntry[];
-  onUpsertEntries: FormEventHandler<HTMLFormElement>;
+  rosetteContractAddress: string;
 };
 
 export const ContractDescriptorScreen = ({
-  contractData: { abi },
+  contractAddress,
+  contractData: { abi, bytecode },
   currentFnEntries,
-  onUpsertEntries,
+  rosetteContractAddress,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
+  const compactMode = below("large");
+  const [{ data: accountData }] = useAccount();
   const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
     useContractDescriptorStore();
-  const compactMode = below("large");
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
+
   /**
    * Debounce wheel event to avoid fast changing pages on scroll.
    */
   const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
   const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
+
+  // Submit entries handler
+  const actionFetcher = useFetcher();
+  const { upsertEntries } = useRosetteActions(rosetteContractAddress);
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const fnDescriptionsJSON = Object.values(userFnDescriptions);
+      console.log("Sending", fnDescriptionsJSON);
+
+      actionFetcher.submit(
+        {
+          fnDescriptions: JSON.stringify(fnDescriptionsJSON),
+        },
+        {
+          method: "post",
+          action: "/fn-descriptions-upload",
+        }
+      );
+    },
+    [userFnDescriptions]
+  );
+
+  useEffect(() => {
+    if (actionFetcher.data) {
+      const sigs = Object.values(userFnDescriptions).map(
+        ({ sigHash }) => sigHash
+      );
+      const scopes = new Array(sigs.length).fill(utils.id(bytecode));
+      const cids: string[] = Object.values(actionFetcher.data);
+
+      upsertEntries(scopes, sigs, cids);
+    }
+  }, [actionFetcher.data, contractAddress, upsertEntries]);
 
   useEffect(() => {
     if (abi && currentFnEntries) {
@@ -67,7 +110,7 @@ export const ContractDescriptorScreen = ({
   }, []);
 
   return (
-    <form onSubmit={onUpsertEntries}>
+    <form onSubmit={handleSubmit}>
       <Layout compactMode={compactMode}>
         <FiltersContainer>FILTERS</FiltersContainer>
         {fnDescriptorEntries.length > 1 && (
@@ -106,6 +149,7 @@ export const ContractDescriptorScreen = ({
             label={`Submit  (${fnDescriptionsCounter})`}
             type="submit"
             wide
+            disabled={!accountData?.address}
           />
         </SubmitContainer>
       </Layout>

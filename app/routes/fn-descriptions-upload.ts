@@ -1,5 +1,5 @@
-import type { ActionFunction } from "remix";
-import { json } from "remix";
+import type { ActionFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import type { UserFnDescription } from "~/types";
 import { ipfs } from "~/utils/server/ipfs.server";
 
@@ -9,20 +9,16 @@ const FN_DESCRIPTIONS_KEY = "fnDescriptions";
 
 export const action: ActionFunction = async ({ request }) => {
   const data = await request.formData();
-  console.log("Got to server", data);
 
   if (!data.has(FN_DESCRIPTIONS_KEY)) {
-    console.log("No data");
-
-    if (!data.has("hola")) {
-      console.log("Nor hola");
-    }
     return new Response("Function descriptions not provided", { status: 400 });
   }
 
+  const fnDescriptionsString = data.get(FN_DESCRIPTIONS_KEY)?.toString() || "";
   const fnDescriptions = JSON.parse(
-    data.get(FN_DESCRIPTIONS_KEY).toString()
+    fnDescriptionsString
   ) as UserFnDescription[];
+
   const uploadRequests = fnDescriptions.map(({ description, minimalName }) => {
     const descriptionJson = JSON.stringify({
       abi: minimalName,
@@ -41,6 +37,7 @@ export const action: ActionFunction = async ({ request }) => {
       return data;
     }, {} as IPFSResponseData);
 
+    console.log("Returning repsonseDAta", responseData);
     return json(responseData);
   } catch (err) {
     console.error(err);
