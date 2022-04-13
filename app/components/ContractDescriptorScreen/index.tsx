@@ -80,6 +80,8 @@ export const ContractDescriptorScreen = ({
   
         await upsertEntries(scopes, sigs, cids);
         window.alert("Entries submitted!") // TODO: Use tx feedback implementation
+
+        // Should we redirect to the enties page?
       } catch (err) {
         console.error(`Error submitting entries: ${err}`)
       }
