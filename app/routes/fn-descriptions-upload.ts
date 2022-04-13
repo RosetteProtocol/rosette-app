@@ -37,7 +37,6 @@ export const action: ActionFunction = async ({ request }) => {
       return data;
     }, {} as IPFSResponseData);
 
-    console.log("Returning repsonseDAta", responseData);
     return json(responseData);
   } catch (err) {
     console.error(err);

@@ -54,7 +54,6 @@ export const ContractDescriptorScreen = ({
       event.preventDefault();
 
       const fnDescriptionsJSON = Object.values(userFnDescriptions);
-      console.log("Sending", fnDescriptionsJSON);
 
       actionFetcher.submit(
         {
@@ -66,20 +65,30 @@ export const ContractDescriptorScreen = ({
         }
       );
     },
-    [userFnDescriptions]
+    [actionFetcher, userFnDescriptions]
   );
 
   useEffect(() => {
-    if (actionFetcher.data) {
-      const sigs = Object.values(userFnDescriptions).map(
-        ({ sigHash }) => sigHash
-      );
-      const scopes = new Array(sigs.length).fill(utils.id(bytecode));
-      const cids: string[] = Object.values(actionFetcher.data);
 
-      upsertEntries(scopes, sigs, cids);
+    const submitEntries = async() => {
+      try {
+        const sigs = Object.values(userFnDescriptions).map(
+          ({ sigHash }) => sigHash
+        );
+        const scopes = new Array(sigs.length).fill(utils.id(bytecode));
+        const cids: string[] = Object.values(actionFetcher.data);
+  
+        await upsertEntries(scopes, sigs, cids);
+        window.alert("Entries submitted!") // TODO: Use tx feedback implementation
+      } catch (err) {
+        console.error(`Error submitting entries: ${err}`)
+      }
     }
-  }, [actionFetcher.data, contractAddress, upsertEntries]);
+
+    if (actionFetcher.data) {
+        submitEntries()
+    }
+  }, [actionFetcher.data, bytecode, contractAddress, upsertEntries, userFnDescriptions]);
 
   useEffect(() => {
     if (abi && currentFnEntries) {
