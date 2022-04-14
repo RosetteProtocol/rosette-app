@@ -17,6 +17,7 @@
     "@1hive/1hive-ui": "^1.0.18",
     "@netlify/functions": "^1.0.0",
     "@remix-run/netlify": "^1.4.0",
+    "@remix-run/node": "^1.4.0",
     "@remix-run/react": "^1.2.3",
     "@remix-run/vercel": "^1.2.3",
     "@udecode/zustood": "^0.4.4",
