@@ -1,3 +1,4 @@
+import * as build from "@remix-run/dev/server-build";
 const path = require("path");
 const { createRequestHandler } = require("@remix-run/netlify");
 
@@ -18,10 +19,11 @@ function purgeRequireCache() {
 
 exports.handler =
   process.env.NODE_ENV === "production"
-    ? createRequestHandler({ build: require("./build") })
+    ? createRequestHandler({ build, mode: process.env.NODE_ENV })
     : (event, context) => {
         purgeRequireCache();
         return createRequestHandler({
-          build: require("./build"),
+          build,
+          mode: process.env.NODE_ENV,
         })(event, context);
       };
