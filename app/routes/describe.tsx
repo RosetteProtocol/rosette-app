@@ -31,13 +31,11 @@ export const loader: LoaderFunction = async ({ request }) => {
   return json({
     contracts,
     contractAddress,
-    rosetteContractAddress: process.env.ROSETTE_STONE_ADDRESS,
   });
 };
 
 export default function Describe() {
-  const { contracts, contractAddress, rosetteContractAddress } =
-    useLoaderData<LoaderData>();
+  const { contracts, contractAddress } = useLoaderData<LoaderData>();
   const contractDescriptionsFetcher = useFetcher();
   const [selectedContractData, setSelectedContractData] =
     useState<ContractData>();
@@ -66,7 +64,6 @@ export default function Describe() {
               contractAddress={contractAddress}
               contractData={selectedContractData}
               currentFnEntries={contractDescriptionsFetcher.data}
-              rosetteContractAddress={rosetteContractAddress}
             />
           </SmoothDisplayContainer>
         ) : (

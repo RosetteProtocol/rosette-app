@@ -24,14 +24,12 @@ type ContractDescriptorScreenProps = {
   contractAddress: string;
   contractData: ContractData;
   currentFnEntries: FnEntry[];
-  rosetteContractAddress: string;
 };
 
 export const ContractDescriptorScreen = ({
   contractAddress,
   contractData: { abi, bytecode },
   currentFnEntries,
-  rosetteContractAddress,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
   const compactMode = below("large");
@@ -48,7 +46,7 @@ export const ContractDescriptorScreen = ({
 
   // Submit entries handler
   const actionFetcher = useFetcher();
-  const { upsertEntries } = useRosetteActions(rosetteContractAddress);
+  const { upsertEntries } = useRosetteActions();
   const handleSubmit = useCallback(
     (event) => {
       event.preventDefault();
@@ -69,28 +67,33 @@ export const ContractDescriptorScreen = ({
   );
 
   useEffect(() => {
-
-    const submitEntries = async() => {
+    const submitEntries = async () => {
       try {
         const sigs = Object.values(userFnDescriptions).map(
           ({ sigHash }) => sigHash
         );
         const scopes = new Array(sigs.length).fill(utils.id(bytecode));
         const cids: string[] = Object.values(actionFetcher.data);
-  
+
         await upsertEntries(scopes, sigs, cids);
-        window.alert("Entries submitted!") // TODO: Use tx feedback implementation
+        window.alert("Entries submitted!"); // TODO: Use tx feedback implementation
 
         // Should we redirect to the enties page?
       } catch (err) {
-        console.error(`Error submitting entries: ${err}`)
+        console.error(`Error submitting entries: ${err}`);
       }
-    }
+    };
 
     if (actionFetcher.data) {
-        submitEntries()
+      submitEntries();
     }
-  }, [actionFetcher.data, bytecode, contractAddress, upsertEntries, userFnDescriptions]);
+  }, [
+    actionFetcher.data,
+    bytecode,
+    contractAddress,
+    upsertEntries,
+    userFnDescriptions,
+  ]);
 
   useEffect(() => {
     if (abi && currentFnEntries) {
