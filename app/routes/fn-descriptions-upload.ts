@@ -14,9 +14,11 @@ export const action: ActionFunction = async ({ request }) => {
     return new Response("Function descriptions not provided", { status: 400 });
   }
 
+  const fnDescriptionsString = data.get(FN_DESCRIPTIONS_KEY)?.toString() || "";
   const fnDescriptions = JSON.parse(
-    data.get(FN_DESCRIPTIONS_KEY)!.toString()
+    fnDescriptionsString
   ) as UserFnDescription[];
+
   const uploadRequests = fnDescriptions.map(({ description, minimalName }) => {
     const descriptionJson = JSON.stringify({
       abi: minimalName,
