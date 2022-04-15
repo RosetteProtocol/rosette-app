@@ -1,6 +1,6 @@
-import type { LoaderFunction } from "remix";
-import { json } from "remix";
-import { useLoaderData } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import type { FnEntry } from "~/types";
