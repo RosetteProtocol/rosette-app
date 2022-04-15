@@ -8,6 +8,7 @@ export enum FnDescriptionStatus {
 }
 
 export type FnEntry = {
+  cid: string;
   notice: string;
   sigHash: string;
   status: FnDescriptionStatus;
