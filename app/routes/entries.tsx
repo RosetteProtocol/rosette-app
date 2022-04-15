@@ -1,11 +1,10 @@
 import { GU, useViewport } from "@1hive/1hive-ui";
-import { Outlet, useNavigate } from "remix";
+import { Outlet } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 
 export default function Home() {
   const { below } = useViewport();
-  const navigate = useNavigate();
 
   return (
     <AppScreen>

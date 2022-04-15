@@ -9,7 +9,7 @@ import {
 import { utils } from "ethers";
 import type { ChangeEvent, FormEventHandler } from "react";
 import { useState } from "react";
-import { useTransition } from "remix";
+import { useTransition } from "@remix-run/react";
 import styled from "styled-components";
 
 type ContractFormProps = {

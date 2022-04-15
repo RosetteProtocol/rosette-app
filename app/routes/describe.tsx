@@ -1,7 +1,8 @@
 import { utils } from "ethers";
 import { useEffect, useState } from "react";
-import type { LoaderFunction } from "remix";
-import { json, useCatch, useFetcher, useLoaderData } from "remix";
+import { json } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { useCatch, useFetcher, useLoaderData } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";

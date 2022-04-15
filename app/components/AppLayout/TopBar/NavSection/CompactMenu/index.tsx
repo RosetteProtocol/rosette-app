@@ -1,6 +1,6 @@
 import { ButtonBase, GU, IconMenu, useViewport } from "@1hive/1hive-ui";
 import { useState } from "react";
-import { useLocation } from "remix";
+import { useLocation } from "@remix-run/react";
 import styled from "styled-components";
 import type { NavigationItem } from "..";
 import { MenuItem } from "./MenuItem";

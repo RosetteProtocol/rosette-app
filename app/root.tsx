@@ -1,6 +1,5 @@
 import { Main } from "@1hive/1hive-ui";
 import {
-  json,
   Links,
   LiveReload,
   Meta,
@@ -8,8 +7,9 @@ import {
   ScrollRestoration,
   useCatch,
   useLoaderData,
-} from "remix";
-import type { MetaFunction } from "remix";
+} from "@remix-run/react";
+import type { MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { App } from "~/App";
 
 export const meta: MetaFunction = () => {
