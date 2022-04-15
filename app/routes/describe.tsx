@@ -1,7 +1,8 @@
 import { utils } from "ethers";
 import { useEffect, useState } from "react";
-import type { LoaderFunction } from "remix";
-import { json, useCatch, useFetcher, useLoaderData } from "remix";
+import { json } from "@remix-run/node";
+import type { LoaderFunction } from "@remix-run/node";
+import { useCatch, useFetcher, useLoaderData } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
@@ -28,11 +29,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const contracts = await fetchContracts(contractAddress);
 
-  return json({ contracts });
+  return json({
+    contracts,
+    contractAddress,
+  });
 };
 
 export default function Describe() {
-  const { contracts } = useLoaderData<LoaderData>();
+  const { contracts, contractAddress } = useLoaderData<LoaderData>();
   const contractDescriptionsFetcher = useFetcher();
   const [selectedContractData, setSelectedContractData] =
     useState<ContractData>();
@@ -58,6 +62,7 @@ export default function Describe() {
         {selectedContractData && contractDescriptionsFetcher.type === "done" ? (
           <SmoothDisplayContainer>
             <ContractDescriptorScreen
+              contractAddress={contractAddress}
               contractData={selectedContractData}
               currentFnEntries={contractDescriptionsFetcher.data}
             />

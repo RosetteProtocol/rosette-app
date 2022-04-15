@@ -1,5 +1,8 @@
+import { useCallback, useEffect, useState } from "react";
+import { useAccount } from "wagmi";
+import { utils } from "ethers";
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
-import { useEffect, useState } from "react";
+import { useFetcher } from "@remix-run/react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
@@ -13,27 +16,84 @@ import {
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
 import type { ContractData, FnEntry } from "~/types";
+import useRosetteActions from "./useRosetteActions";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
 type ContractDescriptorScreenProps = {
+  contractAddress: string;
   contractData: ContractData;
   currentFnEntries: FnEntry[];
 };
 
 export const ContractDescriptorScreen = ({
-  contractData: { abi },
+  contractAddress,
+  contractData: { abi, bytecode },
   currentFnEntries,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
-  const { fnSelected, fnDescriptorEntries } = useContractDescriptorStore();
   const compactMode = below("large");
+  const [{ data: accountData }] = useAccount();
+  const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
+    useContractDescriptorStore();
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
+
   /**
    * Debounce wheel event to avoid fast changing pages on scroll.
    */
   const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
   const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
+
+  // Submit entries handler
+  const actionFetcher = useFetcher();
+  const { upsertEntries } = useRosetteActions();
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const fnDescriptionsJSON = Object.values(userFnDescriptions);
+
+      actionFetcher.submit(
+        {
+          fnDescriptions: JSON.stringify(fnDescriptionsJSON),
+        },
+        {
+          method: "post",
+          action: "/fn-descriptions-upload",
+        }
+      );
+    },
+    [actionFetcher, userFnDescriptions]
+  );
+
+  useEffect(() => {
+    const submitEntries = async () => {
+      try {
+        const sigs = Object.values(userFnDescriptions).map(
+          ({ sigHash }) => sigHash
+        );
+        const scopes = new Array(sigs.length).fill(utils.id(bytecode));
+        const cids: string[] = Object.values(actionFetcher.data);
+
+        await upsertEntries(scopes, sigs, cids);
+        window.alert("Entries submitted!"); // TODO: Use tx feedback implementation
+
+        // Should we redirect to the enties page?
+      } catch (err) {
+        console.error(`Error submitting entries: ${err}`);
+      }
+    };
+
+    if (actionFetcher.data) {
+      submitEntries();
+    }
+  }, [
+    actionFetcher.data,
+    bytecode,
+    contractAddress,
+    upsertEntries,
+    userFnDescriptions,
+  ]);
 
   useEffect(() => {
     if (abi && currentFnEntries) {
@@ -64,43 +124,50 @@ export const ContractDescriptorScreen = ({
   }, []);
 
   return (
-    <Layout compactMode={compactMode}>
-      <FiltersContainer>FILTERS</FiltersContainer>
-      {fnDescriptorEntries.length > 1 && (
-        <PaginationContainer>
-          <Pagination
-            direction={compactMode ? "horizontal" : "vertical"}
-            pages={fnDescriptorEntries.length}
-            selected={fnSelected}
-            size={(compactMode ? 3 : 4) * GU}
-            onChange={actions.fnSelected}
-            touchMode={compactMode}
-          />
-          <PaginationIcon
-            size={compactMode ? 34 : 45}
-            src={compactMode ? handIcon : scrollIcon}
-            alt=""
-          />
-        </PaginationContainer>
-      )}
-      <CarouselContainer>
-        <Carousel
-          selected={fnSelected}
-          items={fnDescriptorEntries.map((f) => (
-            <FunctionDescriptor
-              key={f.sigHash}
-              fnDescriptorEntry={f}
-              onEntryChange={actions.upsertFnDescription}
+    <form onSubmit={handleSubmit}>
+      <Layout compactMode={compactMode}>
+        <FiltersContainer>FILTERS</FiltersContainer>
+        {fnDescriptorEntries.length > 1 && (
+          <PaginationContainer>
+            <Pagination
+              direction={compactMode ? "horizontal" : "vertical"}
+              pages={fnDescriptorEntries.length}
+              selected={fnSelected}
+              size={(compactMode ? 3 : 4) * GU}
+              onChange={actions.fnSelected}
+              touchMode={compactMode}
             />
-          ))}
-          direction={compactMode ? "horizontal" : "vertical"}
-          itemSpacing={450}
-        />
-      </CarouselContainer>
-      <SubmitContainer>
-        <SubmitButton label={`Submit  (${fnDescriptionsCounter})`} wide />
-      </SubmitContainer>
-    </Layout>
+            <PaginationIcon
+              size={compactMode ? 34 : 45}
+              src={compactMode ? handIcon : scrollIcon}
+              alt=""
+            />
+          </PaginationContainer>
+        )}
+        <CarouselContainer>
+          <Carousel
+            selected={fnSelected}
+            items={fnDescriptorEntries.map((f) => (
+              <FunctionDescriptor
+                key={f.sigHash}
+                fnDescriptorEntry={f}
+                onEntryChange={actions.upsertFnDescription}
+              />
+            ))}
+            direction={compactMode ? "horizontal" : "vertical"}
+            itemSpacing={450}
+          />
+        </CarouselContainer>
+        <SubmitContainer>
+          <SubmitButton
+            label={`Submit  (${fnDescriptionsCounter})`}
+            type="submit"
+            wide
+            disabled={!accountData?.address}
+          />
+        </SubmitContainer>
+      </Layout>
+    </form>
   );
 };
 

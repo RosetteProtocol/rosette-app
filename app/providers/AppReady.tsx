@@ -2,8 +2,8 @@ import { springs } from "@1hive/1hive-ui";
 import styled from "styled-components";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
-import type { TransitionFn } from "react-spring";
-import { a, useTransition } from "react-spring";
+import type { TransitionFn } from "@react-spring/web";
+import { a, useTransition } from "@react-spring/web";
 
 import { BlossomLabsLogo } from "~/components/BlossomLabsLogo";
 

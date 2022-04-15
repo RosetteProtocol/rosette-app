@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { a, useSpring } from "react-spring";
+import { a, useSpring } from "@react-spring/web";
 
 export const SmoothDisplayContainer = ({
   children,
