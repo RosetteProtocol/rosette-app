@@ -1,7 +1,7 @@
 import { GU, useViewport } from "@1hive/1hive-ui";
-import type { LoaderFunction } from "remix";
-import { useLoaderData } from "remix";
-import { json, useNavigate } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import type { FnEntry } from "~/types";

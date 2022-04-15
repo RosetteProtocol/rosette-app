@@ -1,5 +1,4 @@
-import { useOutletContext } from "remix";
-import { Outlet } from "@remix-run/react";
+import { Outlet, useOutletContext } from "@remix-run/react";
 import type { AppContext } from "~/App";
 
 export default function EntriesRoute() {

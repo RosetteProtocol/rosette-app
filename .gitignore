@@ -9,6 +9,7 @@ node_modules
 /public/build
 /public/aragon-ui
 /api/index.js
+/api/index.js.map
 
 # Editor directories and files
 .vscode/*
@@ -20,3 +21,5 @@ node_modules
 *.njsproj
 *.sln
 *.sw?
+# Local Netlify folder
+.netlify

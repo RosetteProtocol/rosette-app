@@ -1,4 +1,4 @@
-import type { LoaderFunction } from "remix";
+import type { LoaderFunction } from "@remix-run/node";
 import { getSanitizedEntriesData } from "~/utils/server/entries-data.server";
 import { fetchContractFnEntries } from "~/utils/server/subgraph.server";
 
