@@ -28,11 +28,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const contracts = await fetchContracts(contractAddress);
 
-  return json({ contracts });
+  return json({
+    contracts,
+    contractAddress,
+  });
 };
 
 export default function Describe() {
-  const { contracts } = useLoaderData<LoaderData>();
+  const { contracts, contractAddress } = useLoaderData<LoaderData>();
   const contractDescriptionsFetcher = useFetcher();
   const [selectedContractData, setSelectedContractData] =
     useState<ContractData>();
@@ -58,6 +61,7 @@ export default function Describe() {
         {selectedContractData && contractDescriptionsFetcher.type === "done" ? (
           <SmoothDisplayContainer>
             <ContractDescriptorScreen
+              contractAddress={contractAddress}
               contractData={selectedContractData}
               currentFnEntries={contractDescriptionsFetcher.data}
             />
