@@ -2,7 +2,7 @@ import { utils } from "ethers";
 import { useEffect, useState } from "react";
 import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
-import { useCatch, useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
@@ -86,31 +86,3 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
 `;
-
-// https://remix.run/docs/en/v1/api/conventions#catchboundary
-export function CatchBoundary() {
-  const caught = useCatch();
-
-  let message;
-
-  switch (caught.status) {
-    case 400:
-      message = caught.data;
-    case 500:
-      message = caught.data;
-      break;
-    default:
-      throw new Error(caught.data || caught.statusText);
-  }
-
-  return (
-    <div>
-      <div>
-        <h1>
-          {caught.status}: {caught.statusText}
-        </h1>
-        {message}
-      </div>
-    </div>
-  );
-}

@@ -9,17 +9,16 @@ import {
 import { utils } from "ethers";
 import type { ChangeEvent, FormEventHandler } from "react";
 import { useState } from "react";
-import { useTransition } from "@remix-run/react";
 import styled from "styled-components";
 
 type ContractFormProps = {
+  loading: boolean;
   onSubmit(contractAddress: string): void;
 };
 
-export const ContractForm = ({ onSubmit }: ContractFormProps) => {
+export const ContractForm = ({ loading, onSubmit }: ContractFormProps) => {
   const [contractAddress, setContractAddress] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const transition = useTransition();
 
   const handleSubmit: FormEventHandler = (e) => {
     e.preventDefault();
@@ -59,13 +58,8 @@ export const ContractForm = ({ onSubmit }: ContractFormProps) => {
           </Field>
           {errorMsg && <Info mode="error">{errorMsg}</Info>}
         </div>
-        <NextButton
-          type="submit"
-          mode="strong"
-          disabled={transition.state === "loading"}
-          wide
-        >
-          {transition.state === "loading" ? (
+        <NextButton type="submit" mode="strong" disabled={loading} wide>
+          {loading ? (
             <>
               <LoadingRing style={{ marginRight: 1 * GU }} mode="half-circle" />
               Loading…

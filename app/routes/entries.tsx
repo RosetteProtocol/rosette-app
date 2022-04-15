@@ -1,25 +1,14 @@
-import { GU, useViewport } from "@1hive/1hive-ui";
-import { Outlet } from "@remix-run/react";
-import styled from "styled-components";
-import { AppScreen } from "~/components/AppLayout/AppScreen";
+import { Outlet, useOutletContext } from "@remix-run/react";
+import type { AppContext } from "~/App";
 
-export default function Home() {
-  const { below } = useViewport();
+export default function EntriesRoute() {
+  const context = useOutletContext<AppContext>();
 
   return (
-    <AppScreen>
-      <MainContainer compactMode={below("medium")}>
-        <Outlet />
-      </MainContainer>
-    </AppScreen>
+    <>
+      <main>
+        <Outlet context={context} />
+      </main>
+    </>
   );
 }
-
-const MainContainer = styled.div<{ compactMode: boolean }>`
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: ${({ compactMode }) => (compactMode ? 5 * GU : 17 * GU)}px;
-  width: 100%;
-  height: 100%;
-`;

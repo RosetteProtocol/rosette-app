@@ -1,5 +1,5 @@
 import type { LoaderFunction } from "@remix-run/node";
-import { sanitizeEntriesData } from "~/utils/server/entries-data.server";
+import { getSanitizedEntriesData } from "~/utils/server/entries-data.server";
 import { fetchContractFnEntries } from "~/utils/server/subgraph.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -15,5 +15,5 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const subgraphFnEntriesData = await fetchContractFnEntries(bytecodeHash);
 
-  return sanitizeEntriesData(subgraphFnEntriesData);
+  return getSanitizedEntriesData(subgraphFnEntriesData);
 };

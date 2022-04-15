@@ -3,7 +3,7 @@ import { ipfsResolver } from "~/utils/ipfs";
 
 const ipfs = ipfsResolver();
 
-export const sanitizeEntriesData = async (
+export const getSanitizedEntriesData = async (
   fns: FnEntry[]
 ): Promise<FnEntry[]> => {
   const responses = (await Promise.allSettled(

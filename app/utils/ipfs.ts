@@ -6,7 +6,7 @@ export type IpfsResolver = {
 };
 
 export const DEFAULT_IPFS_CACHED_ITEMS = 100;
-export const DEFAULT_IPFS_URL = "https://gateway.pinata.cloud/ipfs/{cid}{path}"; // TODO: replace to infura after testing phase
+export const DEFAULT_IPFS_URL = "https://ipfs.io/ipfs/{cid}{path}";
 
 export function ipfsResolver(
   urlTemplate: string = DEFAULT_IPFS_URL,

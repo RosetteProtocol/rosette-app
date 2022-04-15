@@ -1,25 +1,73 @@
 import { GU, useViewport } from "@1hive/1hive-ui";
-import { useNavigate } from "@remix-run/react";
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
-import { ContractForm } from "~/components/ContractForm";
+import type { FnEntry } from "~/types";
+import { fetchFnEntries } from "~/utils/server/subgraph.server";
 
-export default function Home() {
+export const loader: LoaderFunction = async () => {
+  const fns = await fetchFnEntries();
+
+  // TODO: group by contract
+
+  return json({ fns });
+};
+
+export default function Entries() {
   const { below } = useViewport();
-  const navigate = useNavigate();
 
   return (
     <AppScreen>
       <MainContainer compactMode={below("medium")}>
-        <ContractForm
-          onSubmit={(contractAddress) =>
-            navigate(`/describe?contract=${contractAddress}`)
-          }
-        />
+        <EntriesList />
       </MainContainer>
     </AppScreen>
   );
 }
+
+type LoaderData = {
+  fns: FnEntry[];
+};
+
+export function EntriesList() {
+  const { fns } = useLoaderData<LoaderData>();
+
+  return (
+    <AppScreen hideBottomBar>
+      <Container>
+        {fns.length ? (
+          <ListContainer>
+            {fns.map((f) => (
+              <EntryCard key={f.id} fn={f} />
+            ))}
+          </ListContainer>
+        ) : (
+          <div>No entries found</div>
+        )}
+      </Container>
+    </AppScreen>
+  );
+}
+
+function EntryCard({ fn }: { fn: FnEntry }) {
+  const navigate = useNavigate();
+
+  return (
+    <EntryContainer onClick={() => navigate(`/entries/${fn.id}`)}>
+      {fn.sigHash}
+    </EntryContainer>
+  );
+}
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  height: 100%;
+  width: 100%;
+`;
 
 const MainContainer = styled.div<{ compactMode: boolean }>`
   display: flex;
@@ -28,4 +76,23 @@ const MainContainer = styled.div<{ compactMode: boolean }>`
   padding-top: ${({ compactMode }) => (compactMode ? 5 * GU : 17 * GU)}px;
   width: 100%;
   height: 100%;
+`;
+
+const ListContainer = styled.div`
+  display: grid;
+  grid-gap: ${2 * GU}px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  margin-bottom: ${2 * GU}px;
+`;
+
+const EntryContainer = styled.div`
+  padding: ${5 * GU}px ${4 * GU}px ${3 * GU}px ${4 * GU}px;
+  background: ${(props) => props.theme.surface};
+  border: 1px solid ${(props) => props.theme.border};
+  border-radius: ${2.5 * GU}px;
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: grid;
+  grid-gap: ${2 * GU}px;
+  text-align: center;
 `;
