@@ -1,5 +1,5 @@
 import { GU, useTheme } from "@1hive/1hive-ui";
-import { Link } from "remix";
+import { Link } from "@remix-run/react";
 import styled from "styled-components";
 import type { NavigationItem } from "..";
 

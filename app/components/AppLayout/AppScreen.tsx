@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 import { a } from "react-spring";
-import { useOutletContext } from "remix";
+import { useOutletContext } from "@remix-run/react";
 import styled from "styled-components";
 import { useAppReady } from "~/providers/AppReady";
 import type { AppContext } from "~/App";

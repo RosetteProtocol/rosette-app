@@ -1166,7 +1166,7 @@
     "@react-spring/shared" "~9.4.4"
     "@react-spring/types" "~9.4.4"
 
-"@remix-run/dev@^1.2.3":
+"@remix-run/dev@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@remix-run/dev/-/dev-1.4.0.tgz#1d41f2cea1adde44b49f13e601a5548acffa5fb0"
   integrity sha512-sysmDtVZzM/2/lQ9yXAeLMIFmj91QxK6QWQLk+01sBlwNc97dv2j+R9BN2J2r7CjhPXJUEaG0VZJwdC/Vjp2Qw==
@@ -1213,7 +1213,7 @@
     ws "^7.4.5"
     xdm "^2.0.0"
 
-"@remix-run/eslint-config@^1.2.3":
+"@remix-run/eslint-config@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@remix-run/eslint-config/-/eslint-config-1.4.0.tgz#a34fa214b3304ff12ddb5d43556d3358d97b6bc3"
   integrity sha512-Yn1gW6xdo/cAjrGqH8Mgr27Hqeq7uItt/wxNY3oijWb/cPaAjIlzgXu7wPpD6NRFoE4e7rQV5ICqXUHBY2gFDA==
@@ -1259,7 +1259,7 @@
     node-fetch "^2.6.1"
     source-map-support "^0.5.21"
 
-"@remix-run/react@^1.2.3":
+"@remix-run/react@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@remix-run/react/-/react-1.4.0.tgz#77a1a1adc767a407c5b5869d56afc4fa693e2823"
   integrity sha512-sG1G6qoDNJXxnUqEh1DR+JaKM4jPDW9+xUs0npET5VhsyZWez116sQ39vBzL/ZUrif1WgQDr4YIL3Yo3MZR0vA==
@@ -7576,11 +7576,6 @@ remark-rehype@^9.0.0:
     mdast-util-to-hast "^11.0.0"
     unified "^10.0.0"
 
-remix@^1.2.3:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/remix/-/remix-1.4.0.tgz#fa47a09bac6c4ed1772ee8964f5bdafc3d868b38"
-  integrity sha512-yCSh9L+voOFGaFKCEw/379F0YNQLxDU3mDveEdxHUsJkqVyJI4qbSY27H5+2aVtcEW6h0qEefCZcXZyBa5A6ww==
-
 repeat-element@^1.1.2:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/repeat-element/-/repeat-element-1.1.4.tgz#be681520847ab58c7568ac75fbfad28ed42d39e9"
@@ -8731,9 +8726,9 @@ urix@^0.1.0:
   resolved "https://registry.yarnpkg.com/urix/-/urix-0.1.0.tgz#da937f7a62e21fec1fd18d49b35c2935067a6c72"
   integrity sha1-2pN/emLiH+wf0Y1Js1wpNQZ6bHI=
 
-"use-inside@git+https://github.com/aragon/use-inside.git#16f321e499d8f89e9b0fb0999e2d21db2b119bbf":
+"use-inside@https://github.com/aragon/use-inside#16f321e499d8f89e9b0fb0999e2d21db2b119bbf":
   version "0.2.0"
-  resolved "git+https://github.com/aragon/use-inside.git#16f321e499d8f89e9b0fb0999e2d21db2b119bbf"
+  resolved "https://github.com/aragon/use-inside#16f321e499d8f89e9b0fb0999e2d21db2b119bbf"
 
 use@^3.1.0:
   version "3.1.1"

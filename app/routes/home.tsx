@@ -1,5 +1,5 @@
 import { GU, useViewport } from "@1hive/1hive-ui";
-import { useNavigate } from "remix";
+import { useNavigate } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractForm } from "~/components/ContractForm";
