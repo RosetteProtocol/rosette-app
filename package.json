@@ -16,6 +16,7 @@
   "dependencies": {
     "@1hive/1hive-ui": "^1.0.18",
     "@netlify/functions": "^1.0.0",
+    "@react-spring/web": "^9.4.4",
     "@remix-run/netlify": "^1.4.0",
     "@remix-run/node": "^1.4.0",
     "@remix-run/react": "^1.4.0",
@@ -26,7 +27,6 @@
     "ipfs-http-client": "^55.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-spring": "^9.4.4",
     "styled-components": "^5.3.3",
     "wagmi": "^0.2.26",
     "zustand": "^3.7.1"

@@ -1,6 +1,6 @@
 import { RootPortal } from "@1hive/1hive-ui";
 import type { ReactNode } from "react";
-import { a, useTransition } from "react-spring";
+import { a, useTransition } from "@react-spring/web";
 import styled from "styled-components";
 
 type SidebarProps = {

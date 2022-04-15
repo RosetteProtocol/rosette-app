@@ -1,5 +1,5 @@
 import { GU, useViewport } from "@1hive/1hive-ui";
-import { a } from "react-spring";
+import { a } from "@react-spring/web";
 import styled from "styled-components";
 
 import { useAppReady } from "~/providers/AppReady";
