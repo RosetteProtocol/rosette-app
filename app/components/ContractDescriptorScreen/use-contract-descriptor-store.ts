@@ -19,12 +19,16 @@ type ContractDescriptorState = {
    * the expense of having some fn data duplication (sigHash, minimalName, etc)
    */
   userFnDescriptions: Record<string, UserFnDescription>;
+  readyToFocus: boolean;
+  lastCaretPos: number;
 };
 
 const initialState: ContractDescriptorState = {
   fnSelected: 0,
   fnDescriptorEntries: [],
   userFnDescriptions: {},
+  readyToFocus: false,
+  lastCaretPos: 0,
 };
 
 const contractDescriptorStore = createStore("contract-descriptor")(
@@ -86,6 +90,37 @@ const contractDescriptorStore = createStore("contract-descriptor")(
 
         [sigHash]: userFnDescription,
       });
+    },
+  }))
+  .extendActions((set, get) => ({
+    addHelperFunction: (fnSignature: string) => {
+      const fnSelected = get.fnSelected();
+      const selectedEntry = get.fnDescriptorEntries()[fnSelected];
+      const selectedUserFnDescription =
+        get.userFnDescriptions()[selectedEntry.sigHash];
+      const fieldCaretPos = get.lastCaretPos();
+      const oldDescription = selectedUserFnDescription?.description ?? "";
+      const newDescription = `${oldDescription.slice(
+        0,
+        fieldCaretPos
+      )}\`${fnSignature}\`${oldDescription.slice(fieldCaretPos)}`;
+
+      const newUserFnDescription: UserFnDescription = selectedUserFnDescription
+        ? {
+            ...selectedUserFnDescription,
+            description: newDescription,
+          }
+        : {
+            sigHash: selectedEntry.sigHash,
+            description: newDescription,
+            minimalName: selectedEntry.minimalName,
+          };
+
+      set.upsertFnDescription(newUserFnDescription);
+
+      // Wait a little bit for the description to update.
+      setTimeout(() => set.readyToFocus(true), 100);
+      setTimeout(() => set.readyToFocus(false), 100);
     },
   }))
   .extendSelectors((_, get) => ({

@@ -1,6 +1,5 @@
 import { createRef, useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
-import { getSelectionRange } from "~/utils/client/selection.client";
 import { Carousel } from "./Carousel";
 import { FunctionDescriptor } from "./FunctionDescriptor";
 import {
@@ -15,7 +14,7 @@ type FnDescriptorsCarouselProps = {
 export const FnDescriptorsCarousel = ({
   compactMode,
 }: FnDescriptorsCarouselProps) => {
-  const { fnDescriptorEntries, fnSelected, userFnDescriptions } =
+  const { fnDescriptorEntries, fnSelected, userFnDescriptions, readyToFocus } =
     useContractDescriptorStore();
   const descriptorRefs = useRef<RefObject<HTMLTextAreaElement>[]>([]);
   const prevDescriptorIndexRef = useRef(-1);
@@ -62,6 +61,20 @@ export const FnDescriptorsCarousel = ({
 
     currentDescriptorIndexRef.current = fnSelected;
   }, [fnSelected]);
+
+  /**
+   * Focus on current element when function was selected and set
+   * selection on first paramenter.
+   */
+  useEffect(() => {
+    if (!readyToFocus || !descriptorRefs.current[fnSelected]?.current) {
+      return;
+    }
+
+    const selectedDescriptor = descriptorRefs.current[fnSelected].current!;
+
+    selectedDescriptor.focus();
+  }, [readyToFocus, fnSelected]);
 
   return (
     <Carousel

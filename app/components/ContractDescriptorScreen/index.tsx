@@ -148,6 +148,9 @@ export const ContractDescriptorScreen = ({
         <CarouselContainer>
           <FnDescriptorsCarousel compactMode={compactMode} />
         </CarouselContainer>
+        <FunctionsPickerContainer>
+          <HelperFunctionsPicker popoverPlacement="left-start" />
+        </FunctionsPickerContainer>
         <SubmitContainer>
           <SubmitButton
             label={`Submit  (${fnDescriptionsCounter})`}
@@ -190,6 +193,10 @@ const Layout = styled.div<{ compactMode: boolean }>`
       grid-area: carousel;
     }
 
+    ${FunctionsPickerContainer} {
+      grid-area: functions-picker;
+    }
+
     ${SubmitContainer} {
       grid-area: submit;
       ${
@@ -217,7 +224,7 @@ const Layout = styled.div<{ compactMode: boolean }>`
     `
        : `grid: 
       [row1-start] "filters filters filters" 1fr [row1-end]
-      [row2-start] "pagination carousel ." 8fr [row2-end]
+      [row2-start] "pagination carousel functions-picker" 8fr [row2-end]
       [row3-start] ". . submit" 1fr [row3-end]
       / 1fr minmax(200px,${FN_DESCRIPTOR_HEIGHT}) 1fr;
     `
@@ -242,6 +249,10 @@ const PaginationIcon = styled.img<{ size: number }>`
 const CarouselContainer = styled.div`
   min-width: 100%;
   height: 100%;
+`;
+
+const FunctionsPickerContainer = styled.div`
+  justify-self: end;
 `;
 
 const SubmitContainer = styled.div``;

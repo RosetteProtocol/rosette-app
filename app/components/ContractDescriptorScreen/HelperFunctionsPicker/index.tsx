@@ -1,10 +1,31 @@
 import { Button, GU, IconMenu, Popover, SearchInput } from "@1hive/1hive-ui";
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import type { WheelEventHandler } from "react";
 import styled from "styled-components";
 import { FunctionDetails } from "./FunctionDetails";
 import { HELPER_FUNCTIONS } from "~/radspec-helper-functions";
+import type { HelperFunction } from "~/radspec-helper-functions";
 
-type Placement = "top" | "bottom" | "left" | "right";
+import { actions } from "../use-contract-descriptor-store";
+import { SELECTION_SEPARATOR } from "~/utils/client/selection.client";
+
+type Placement =
+  | "top"
+  | "bottom"
+  | "left"
+  | "right"
+  | "left-end"
+  | "left-start";
+
+const computeFnSignature = (fn: HelperFunction): string => {
+  const params = fn.params
+    // Filter out optional parameters
+    ?.filter((p) => p.defaultValue === undefined)
+    .map((p) => `${SELECTION_SEPARATOR}${p.name}`)
+    .join(",");
+
+  return `${fn.name}(${params})`;
+};
 
 export const HelperFunctionsPicker = ({
   popoverPlacement,
@@ -14,8 +35,17 @@ export const HelperFunctionsPicker = ({
   const opener = useRef();
   const [visible, setVisible] = useState(false);
 
+  const handleUseFunction = useCallback((fn: HelperFunction) => {
+    actions.addHelperFunction(computeFnSignature(fn));
+    setVisible(false);
+  }, []);
+
+  const handlePickerWheelEvent = useCallback<WheelEventHandler>((e) => {
+    e.stopPropagation();
+  }, []);
+
   return (
-    <>
+    <div onWheel={handlePickerWheelEvent}>
       <Button
         display="icon"
         label="Helper functions"
@@ -35,13 +65,17 @@ export const HelperFunctionsPicker = ({
             <SearchInput placeholder="Search function…" wide />
             <FunctionsSection>
               {HELPER_FUNCTIONS.map((fn) => (
-                <FunctionDetails key={fn.name} fn={fn} />
+                <FunctionDetails
+                  key={fn.name}
+                  fn={fn}
+                  onUse={handleUseFunction}
+                />
               ))}
             </FunctionsSection>
           </PopoverLayout>
         </PopoverWrapper>
       </Popover>
-    </>
+    </div>
   );
 };
 

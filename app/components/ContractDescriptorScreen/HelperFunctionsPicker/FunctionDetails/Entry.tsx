@@ -7,10 +7,7 @@ type DescriptionProps = {
   params?: Param[];
 };
 
-export const FunctionDescription = ({
-  description,
-  params = [],
-}: DescriptionProps) => (
+export const Entry = ({ description, params = [] }: DescriptionProps) => (
   <Container>
     <div>{description}</div>
     {params.length && (

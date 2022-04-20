@@ -1,50 +1,55 @@
 import { Button, textStyle, GU } from "@1hive/1hive-ui";
-import { useEffect, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useDebounce } from "~/hooks/useDebounce";
 import type { UserFnDescription } from "~/types";
 import { FnDescriptionStatus } from "~/types";
 import { getFnEntryStatusIconData } from "~/utils/client/icons.client";
+import { actions } from "../use-contract-descriptor-store";
 import type { Function } from "../use-contract-descriptor-store";
 import { DescriptionField } from "./DescriptionField";
 
 type FunctionDescriptorProps = {
   fnDescriptorEntry: Function;
+  description?: string;
   onEntryChange(userFnDescription: UserFnDescription): void;
   isCompleted?: boolean;
 };
 
-export const FunctionDescriptor = ({
-  fnDescriptorEntry,
-  onEntryChange,
-}: FunctionDescriptorProps) => {
+export const FunctionDescriptor = forwardRef<
+  HTMLTextAreaElement,
+  FunctionDescriptorProps
+>(({ fnDescriptorEntry, description, onEntryChange }, ref) => {
   const entry = fnDescriptorEntry.entry;
   const { notice, status } = entry || {};
-  const [description, setDescription] = useState<string>();
-  const debouncedDescription = useDebounce<string | undefined>(
-    description,
-    350
+  const [textAreaValue, setTextAreaValue] = useState<string | undefined>(
+    description
   );
-  const descriptorStatus =
-    status ||
-    (debouncedDescription
-      ? FnDescriptionStatus.Added
-      : FnDescriptionStatus.Available);
+  const debouncedTextAreaValue = useDebounce<string | undefined>(
+    textAreaValue,
+    150
+  );
+
+  const descriptorStatus = status || FnDescriptionStatus.Available;
 
   useEffect(() => {
-    if (debouncedDescription !== undefined) {
+    if (debouncedTextAreaValue !== undefined) {
       onEntryChange({
         sigHash: fnDescriptorEntry.sigHash,
         minimalName: fnDescriptorEntry.minimalName,
-        description: debouncedDescription,
+        description: debouncedTextAreaValue,
       });
     }
   }, [
     fnDescriptorEntry.sigHash,
     fnDescriptorEntry.minimalName,
-    debouncedDescription,
     onEntryChange,
+    debouncedTextAreaValue,
   ]);
+
+  useEffect(() => {
+    setTextAreaValue(description);
+  }, [description]);
 
   return (
     <Container>
@@ -53,9 +58,13 @@ export const FunctionDescriptor = ({
         <StatusLabel status={descriptorStatus} />
       </DescriptorHeader>
       <DescriptionField
+        ref={ref}
         height={`${23.5 * GU}px`}
-        value={notice || description}
-        onChange={(e) => setDescription(e.target.value)}
+        value={notice ?? textAreaValue}
+        onChange={(e) => setTextAreaValue(e.target.value)}
+        onBlur={(e) => {
+          actions.lastCaretPos(e.target.selectionStart);
+        }}
         disabled={!!notice}
       />
       <div style={{ margin: `${2 * GU}px 0` }}>
@@ -64,12 +73,15 @@ export const FunctionDescriptor = ({
       <Button
         label="Test function"
         wide
+        // TODO: implement test functionality
         onClick={() => {}}
         disabled={!(notice || description)}
       />
     </Container>
   );
-};
+});
+
+FunctionDescriptor.displayName = "FunctionDescriptor";
 
 const StatusLabel = ({ status }: { status: FnDescriptionStatus }) => {
   const iconData = getFnEntryStatusIconData(status);

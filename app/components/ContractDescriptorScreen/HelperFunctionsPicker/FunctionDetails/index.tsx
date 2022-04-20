@@ -7,14 +7,14 @@ import {
   useTheme,
 } from "@1hive/1hive-ui";
 import { useEffect, useRef, useState } from "react";
-import { a, useSpring } from "react-spring";
+import { a, useSpring } from "@react-spring/web";
 import styled from "styled-components";
 import type { HelperFunction } from "~/radspec-helper-functions";
-import { FunctionDescription } from "./FunctionDescription";
+import { Entry } from "./Entry";
 
 type FunctionDetailsProps = {
   fn: HelperFunction;
-  onUse?(fnSignature: string): void;
+  onUse?(fn: HelperFunction): void;
 };
 
 export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
@@ -63,7 +63,7 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
           ),
         }}
       >
-        <ActionButtonWrapper onClick={() => onUse("")}>Use</ActionButtonWrapper>
+        <ActionButtonWrapper onClick={() => onUse(fn)}>Use</ActionButtonWrapper>
         <EntryButton onClick={handleToggle}>
           <FnNameWrapper>
             <div>
@@ -105,10 +105,7 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
             }}
           >
             <div ref={handleContentRef} style={{ padding: 5, marginLeft: 15 }}>
-              <FunctionDescription
-                description={fn.description}
-                params={fn.params}
-              />
+              <Entry description={fn.description} params={fn.params} />
             </div>
           </AnimatedContainer>
         </div>
@@ -134,8 +131,8 @@ const FnNameWrapper = styled.h1`
   height: ${5 * GU}px;
   margin-left: ${0.5 * GU}px;
   color: ${({ theme }) => theme.surfaceContent};
-  ${textStyle("body2")};
   font-weight: bold;
+  ${textStyle("body2")};
 `;
 
 const AnimatedContainer = styled(a.div)`
@@ -148,9 +145,9 @@ const ActionButtonWrapper = styled(ButtonBase)`
   position: absolute;
   top: 10px;
   right: 10px;
-  ${textStyle("body3")};
   color: ${({ theme }) => theme.link.alpha(0.6)};
   z-index: 2;
+  ${textStyle("body3")};
 
   &:hover {
     color: ${({ theme }) => theme.link};
