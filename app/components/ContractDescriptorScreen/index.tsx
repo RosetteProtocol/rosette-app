@@ -7,8 +7,6 @@ import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
 import { useDebounce } from "~/hooks/useDebounce";
-import { Carousel } from "./Carousel";
-import { FunctionDescriptor } from "./FunctionDescriptor";
 import { Pagination } from "./Pagination";
 import {
   actions,
@@ -17,6 +15,8 @@ import {
 } from "./use-contract-descriptor-store";
 import type { ContractData, FnEntry } from "~/types";
 import useRosetteActions from "./useRosetteActions";
+import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
+import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
@@ -32,7 +32,6 @@ export const ContractDescriptorScreen = ({
   currentFnEntries,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
-  const compactMode = below("large");
   const [{ data: accountData }] = useAccount();
   const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
     useContractDescriptorStore();
@@ -43,10 +42,12 @@ export const ContractDescriptorScreen = ({
    */
   const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
   const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
+  const compactMode = below("large");
 
   // Submit entries handler
   const actionFetcher = useFetcher();
   const { upsertEntries } = useRosetteActions();
+
   const handleSubmit = useCallback(
     (event) => {
       event.preventDefault();
@@ -124,7 +125,7 @@ export const ContractDescriptorScreen = ({
   }, []);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form style={{ height: "100%" }} onSubmit={handleSubmit}>
       <Layout compactMode={compactMode}>
         <FiltersContainer>FILTERS</FiltersContainer>
         {fnDescriptorEntries.length > 1 && (
@@ -145,18 +146,7 @@ export const ContractDescriptorScreen = ({
           </PaginationContainer>
         )}
         <CarouselContainer>
-          <Carousel
-            selected={fnSelected}
-            items={fnDescriptorEntries.map((f) => (
-              <FunctionDescriptor
-                key={f.sigHash}
-                fnDescriptorEntry={f}
-                onEntryChange={actions.upsertFnDescription}
-              />
-            ))}
-            direction={compactMode ? "horizontal" : "vertical"}
-            itemSpacing={450}
-          />
+          <FnDescriptorsCarousel compactMode={compactMode} />
         </CarouselContainer>
         <SubmitContainer>
           <SubmitButton
@@ -226,10 +216,10 @@ const Layout = styled.div<{ compactMode: boolean }>`
       justify-content: center;
     `
        : `grid: 
-      [row1-start] ". filters ." 1fr [row1-end]
+      [row1-start] "filters filters filters" 1fr [row1-end]
       [row2-start] "pagination carousel ." 8fr [row2-end]
       [row3-start] ". . submit" 1fr [row3-end]
-      / 1fr minmax(200px,527px) 1fr;
+      / 1fr minmax(200px,${FN_DESCRIPTOR_HEIGHT}) 1fr;
     `
    }
   `};
