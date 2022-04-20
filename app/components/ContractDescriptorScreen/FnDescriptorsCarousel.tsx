@@ -6,6 +6,7 @@ import {
   actions,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
+import { canTab, getSelectionRange } from "~/utils/client/selection.client";
 
 type FnDescriptorsCarouselProps = {
   compactMode: boolean;
@@ -14,8 +15,13 @@ type FnDescriptorsCarouselProps = {
 export const FnDescriptorsCarousel = ({
   compactMode,
 }: FnDescriptorsCarouselProps) => {
-  const { fnDescriptorEntries, fnSelected, userFnDescriptions, readyToFocus } =
-    useContractDescriptorStore();
+  const {
+    fnDescriptorEntries,
+    fnSelected,
+    lastCaretPos,
+    userFnDescriptions,
+    readyToFocus,
+  } = useContractDescriptorStore();
   const descriptorRefs = useRef<RefObject<HTMLTextAreaElement>[]>([]);
   const prevDescriptorIndexRef = useRef(-1);
   const currentDescriptorIndexRef = useRef(0);
@@ -74,7 +80,14 @@ export const FnDescriptorsCarousel = ({
     const selectedDescriptor = descriptorRefs.current[fnSelected].current!;
 
     selectedDescriptor.focus();
-  }, [readyToFocus, fnSelected]);
+
+    const [start, end] = getSelectionRange(
+      selectedDescriptor.value,
+      lastCaretPos
+    );
+
+    selectedDescriptor.setSelectionRange(start, end);
+  }, [lastCaretPos, readyToFocus, fnSelected]);
 
   return (
     <Carousel
@@ -86,6 +99,17 @@ export const FnDescriptorsCarousel = ({
           description={userFnDescriptions[f.sigHash]?.description}
           fnDescriptorEntry={f}
           onEntryChange={actions.upsertFnDescription}
+          onKeyDown={(e) => {
+            const text = userFnDescriptions[f.sigHash]?.description;
+            const offset = e.target.selectionStart;
+
+            if (e.code === "Tab" && text && canTab(text, offset)) {
+              e.preventDefault();
+              const [start, end] = getSelectionRange(text, offset);
+
+              descriptorRefs.current[i].current?.setSelectionRange(start, end);
+            }
+          }}
         />
       ))}
       direction={compactMode ? "horizontal" : "vertical"}

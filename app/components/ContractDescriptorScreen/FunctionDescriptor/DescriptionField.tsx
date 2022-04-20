@@ -1,6 +1,10 @@
 import { GU, RADIUS, textStyle } from "@1hive/1hive-ui";
 import { forwardRef } from "react";
-import type { ChangeEventHandler, FocusEventHandler } from "react";
+import type {
+  ChangeEventHandler,
+  FocusEventHandler,
+  KeyboardEventHandler,
+} from "react";
 import styled from "styled-components";
 
 type DescriptionFieldProps = {
@@ -11,6 +15,7 @@ type DescriptionFieldProps = {
   textSize?: string;
   onBlur?: FocusEventHandler<HTMLTextAreaElement>;
   onChange?: ChangeEventHandler<HTMLTextAreaElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>;
 };
 
 export const DescriptionField = forwardRef<

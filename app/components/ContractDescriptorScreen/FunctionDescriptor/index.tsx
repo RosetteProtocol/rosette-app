@@ -1,5 +1,6 @@
 import { Button, textStyle, GU } from "@1hive/1hive-ui";
 import { forwardRef, useEffect, useState } from "react";
+import type { KeyboardEventHandler } from "react";
 import styled from "styled-components";
 import { useDebounce } from "~/hooks/useDebounce";
 import type { UserFnDescription } from "~/types";
@@ -13,13 +14,14 @@ type FunctionDescriptorProps = {
   fnDescriptorEntry: Function;
   description?: string;
   onEntryChange(userFnDescription: UserFnDescription): void;
+  onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>;
   isCompleted?: boolean;
 };
 
 export const FunctionDescriptor = forwardRef<
   HTMLTextAreaElement,
   FunctionDescriptorProps
->(({ fnDescriptorEntry, description, onEntryChange }, ref) => {
+>(({ fnDescriptorEntry, description, onEntryChange, onKeyDown }, ref) => {
   const entry = fnDescriptorEntry.entry;
   const { notice, status } = entry || {};
   const [textAreaValue, setTextAreaValue] = useState<string | undefined>(
@@ -65,6 +67,7 @@ export const FunctionDescriptor = forwardRef<
         onBlur={(e) => {
           actions.lastCaretPos(e.target.selectionStart);
         }}
+        onKeyDown={onKeyDown}
         disabled={!!notice}
       />
       <div style={{ margin: `${2 * GU}px 0` }}>
