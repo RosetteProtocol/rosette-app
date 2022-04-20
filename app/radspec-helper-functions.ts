@@ -20,7 +20,7 @@ export type HelperFunction = {
 
 export const HELPER_FUNCTIONS: HelperFunction[] = [
   {
-    name: "formatDate",
+    name: "@formatDate",
     description: "Format a timestamp as a string.",
     params: [
       {
@@ -37,7 +37,7 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
     ],
   },
   {
-    name: "formatPct",
+    name: "@formatPct",
     description: "Format a percentage amount.",
     params: [
       {
@@ -61,7 +61,7 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
     ],
   },
   {
-    name: "fromHex",
+    name: "@fromHex",
     description: "Returns the string representation of a given hex value.",
     params: [
       {
@@ -78,7 +78,7 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
     ],
   },
   {
-    name: "radspec",
+    name: "@radspec",
     description: "Interpret calldata using radspec recursively.",
     params: [
       {
@@ -94,7 +94,7 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
     ],
   },
   {
-    name: "tokenAmount",
+    name: "@tokenAmount",
     description: "Format token amounts taking decimals into account.",
     params: [
       {
@@ -122,7 +122,7 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
     ],
   },
   {
-    name: "transformTime",
+    name: "@transformTime",
     description: "Transform between time units.",
     params: [
       {
@@ -147,7 +147,7 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
     ],
   },
   {
-    name: "withDecimals",
+    name: "@withDecimals",
     description: "Format an numerical amount with its decimals.",
     params: [
       {
