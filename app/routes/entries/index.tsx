@@ -94,7 +94,6 @@ const EntryContainer = styled.div`
 `;
 
 const NoticeContainer = styled.div`
-  visibility: visible;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
