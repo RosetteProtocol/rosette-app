@@ -4,6 +4,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
+import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
 import { StatusLabel } from "~/components/StatusLabel";
 import type { FnEntry } from "~/types";
 import { fetchFnEntries } from "~/utils/server/subgraph.server";
@@ -19,9 +20,11 @@ export default function Entries() {
 
   return (
     <AppScreen>
-      <MainContainer compactMode={below("medium")}>
-        <EntriesList />
-      </MainContainer>
+      <SmoothDisplayContainer>
+        <MainContainer compactMode={below("medium")}>
+          <EntriesList />
+        </MainContainer>
+      </SmoothDisplayContainer>
     </AppScreen>
   );
 }
