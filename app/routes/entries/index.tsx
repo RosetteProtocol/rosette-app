@@ -23,15 +23,15 @@ export default function Entries() {
   const { fns } = useLoaderData<LoaderData>();
   const { below, within } = useViewport();
 
+  const compactMode = below("medium");
+  const tabletMode = within("medium", "large");
+
   return (
     <AppScreen hideBottomBar>
       <SmoothDisplayContainer>
-        <Container compactMode={below("medium")}>
+        <Container compactMode={compactMode} tabletMode={tabletMode}>
           {fns.length ? (
-            <ListContainer
-              compactMode={below("medium")}
-              tabletMode={within("medium", "large")}
-            >
+            <ListContainer compactMode={compactMode} tabletMode={tabletMode}>
               {fns.map((f) => (
                 <EntryCard key={f.id} fn={f} />
               ))}
@@ -61,18 +61,20 @@ function EntryCard({ fn }: { fn: FnEntry }) {
   );
 }
 
-const Container = styled.div<{ compactMode: boolean }>`
+const Container = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   display: flex;
   justify-content: center;
   align-items: start;
-  padding-top: ${({ compactMode }) => (compactMode ? 5 * GU : 17 * GU)}px;
+  padding-top: ${({ compactMode, tabletMode }) =>
+    compactMode ? 3 * GU : tabletMode ? 5 * GU : 9 * GU}px;
   height: 100%;
   width: 100%;
 `;
 
 const ListContainer = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   display: grid;
-  grid-gap: ${5 * GU}px;
+  grid-gap: ${({ compactMode, tabletMode }) =>
+    compactMode ? 3 * GU : tabletMode ? 3 * GU : 5 * GU}px;
   grid-template-columns: ${({ compactMode, tabletMode }) =>
     `repeat(${compactMode ? "1" : tabletMode ? "2" : "3"}, ${
       compactMode ? "327" : tabletMode ? "336" : "350"
