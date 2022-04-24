@@ -33,6 +33,7 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
         type: ParamType.String,
         description:
           'Format for the date, defaults to a format like "Jan. 1st 2000".',
+        defaultValue: "MMM. do y",
       },
     ],
   },
@@ -112,12 +113,14 @@ export const HELPER_FUNCTIONS: HelperFunction[] = [
         type: ParamType.Bool,
         description:
           "Whether the token symbol will be printed after the amount.",
+        defaultValue: "true",
       },
       {
         name: "precision",
         type: ParamType.Uint,
         description:
           "The number of decimal places to format to. If set, the precision is always enforced.",
+        defaultValue: 18,
       },
     ],
   },
