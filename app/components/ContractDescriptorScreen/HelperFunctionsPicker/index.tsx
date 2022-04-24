@@ -1,5 +1,5 @@
 import { Button, GU, IconMenu, Popover, SearchInput } from "@1hive/1hive-ui";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WheelEventHandler } from "react";
 import styled from "styled-components";
 import { FunctionDetails } from "./FunctionDetails";
@@ -34,6 +34,14 @@ export const HelperFunctionsPicker = ({
 }) => {
   const opener = useRef();
   const [visible, setVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const filteredHelperFunctions = useMemo(
+    () =>
+      HELPER_FUNCTIONS.filter((fn) =>
+        fn.name.toLowerCase().includes(searchTerm.toLowerCase())
+      ),
+    [searchTerm]
+  );
 
   const handleUseFunction = useCallback((fn: HelperFunction) => {
     actions.addHelperFunction(computeFnSignature(fn));
@@ -43,6 +51,13 @@ export const HelperFunctionsPicker = ({
   const handlePickerWheelEvent = useCallback<WheelEventHandler>((e) => {
     e.stopPropagation();
   }, []);
+
+  useEffect(() => {
+    if (!visible) {
+      // Wait a little bit for the popover to close.
+      setTimeout(() => setSearchTerm(""), 100);
+    }
+  }, [visible]);
 
   return (
     <div onWheel={handlePickerWheelEvent}>
@@ -62,9 +77,13 @@ export const HelperFunctionsPicker = ({
         <PopoverWrapper>
           <PopoverLayout>
             <div>Functions library</div>
-            <SearchInput placeholder="Search function…" wide />
+            <SearchInput
+              placeholder="Search function…"
+              wide
+              onChange={setSearchTerm}
+            />
             <FunctionsSection>
-              {HELPER_FUNCTIONS.map((fn) => (
+              {filteredHelperFunctions.map((fn) => (
                 <FunctionDetails
                   key={fn.name}
                   fn={fn}
