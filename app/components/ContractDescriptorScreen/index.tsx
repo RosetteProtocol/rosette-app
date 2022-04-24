@@ -13,10 +13,15 @@ import {
   selectors,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
+import type {
+  Function,
+  UserFnDescription,
+} from "./use-contract-descriptor-store";
 import type { ContractData, FnEntry } from "~/types";
 import useRosetteActions from "./useRosetteActions";
 import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
+import type { IPFSFnDescription } from "~/routes/fn-descriptions-upload";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
@@ -24,6 +29,24 @@ type ContractDescriptorScreenProps = {
   contractAddress: string;
   contractData: ContractData;
   currentFnEntries: FnEntry[];
+};
+
+const buildUploadDataJSON = (
+  fnDescriptorEntries: Function[],
+  userFnDescriptions: Record<string, UserFnDescription>
+): IPFSFnDescription[] => {
+  return Object.values(userFnDescriptions).map(
+    ({ description, sigHash }): IPFSFnDescription => {
+      const minimalName = fnDescriptorEntries.find(
+        (e) => e.sigHash === sigHash
+      )?.minimalName;
+      return {
+        description,
+        minimalName: minimalName ?? "",
+        sigHash,
+      };
+    }
+  );
 };
 
 export const ContractDescriptorScreen = ({
@@ -52,7 +75,10 @@ export const ContractDescriptorScreen = ({
     (event) => {
       event.preventDefault();
 
-      const fnDescriptionsJSON = Object.values(userFnDescriptions);
+      const fnDescriptionsJSON = buildUploadDataJSON(
+        fnDescriptorEntries,
+        userFnDescriptions
+      );
 
       actionFetcher.submit(
         {
@@ -64,7 +90,7 @@ export const ContractDescriptorScreen = ({
         }
       );
     },
-    [actionFetcher, userFnDescriptions]
+    [actionFetcher, fnDescriptorEntries, userFnDescriptions]
   );
 
   useEffect(() => {

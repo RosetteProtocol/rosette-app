@@ -1,7 +1,7 @@
 import { createStore } from "@udecode/zustood";
 import { utils } from "ethers";
 import type { FunctionFragment } from "ethers/lib/utils";
-import type { FnEntry, UserFnDescription } from "~/types";
+import type { FnEntry } from "~/types";
 import { getFnSelector } from "~/utils";
 
 export type Function = {
@@ -9,6 +9,11 @@ export type Function = {
   minimalName: string;
   sigHash: string;
   entry?: FnEntry;
+};
+
+export type UserFnDescription = {
+  sigHash: string;
+  description: string;
 };
 
 type ContractDescriptorState = {
@@ -68,27 +73,29 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       const prevFnSelected = get.fnSelected();
       set.fnSelected(Math.max(0, prevFnSelected - 1));
     },
-    upsertFnDescription: (userFnDescription: UserFnDescription) => {
-      const { sigHash, description } = userFnDescription;
+    upsertFnDescription: (sigHash: string, description: string) => {
       const prevUserFnDescriptions = get.userFnDescriptions();
 
       if (prevUserFnDescriptions[sigHash]?.description === description) {
         return;
       }
 
+      // Delete description
       if (!description && prevUserFnDescriptions.hasOwnProperty(sigHash)) {
         const newUserFnDescriptions = { ...prevUserFnDescriptions };
         delete newUserFnDescriptions[sigHash];
-
         set.userFnDescriptions(newUserFnDescriptions);
 
         return;
       }
 
+      // Upsert description
       set.userFnDescriptions({
         ...prevUserFnDescriptions,
-
-        [sigHash]: userFnDescription,
+        [sigHash]: {
+          ...prevUserFnDescriptions[sigHash],
+          description,
+        },
       });
     },
   }))
@@ -105,18 +112,7 @@ const contractDescriptorStore = createStore("contract-descriptor")(
         fieldCaretPos
       )}\`${fnSignature}\`${oldDescription.slice(fieldCaretPos)}`;
 
-      const newUserFnDescription: UserFnDescription = selectedUserFnDescription
-        ? {
-            ...selectedUserFnDescription,
-            description: newDescription,
-          }
-        : {
-            sigHash: selectedEntry.sigHash,
-            description: newDescription,
-            minimalName: selectedEntry.minimalName,
-          };
-
-      set.upsertFnDescription(newUserFnDescription);
+      set.upsertFnDescription(selectedEntry.sigHash, newDescription);
 
       // Wait a little bit for the description to update.
       setTimeout(() => set.readyToFocus(true), 100);

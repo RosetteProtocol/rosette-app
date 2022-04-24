@@ -1,4 +1,11 @@
-import { createRef, useEffect, useRef, useState } from "react";
+import {
+  createRef,
+  FocusEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import type { RefObject } from "react";
 import { Carousel } from "./Carousel";
 import { FunctionDescriptor } from "./FunctionDescriptor";
@@ -54,7 +61,7 @@ export const FnDescriptorsCarousel = ({
 
   /**
    * Lost focus on last element when a new one was selected to not mess up
-   * the transition animation if user type in.
+   * the transition animation if user types in.
    */
   useEffect(() => {
     if (prevDescriptorIndexRef.current === -1) {
@@ -70,7 +77,7 @@ export const FnDescriptorsCarousel = ({
 
   /**
    * Focus on current element when function was selected and set
-   * selection on first paramenter.
+   * selection on first parameter.
    */
   useEffect(() => {
     if (!readyToFocus || !descriptorRefs.current[fnSelected]?.current) {
@@ -99,17 +106,6 @@ export const FnDescriptorsCarousel = ({
           description={userFnDescriptions[f.sigHash]?.description}
           fnDescriptorEntry={f}
           onEntryChange={actions.upsertFnDescription}
-          onKeyDown={(e) => {
-            const text = userFnDescriptions[f.sigHash]?.description;
-            const offset = e.target.selectionStart;
-
-            if (e.code === "Tab" && text && canTab(text, offset)) {
-              e.preventDefault();
-              const [start, end] = getSelectionRange(text, offset);
-
-              descriptorRefs.current[i].current?.setSelectionRange(start, end);
-            }
-          }}
         />
       ))}
       direction={compactMode ? "horizontal" : "vertical"}

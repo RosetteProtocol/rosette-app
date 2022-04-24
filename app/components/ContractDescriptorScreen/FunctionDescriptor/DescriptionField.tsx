@@ -1,20 +1,17 @@
 import { GU, RADIUS, textStyle } from "@1hive/1hive-ui";
-import { forwardRef } from "react";
-import type {
-  ChangeEventHandler,
-  FocusEventHandler,
-  KeyboardEventHandler,
-} from "react";
+import { forwardRef, useEffect, useState } from "react";
+import type { FocusEventHandler, KeyboardEventHandler } from "react";
 import styled from "styled-components";
+import { useDebounce } from "~/hooks/useDebounce";
 
 type DescriptionFieldProps = {
-  value?: string;
+  description?: string;
   disabled?: boolean;
   height?: string;
   placeholder?: string;
   textSize?: string;
+  onChange(value: string): void;
   onBlur?: FocusEventHandler<HTMLTextAreaElement>;
-  onChange?: ChangeEventHandler<HTMLTextAreaElement>;
   onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>;
 };
 
@@ -24,26 +21,47 @@ export const DescriptionField = forwardRef<
 >(
   (
     {
-      value,
+      description,
       disabled = false,
       height = `${10 * GU}px`,
       textSize = "body2",
       placeholder = "Add description…",
+      onChange,
       ...props
     },
     ref
-  ) => (
-    <DescriptionTextArea
-      tabIndex={-1}
-      ref={ref}
-      height={height}
-      textSize={textSize}
-      value={value}
-      placeholder={placeholder}
-      disabled={disabled}
-      {...props}
-    />
-  )
+  ) => {
+    const [value, setValue] = useState<string | undefined>(description);
+    const debouncedValue = useDebounce(value, 400);
+
+    useEffect(() => {
+      if (debouncedValue !== undefined) {
+        onChange(debouncedValue);
+      }
+    }, [debouncedValue, onChange]);
+
+    /**
+     * Keep inner description value in sync as it can be updated from other places
+     * of the component tree (e.g. adding a function from the picker)
+     */
+    useEffect(() => {
+      setValue(description);
+    }, [description]);
+
+    return (
+      <DescriptionTextArea
+        tabIndex={-1}
+        ref={ref}
+        height={height}
+        textSize={textSize}
+        value={value}
+        placeholder={placeholder}
+        disabled={disabled}
+        onChange={(e) => setValue(e.target.value)}
+        {...props}
+      />
+    );
+  }
 );
 
 DescriptionField.displayName = "DescriptionField";
