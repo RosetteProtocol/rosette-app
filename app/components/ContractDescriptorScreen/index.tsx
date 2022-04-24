@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { utils } from "ethers";
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
@@ -6,7 +6,6 @@ import { useFetcher } from "@remix-run/react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
-import { useDebounce } from "~/hooks/useDebounce";
 import { Pagination } from "./Pagination";
 import {
   actions,
@@ -22,6 +21,7 @@ import useRosetteActions from "./useRosetteActions";
 import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
 import type { IPFSFnDescription } from "~/routes/fn-descriptions-upload";
+import debounce from "lodash.debounce";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
@@ -59,12 +59,6 @@ export const ContractDescriptorScreen = ({
   const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
     useContractDescriptorStore();
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
-
-  /**
-   * Debounce wheel event to avoid fast changing pages on scroll.
-   */
-  const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
-  const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
   const compactMode = below("large");
 
   // Submit entries handler
@@ -129,24 +123,20 @@ export const ContractDescriptorScreen = ({
   }, [abi, currentFnEntries]);
 
   useEffect(() => {
-    if (debouncedWheelEvent) {
-      if (debouncedWheelEvent.deltaY < 0) {
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY < 0) {
         actions.goToPrevFn();
       } else {
         actions.goToNextFn();
       }
-    }
-  }, [debouncedWheelEvent]);
-
-  useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
-      setWheelEvent(e);
     };
 
-    window.addEventListener("wheel", onWheel);
+    const debouncedOnWheel = debounce(onWheel, 100);
+
+    window.addEventListener("wheel", debouncedOnWheel);
 
     return () => {
-      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("wheel", debouncedOnWheel);
     };
   }, []);
 
