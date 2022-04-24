@@ -1,5 +1,5 @@
 import { createStore } from "@udecode/zustood";
-import { Connector } from "wagmi";
+import type { Connector } from "wagmi";
 
 export enum ScreenType {
   Wallets,

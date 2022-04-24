@@ -1,11 +1,4 @@
-import {
-  createRef,
-  FocusEventHandler,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { createRef, useEffect, useRef, useState } from "react";
 import type { RefObject } from "react";
 import { Carousel } from "./Carousel";
 import { FunctionDescriptor } from "./FunctionDescriptor";
@@ -13,7 +6,7 @@ import {
   actions,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
-import { canTab, getSelectionRange } from "~/utils/client/selection.client";
+import { getSelectionRange } from "~/utils/client/selection.client";
 
 type FnDescriptorsCarouselProps = {
   compactMode: boolean;
