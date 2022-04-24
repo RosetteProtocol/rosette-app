@@ -220,7 +220,7 @@ const Layout = styled.div<{ compactMode: boolean }>`
     }
 
     ${FunctionsPickerContainer} {
-      grid-area: functions-picker;
+      grid-area: picker;
     }
 
     ${SubmitContainer} {
@@ -241,16 +241,17 @@ const Layout = styled.div<{ compactMode: boolean }>`
      compactMode
        ? `grid: 
       [row1-start] "filters" 1fr [row1-end]
-      [row2-start] "carousel" 5fr [row2-end]
-      [row3-start] "pagination" 1fr [row3-end]
-      [row4-start] "submit" 1fr [row4-end]
+      [row2-start] "picker" 0.5fr [row2-end]
+      [row3-start] "carousel" 5fr [row3-end]
+      [row4-start] "pagination" 1fr [row4-end]
+      [row5-start] "submit" 1fr [row5-end]
       / minmax(200px,${FN_DESCRIPTOR_HEIGHT});
 
       justify-content: center;
     `
        : `grid: 
       [row1-start] "filters filters filters" 1fr [row1-end]
-      [row2-start] "pagination carousel functions-picker" 8fr [row2-end]
+      [row2-start] "pagination carousel picker" 8fr [row2-end]
       [row3-start] ". . submit" 1fr [row3-end]
       / 1fr minmax(200px,${FN_DESCRIPTOR_HEIGHT}) 1fr;
     `
