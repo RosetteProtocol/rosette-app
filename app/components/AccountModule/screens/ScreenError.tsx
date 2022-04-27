@@ -9,12 +9,12 @@ import {
 import { useMemo } from "react";
 import styled from "styled-components";
 import {
-  Chain,
   ChainNotConfiguredError,
   useAccount,
   useConnect,
   useNetwork,
 } from "wagmi";
+import type { Chain } from "wagmi";
 
 import { getNetworkLogo } from "~/utils/client/icons.client";
 import { getNetworkError } from "../helpers";

@@ -1,7 +1,7 @@
 import { createStore } from "@udecode/zustood";
 import { utils } from "ethers";
 import type { FunctionFragment } from "ethers/lib/utils";
-import type { FnEntry, UserFnDescription } from "~/types";
+import type { FnEntry } from "~/types";
 import { getFnSelector } from "~/utils";
 
 export type Function = {
@@ -9,6 +9,11 @@ export type Function = {
   minimalName: string;
   sigHash: string;
   entry?: FnEntry;
+};
+
+export type UserFnDescription = {
+  sigHash: string;
+  description: string;
 };
 
 type ContractDescriptorState = {
@@ -19,12 +24,16 @@ type ContractDescriptorState = {
    * the expense of having some fn data duplication (sigHash, minimalName, etc)
    */
   userFnDescriptions: Record<string, UserFnDescription>;
+  readyToFocus: boolean;
+  lastCaretPos: number;
 };
 
 const initialState: ContractDescriptorState = {
   fnSelected: 0,
   fnDescriptorEntries: [],
   userFnDescriptions: {},
+  readyToFocus: false,
+  lastCaretPos: 0,
 };
 
 const contractDescriptorStore = createStore("contract-descriptor")(
@@ -64,28 +73,50 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       const prevFnSelected = get.fnSelected();
       set.fnSelected(Math.max(0, prevFnSelected - 1));
     },
-    upsertFnDescription: (userFnDescription: UserFnDescription) => {
-      const { sigHash, description } = userFnDescription;
+    upsertFnDescription: (sigHash: string, description: string) => {
       const prevUserFnDescriptions = get.userFnDescriptions();
 
       if (prevUserFnDescriptions[sigHash]?.description === description) {
         return;
       }
 
+      // Delete description
       if (!description && prevUserFnDescriptions.hasOwnProperty(sigHash)) {
         const newUserFnDescriptions = { ...prevUserFnDescriptions };
         delete newUserFnDescriptions[sigHash];
-
         set.userFnDescriptions(newUserFnDescriptions);
 
         return;
       }
 
+      // Upsert description
       set.userFnDescriptions({
         ...prevUserFnDescriptions,
-
-        [sigHash]: userFnDescription,
+        [sigHash]: {
+          ...prevUserFnDescriptions[sigHash],
+          description,
+        },
       });
+    },
+  }))
+  .extendActions((set, get) => ({
+    addHelperFunction: (fnSignature: string) => {
+      const fnSelected = get.fnSelected();
+      const selectedEntry = get.fnDescriptorEntries()[fnSelected];
+      const selectedUserFnDescription =
+        get.userFnDescriptions()[selectedEntry.sigHash];
+      const fieldCaretPos = get.lastCaretPos();
+      const oldDescription = selectedUserFnDescription?.description ?? "";
+      const newDescription = `${oldDescription.slice(
+        0,
+        fieldCaretPos
+      )}\`${fnSignature}\`${oldDescription.slice(fieldCaretPos)}`;
+
+      set.upsertFnDescription(selectedEntry.sigHash, newDescription);
+
+      // Wait a little bit for the description to update.
+      setTimeout(() => set.readyToFocus(true), 100);
+      setTimeout(() => set.readyToFocus(false), 100);
     },
   }))
   .extendSelectors((_, get) => ({

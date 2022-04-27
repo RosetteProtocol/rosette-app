@@ -1,7 +1,7 @@
-import { GU, useViewport } from "@1hive/1hive-ui";
+import { GU, noop, useViewport } from "@1hive/1hive-ui";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState, useRef } from "react";
-import { a, useSpring } from "react-spring";
+import { a, useSpring } from "@react-spring/web";
 import styled from "styled-components";
 import { PrevNext } from "./PrevNext";
 
@@ -14,6 +14,7 @@ type CarouselProps = {
   customSideSpace?: number;
   showPrevNext?: boolean;
   onItemSelected?(selected: number): void;
+  onTransitionEnd?(): void;
 };
 
 const DEFAULT_SIZE = { width: 0, height: 0 };
@@ -26,7 +27,8 @@ export const Carousel = ({
   itemSpacing = 3 * GU,
   customSideSpace,
   showPrevNext = false,
-  onItemSelected = () => {},
+  onItemSelected = noop,
+  onTransitionEnd = noop,
 }: CarouselProps) => {
   const [containerSize, setContainerSize] = useState({ ...DEFAULT_SIZE });
   const container = useRef(null);
@@ -84,6 +86,7 @@ export const Carousel = ({
     x: selectedX,
     drag: Number(false),
     immediate: true,
+    onRest: onTransitionEnd,
   }));
 
   // TODO: Implement dragging feature for mobile screens

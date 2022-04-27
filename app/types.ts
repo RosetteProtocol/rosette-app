@@ -8,17 +8,15 @@ export enum FnDescriptionStatus {
 }
 
 export type FnEntry = {
+  id: string;
+  abi: string;
+  cid: string;
+  contract: string;
   notice: string;
   sigHash: string;
   status: FnDescriptionStatus;
   submitter: string;
   upsertAt: number;
-};
-
-export type UserFnDescription = {
-  sigHash: string;
-  minimalName: string;
-  description: string;
 };
 
 export type ContractData = {

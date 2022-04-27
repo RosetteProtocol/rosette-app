@@ -1,39 +1,120 @@
+import { useCallback, useEffect } from "react";
+import { useAccount } from "wagmi";
+import { utils } from "ethers";
 import { Button, GU, useViewport } from "@1hive/1hive-ui";
-import { useEffect, useState } from "react";
+import { useFetcher } from "@remix-run/react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
-import { useDebounce } from "~/hooks/useDebounce";
-import { Carousel } from "./Carousel";
-import { FunctionDescriptor } from "./FunctionDescriptor";
 import { Pagination } from "./Pagination";
 import {
   actions,
   selectors,
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
+import type {
+  Function,
+  UserFnDescription,
+} from "./use-contract-descriptor-store";
 import type { ContractData, FnEntry } from "~/types";
+import useRosetteActions from "./useRosetteActions";
+import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
+import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
+import type { IPFSFnDescription } from "~/routes/fn-descriptions-upload";
+import debounce from "lodash.debounce";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
 type ContractDescriptorScreenProps = {
+  contractAddress: string;
   contractData: ContractData;
   currentFnEntries: FnEntry[];
 };
 
+const buildUploadDataJSON = (
+  fnDescriptorEntries: Function[],
+  userFnDescriptions: Record<string, UserFnDescription>
+): IPFSFnDescription[] => {
+  return Object.values(userFnDescriptions).map(
+    ({ description, sigHash }): IPFSFnDescription => {
+      const minimalName = fnDescriptorEntries.find(
+        (e) => e.sigHash === sigHash
+      )?.minimalName;
+      return {
+        description,
+        minimalName: minimalName ?? "",
+        sigHash,
+      };
+    }
+  );
+};
+
 export const ContractDescriptorScreen = ({
-  contractData: { abi },
+  contractAddress,
+  contractData: { abi, bytecode },
   currentFnEntries,
 }: ContractDescriptorScreenProps) => {
   const { below } = useViewport();
-  const { fnSelected, fnDescriptorEntries } = useContractDescriptorStore();
-  const compactMode = below("large");
+  const [{ data: accountData }] = useAccount();
+  const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
+    useContractDescriptorStore();
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
-  /**
-   * Debounce wheel event to avoid fast changing pages on scroll.
-   */
-  const [wheelEvent, setWheelEvent] = useState<WheelEvent | null>(null);
-  const debouncedWheelEvent = useDebounce<WheelEvent | null>(wheelEvent, 50);
+  const compactMode = below("large");
+
+  // Submit entries handler
+  const actionFetcher = useFetcher();
+  const { upsertEntries } = useRosetteActions();
+
+  const handleSubmit = useCallback(
+    (event) => {
+      event.preventDefault();
+
+      const fnDescriptionsJSON = buildUploadDataJSON(
+        fnDescriptorEntries,
+        userFnDescriptions
+      );
+
+      actionFetcher.submit(
+        {
+          fnDescriptions: JSON.stringify(fnDescriptionsJSON),
+        },
+        {
+          method: "post",
+          action: "/fn-descriptions-upload",
+        }
+      );
+    },
+    [actionFetcher, fnDescriptorEntries, userFnDescriptions]
+  );
+
+  useEffect(() => {
+    const submitEntries = async () => {
+      try {
+        const sigs = Object.values(userFnDescriptions).map(
+          ({ sigHash }) => sigHash
+        );
+        const scopes = new Array(sigs.length).fill(utils.id(bytecode));
+        const cids: string[] = Object.values(actionFetcher.data);
+
+        await upsertEntries(scopes, sigs, cids);
+        window.alert("Entries submitted!"); // TODO: Use tx feedback implementation
+
+        // Should we redirect to the enties page?
+      } catch (err) {
+        console.error(`Error submitting entries: ${err}`);
+      }
+    };
+
+    if (actionFetcher.data) {
+      submitEntries();
+    }
+  }, [
+    actionFetcher.data,
+    bytecode,
+    contractAddress,
+    upsertEntries,
+    userFnDescriptions,
+  ]);
 
   useEffect(() => {
     if (abi && currentFnEntries) {
@@ -42,65 +123,60 @@ export const ContractDescriptorScreen = ({
   }, [abi, currentFnEntries]);
 
   useEffect(() => {
-    if (debouncedWheelEvent) {
-      if (debouncedWheelEvent.deltaY < 0) {
+    const onWheel = (e: WheelEvent) => {
+      if (e.deltaY < 0) {
         actions.goToPrevFn();
       } else {
         actions.goToNextFn();
       }
-    }
-  }, [debouncedWheelEvent]);
-
-  useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
-      setWheelEvent(e);
     };
 
-    window.addEventListener("wheel", onWheel);
+    const debouncedOnWheel = debounce(onWheel, 100);
+
+    window.addEventListener("wheel", debouncedOnWheel);
 
     return () => {
-      window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("wheel", debouncedOnWheel);
     };
   }, []);
 
   return (
-    <Layout compactMode={compactMode}>
-      <FiltersContainer>FILTERS</FiltersContainer>
-      {fnDescriptorEntries.length > 1 && (
-        <PaginationContainer>
-          <Pagination
-            direction={compactMode ? "horizontal" : "vertical"}
-            pages={fnDescriptorEntries.length}
-            selected={fnSelected}
-            size={(compactMode ? 3 : 4) * GU}
-            onChange={actions.fnSelected}
-            touchMode={compactMode}
-          />
-          <PaginationIcon
-            size={compactMode ? 34 : 45}
-            src={compactMode ? handIcon : scrollIcon}
-            alt=""
-          />
-        </PaginationContainer>
-      )}
-      <CarouselContainer>
-        <Carousel
-          selected={fnSelected}
-          items={fnDescriptorEntries.map((f) => (
-            <FunctionDescriptor
-              key={f.sigHash}
-              fnDescriptorEntry={f}
-              onEntryChange={actions.upsertFnDescription}
+    <form style={{ height: "100%" }} onSubmit={handleSubmit}>
+      <Layout compactMode={compactMode}>
+        <FiltersContainer>FILTERS</FiltersContainer>
+        {fnDescriptorEntries.length > 1 && (
+          <PaginationContainer>
+            <Pagination
+              direction={compactMode ? "horizontal" : "vertical"}
+              pages={fnDescriptorEntries.length}
+              selected={fnSelected}
+              size={(compactMode ? 3 : 4) * GU}
+              onChange={actions.fnSelected}
+              touchMode={compactMode}
             />
-          ))}
-          direction={compactMode ? "horizontal" : "vertical"}
-          itemSpacing={450}
-        />
-      </CarouselContainer>
-      <SubmitContainer>
-        <SubmitButton label={`Submit  (${fnDescriptionsCounter})`} wide />
-      </SubmitContainer>
-    </Layout>
+            <PaginationIcon
+              size={compactMode ? 34 : 45}
+              src={compactMode ? handIcon : scrollIcon}
+              alt=""
+            />
+          </PaginationContainer>
+        )}
+        <CarouselContainer>
+          <FnDescriptorsCarousel compactMode={compactMode} />
+        </CarouselContainer>
+        <FunctionsPickerContainer>
+          <HelperFunctionsPicker popoverPlacement="left-start" />
+        </FunctionsPickerContainer>
+        <SubmitContainer>
+          <SubmitButton
+            label={`Submit  (${fnDescriptionsCounter})`}
+            type="submit"
+            wide
+            disabled={!accountData?.address}
+          />
+        </SubmitContainer>
+      </Layout>
+    </form>
   );
 };
 
@@ -133,6 +209,10 @@ const Layout = styled.div<{ compactMode: boolean }>`
       grid-area: carousel;
     }
 
+    ${FunctionsPickerContainer} {
+      grid-area: picker;
+    }
+
     ${SubmitContainer} {
       grid-area: submit;
       ${
@@ -151,18 +231,19 @@ const Layout = styled.div<{ compactMode: boolean }>`
      compactMode
        ? `grid: 
       [row1-start] "filters" 1fr [row1-end]
-      [row2-start] "carousel" 5fr [row2-end]
-      [row3-start] "pagination" 1fr [row3-end]
-      [row4-start] "submit" 1fr [row4-end]
+      [row2-start] "picker" 0.5fr [row2-end]
+      [row3-start] "carousel" 5fr [row3-end]
+      [row4-start] "pagination" 1fr [row4-end]
+      [row5-start] "submit" 1fr [row5-end]
       / minmax(200px,${FN_DESCRIPTOR_HEIGHT});
 
       justify-content: center;
     `
        : `grid: 
-      [row1-start] ". filters ." 1fr [row1-end]
-      [row2-start] "pagination carousel ." 8fr [row2-end]
+      [row1-start] "filters filters filters" 1fr [row1-end]
+      [row2-start] "pagination carousel picker" 8fr [row2-end]
       [row3-start] ". . submit" 1fr [row3-end]
-      / 1fr minmax(200px,527px) 1fr;
+      / 1fr minmax(200px,${FN_DESCRIPTOR_HEIGHT}) 1fr;
     `
    }
   `};
@@ -185,6 +266,10 @@ const PaginationIcon = styled.img<{ size: number }>`
 const CarouselContainer = styled.div`
   min-width: 100%;
   height: 100%;
+`;
+
+const FunctionsPickerContainer = styled.div`
+  justify-self: end;
 `;
 
 const SubmitContainer = styled.div``;

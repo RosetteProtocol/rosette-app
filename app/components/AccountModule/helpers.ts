@@ -1,8 +1,5 @@
-import {
-  Chain,
-  ChainNotConfiguredError,
-  UserRejectedRequestError,
-} from "wagmi";
+import { ChainNotConfiguredError, UserRejectedRequestError } from "wagmi";
+import type { Chain } from "wagmi";
 
 import metamask from "./assets/metamask.svg";
 import walletconnect from "./assets/walletconnect.svg";

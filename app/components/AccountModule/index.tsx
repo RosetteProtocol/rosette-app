@@ -1,14 +1,15 @@
 import { Button, GU, IconConnect } from "@1hive/1hive-ui";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { Chain, Connector, useAccount, useConnect, useNetwork } from "wagmi";
+import { useAccount, useConnect, useNetwork } from "wagmi";
+import type { Chain, Connector } from "wagmi";
 import { getNetworkError } from "./helpers";
 import {
-  PromptedAction,
   ScreenType,
   actions,
   useAccounModuleStore,
 } from "./use-account-module-store";
+import type { PromptedAction } from "./use-account-module-store";
 import { AccountButton } from "./AccountButton";
 import { HeaderPopover } from "./HeaderPopover";
 import {
