@@ -1,4 +1,4 @@
-import { GU, useViewport } from "@1hive/1hive-ui";
+import { GU, useViewport } from "@blossom-labs/rosette-ui";
 import { a } from "@react-spring/web";
 import styled from "styled-components";
 

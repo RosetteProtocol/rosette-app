@@ -1,4 +1,4 @@
-import { GU, RADIUS, textStyle } from "@1hive/1hive-ui";
+import { GU, RADIUS, textStyle } from "@blossom-labs/rosette-ui";
 import { forwardRef, useEffect, useState } from "react";
 import type { FocusEventHandler, KeyboardEventHandler } from "react";
 import styled from "styled-components";

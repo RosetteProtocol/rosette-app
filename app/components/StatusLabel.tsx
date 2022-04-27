@@ -1,4 +1,4 @@
-import { textStyle, GU } from "@1hive/1hive-ui";
+import { textStyle, GU } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { FnDescriptionStatus } from "~/types";
 import { getFnEntryStatusIconData } from "~/utils/client/icons.client";

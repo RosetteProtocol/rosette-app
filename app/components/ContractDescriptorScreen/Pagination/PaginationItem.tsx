@@ -1,4 +1,4 @@
-import { ButtonBase, RADIUS, textStyle } from "@1hive/1hive-ui";
+import { ButtonBase, RADIUS, textStyle } from "@blossom-labs/rosette-ui";
 import { useCallback } from "react";
 import styled from "styled-components";
 

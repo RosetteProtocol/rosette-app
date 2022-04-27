@@ -1,4 +1,4 @@
-import { IconEllipsis } from "@1hive/1hive-ui";
+import { IconEllipsis } from "@blossom-labs/rosette-ui";
 import { memo } from "react";
 import styled from "styled-components";
 

@@ -1,4 +1,10 @@
-import { GU, LoadingRing, Switch, Tag, textStyle } from "@1hive/1hive-ui";
+import {
+  GU,
+  LoadingRing,
+  Switch,
+  Tag,
+  textStyle,
+} from "@blossom-labs/rosette-ui";
 import type { MouseEventHandler } from "react";
 import { useEffect, useState } from "react";
 import { a, useTransition } from "@react-spring/web";

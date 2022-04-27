@@ -5,7 +5,7 @@ import {
   noop,
   textStyle,
   useTheme,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import { useEffect, useRef, useState } from "react";
 import { a, useSpring } from "@react-spring/web";
 import styled from "styled-components";

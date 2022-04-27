@@ -14,7 +14,7 @@
     "lint": "eslint ./app"
   },
   "dependencies": {
-    "@1hive/1hive-ui": "^1.0.18",
+    "@blossom-labs/rosette-ui": "^0.0.1-alpha.0",
     "@netlify/functions": "^1.0.0",
     "@react-spring/web": "^9.4.4",
     "@remix-run/netlify": "^1.4.0",

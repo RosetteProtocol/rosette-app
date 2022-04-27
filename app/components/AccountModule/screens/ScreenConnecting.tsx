@@ -1,4 +1,4 @@
-import { GU, textStyle, useTheme } from "@1hive/1hive-ui";
+import { GU, textStyle, useTheme } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 
 import { getWalletIconPath } from "../helpers";

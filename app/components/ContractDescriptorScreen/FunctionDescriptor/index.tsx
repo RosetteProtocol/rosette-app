@@ -1,4 +1,4 @@
-import { Button, GU } from "@1hive/1hive-ui";
+import { Button, GU } from "@blossom-labs/rosette-ui";
 import { forwardRef, memo, useCallback } from "react";
 import type { FocusEventHandler, KeyboardEventHandler } from "react";
 import styled from "styled-components";

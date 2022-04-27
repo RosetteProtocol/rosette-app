@@ -1,4 +1,4 @@
-import { GU, textStyle } from "@1hive/1hive-ui";
+import { GU, textStyle } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { a, useTransition } from "@react-spring/web";
 import type { ContractData, AggregateContract } from "~/types";

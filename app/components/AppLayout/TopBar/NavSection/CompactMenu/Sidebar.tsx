@@ -1,4 +1,4 @@
-import { RootPortal } from "@1hive/1hive-ui";
+import { RootPortal } from "@blossom-labs/rosette-ui";
 import type { ReactNode } from "react";
 import { a, useTransition } from "@react-spring/web";
 import styled from "styled-components";

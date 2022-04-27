@@ -1,4 +1,4 @@
-import { Button, GU, IconConnect } from "@1hive/1hive-ui";
+import { Button, GU, IconConnect } from "@blossom-labs/rosette-ui";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useAccount, useConnect, useNetwork } from "wagmi";

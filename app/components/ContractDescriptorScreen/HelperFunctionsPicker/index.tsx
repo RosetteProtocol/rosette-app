@@ -1,4 +1,10 @@
-import { Button, GU, IconMenu, Popover, SearchInput } from "@1hive/1hive-ui";
+import {
+  Button,
+  GU,
+  IconMenu,
+  Popover,
+  SearchInput,
+} from "@blossom-labs/rosette-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WheelEventHandler } from "react";
 import styled from "styled-components";

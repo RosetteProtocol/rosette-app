@@ -1,4 +1,4 @@
-import { GU, LoadingRing, useViewport } from "@1hive/1hive-ui";
+import { GU, LoadingRing, useViewport } from "@blossom-labs/rosette-ui";
 import {
   useCatch,
   useNavigate,

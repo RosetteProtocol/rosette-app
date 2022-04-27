@@ -1,4 +1,4 @@
-import { GU } from "@1hive/1hive-ui/";
+import { GU } from "@blossom-labs/rosette-ui/";
 import styled from "styled-components";
 
 import blossomLabsIcon from "~/assets/blossom-labs.svg";

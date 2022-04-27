@@ -5,7 +5,7 @@ import {
   Info,
   LoadingRing,
   TextInput,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import { utils } from "ethers";
 import type { ChangeEvent, FormEventHandler } from "react";
 import { useState } from "react";

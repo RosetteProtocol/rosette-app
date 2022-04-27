@@ -1,4 +1,4 @@
-import { GU, textStyle, useViewport } from "@1hive/1hive-ui";
+import { GU, textStyle, useViewport } from "@blossom-labs/rosette-ui";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";

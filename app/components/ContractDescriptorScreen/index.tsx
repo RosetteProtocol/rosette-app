@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { utils } from "ethers";
-import { Button, GU, useViewport } from "@1hive/1hive-ui";
+import { Button, GU, useViewport } from "@blossom-labs/rosette-ui";
 import { useFetcher } from "@remix-run/react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";

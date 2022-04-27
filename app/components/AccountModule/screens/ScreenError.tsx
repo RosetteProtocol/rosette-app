@@ -5,7 +5,7 @@ import {
   Link,
   textStyle,
   useTheme,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import { useMemo } from "react";
 import styled from "styled-components";
 import {
