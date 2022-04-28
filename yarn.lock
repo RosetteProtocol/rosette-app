@@ -473,10 +473,10 @@
     "@babel/helper-validator-identifier" "^7.16.7"
     to-fast-properties "^2.0.0"
 
-"@blossom-labs/rosette-ui@^0.0.1-alpha.1":
-  version "0.0.1-alpha.1"
-  resolved "https://registry.yarnpkg.com/@blossom-labs/rosette-ui/-/rosette-ui-0.0.1-alpha.1.tgz#44dce144aaf195c6981703eb3f203e93bea61cbf"
-  integrity sha512-X1+Ta1KdVlRCj0/Q3R829O3O8jyl/pIMTNE1r61HX4cj2IAY35M3Fh0yX991jgR1CCNHc6Zyw/kw8F3QQRh44g==
+"@blossom-labs/rosette-ui@^0.0.1-alpha.3":
+  version "0.0.1-alpha.3"
+  resolved "https://registry.yarnpkg.com/@blossom-labs/rosette-ui/-/rosette-ui-0.0.1-alpha.3.tgz#1151f80cbdaba84428621094adff1a2ffcb2c7fb"
+  integrity sha512-CJBfMVxmTcyMSogwkYSWiEl3nQYhjP9O2coqacY2agml038mJLBbNiv0CqZShirnr8Yd+K1TuYFN3+mGXqiCxg==
   dependencies:
     "@babel/runtime" "^7.3.1"
     airbnb-prop-types "^2.9.0"
