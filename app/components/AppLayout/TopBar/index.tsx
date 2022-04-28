@@ -13,7 +13,7 @@ export const TopBar = () => {
   const mobileMode = below("medium");
 
   return (
-    <NavContainer>
+    <NavContainer compact={compactMode}>
       {appReadyTransition(
         ({ progress, topBarTransform }, ready) =>
           ready && (
@@ -33,7 +33,7 @@ export const TopBar = () => {
   );
 };
 
-const NavContainer = styled.nav`
+const NavContainer = styled.nav<{ compact: boolean }>`
   position: relative;
   margin: 0 auto;
   height: ${8 * GU}px;
@@ -42,15 +42,17 @@ const NavContainer = styled.nav`
 const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
   position: absolute;
   inset: 0;
-  border-bottom: 1px solid ${({ theme }) => theme.border};
+  border-bottom: ${({ $compactMode, theme }) =>
+    $compactMode ? `1px solid ${theme.border}` : ""};
   ${({ $compactMode }) =>
     $compactMode
       ? `
     padding-right: ${1 * GU}px;
   `
       : `
-    padding-right: ${5 * GU}px;
-    padding-left: ${5 * GU}px;
+    padding-right: ${6 * GU}px;
+    padding-left: ${6 * GU}px;
+    padding-top: ${5 * GU}px;
   `};
   display: flex;
   justify-content: space-between;

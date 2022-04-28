@@ -22,7 +22,7 @@ export const NavSection = ({ compact }: { compact: boolean }) => {
     <NavLinksList>
       {navigationItem.map(({ label, to }) => (
         <li key={label}>
-          <NavLink to={to}>{label === "Home" ? "Rosette" : label}</NavLink>
+          <NavLink to={to}>{label === "Home" ? "rosette" : label}</NavLink>
         </li>
       ))}
     </NavLinksList>
@@ -34,6 +34,8 @@ const NavLinksList = styled.ul`
   align-items: center;
   gap: ${6 * GU}px;
   list-style: none;
+  ${textStyle("body2")};
+  color: ${(props) => props.theme.content};
 
   li:first-child {
     ${textStyle("title2")};
@@ -42,7 +44,7 @@ const NavLinksList = styled.ul`
   > li {
     transition: all 200ms ease-out;
     &:hover {
-      color: ${(props) => props.theme.surfaceHighlight};
+      color: ${(props) => props.theme.surfaceUnder.alpha(0.1)};
     }
   }
 

@@ -131,6 +131,7 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
           label="Connect account"
           onClick={actions.toggleOpened}
           display={compact ? "icon" : "all"}
+          size="small"
         />
       )}
       <HeaderPopover
