@@ -21,7 +21,7 @@ export const BottomBar = () => {
               $compactMode={compactMode}
             >
               <div style={{ color: theme.surfaceContent, opacity: OPACITY }}>
-                powered by &nbsp; <BlossomLabsLogo />
+                powered by <BlossomLabsLogo />
               </div>
             </AnimatedContainer>
           )

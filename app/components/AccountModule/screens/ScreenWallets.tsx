@@ -78,7 +78,7 @@ const MainHeader = styled.h4`
   padding-left: ${2 * GU}px;
   color: ${({ theme }) => theme.border};
   margin-bottom: ${2 * GU}px;
-  ${textStyle("body3")};
+  ${textStyle("body2")};
 `;
 
 const Container = styled.div`

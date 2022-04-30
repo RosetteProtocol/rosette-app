@@ -131,5 +131,5 @@ const NetworkInfo = styled.div`
 
 const WalletName = styled.span`
   color: ${(props) => props.theme.border};
-  ${textStyle("body3")};
+  ${textStyle("body2")};
 `;

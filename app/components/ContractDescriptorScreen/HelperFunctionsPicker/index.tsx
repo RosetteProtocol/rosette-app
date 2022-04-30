@@ -138,7 +138,7 @@ const PopoverLayout = styled.div`
 
 const Header = styled.div`
   color: ${({ theme }) => theme.content};
-  ${textStyle("body3")};
+  ${textStyle("body2")};
 `;
 
 const FunctionsSection = styled.div`

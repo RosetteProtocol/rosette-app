@@ -127,7 +127,7 @@ const ConnectedCircle = styled.div`
 const LabelWrapper = styled.div`
   margin-bottom: -5px;
   color: ${({ theme }) => theme.content};
-  ${textStyle("body3")};
+  ${textStyle("body2")};
 `;
 
 const LabelInnerWrapper = styled.div`

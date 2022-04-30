@@ -131,7 +131,7 @@ const FnNameWrapper = styled.h1`
   margin-left: ${0.5 * GU}px;
   color: ${({ theme }) => theme.surfaceContent};
   font-weight: bold;
-  ${textStyle("body3")};
+  ${textStyle("body2")};
 `;
 
 const AnimatedContainer = styled(a.div)`
@@ -146,5 +146,5 @@ const ActionButtonWrapper = styled(ButtonBase)`
   right: 10px;
   color: ${({ theme }) => theme.link};
   z-index: 2;
-  ${textStyle("body3")};
+  ${textStyle("body2")};
 `;

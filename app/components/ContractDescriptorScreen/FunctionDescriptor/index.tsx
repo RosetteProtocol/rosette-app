@@ -96,27 +96,25 @@ export const FunctionDescriptor = memo(
             onClick={handleTestModal}
             disabled={!(notice || description)}
           />
-          <Modal visible={showModal}>
-            <Box>
-              <Header primary="Test function" />
-              <Field label="Calldata">
-                <TextInput
-                  value={callData}
-                  placeholder="0x…"
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    setCallData(e.target.value);
-                  }}
-                  size="medium"
-                  wide
-                />
-              </Field>
-              <Button
-                label="Test"
+          <Modal visible={showModal} onClose={() => setShowModal(false)}>
+            <Header primary="Test function" />
+            <Field label="Calldata">
+              <TextInput
+                value={callData}
+                placeholder="0x…"
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  setCallData(e.target.value);
+                }}
+                size="medium"
                 wide
-                onClick={handleDescribeCalldata}
-                mode="strong"
               />
-            </Box>
+            </Field>
+            <Button
+              label="Test"
+              wide
+              onClick={handleDescribeCalldata}
+              mode="strong"
+            />
           </Modal>
         </Container>
       );
@@ -129,6 +127,7 @@ FunctionDescriptor.displayName = "FunctionDescriptor";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  height: 100%;
 `;
 
 const DescriptorHeader = styled.div`
@@ -136,7 +135,7 @@ const DescriptorHeader = styled.div`
   justify-content: space-between;
   margin-bottom: ${1 * GU}px;
   color: ${({ theme }) => theme.content};
-  ${textStyle("body3")};
+  ${textStyle("body2")};
 `;
 
 const DescriptorEntry = styled.div`

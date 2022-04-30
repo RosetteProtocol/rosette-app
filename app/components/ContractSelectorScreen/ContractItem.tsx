@@ -148,7 +148,7 @@ const ItemContent = styled.div`
   }
 
   & > div:nth-child(2) {
-    ${textStyle("body3")};
+    ${textStyle("body2")};
     color: ${({ theme }) => theme.contentSecondary};
     white-space: nowrap;
     overflow: hidden;
@@ -185,7 +185,7 @@ const Loader = styled(a.div)`
   align-items: center;
   flex-wrap: nowrap;
   gap: ${1 * GU}px;
-  ${textStyle("body3")};
+  ${textStyle("body2")};
   color: ${({ theme }) => theme.contentSecondary};
 `;
 

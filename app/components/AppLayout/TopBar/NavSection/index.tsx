@@ -38,7 +38,7 @@ const NavLinksList = styled.ul`
   align-items: center;
   gap: ${6 * GU}px;
   list-style: none;
-  ${textStyle("body3")};
+  ${textStyle("body2")};
   color: ${(props) => props.theme.content};
 
   li:first-child {
