@@ -3,6 +3,10 @@ import { NavLink } from "@remix-run/react";
 import styled from "styled-components";
 import { CompactMenu } from "./CompactMenu";
 
+import homeIcon from "~/assets/sidebar-home.svg";
+import entriesIcon from "~/assets/sidebar-entries.svg";
+import guidelinesIcon from "~/assets/sidebar-guidelines.svg";
+
 export type NavigationItem = {
   icon: string;
   label: string;
@@ -10,9 +14,9 @@ export type NavigationItem = {
 };
 
 const navigationItem: NavigationItem[] = [
-  { icon: "", label: "Home", to: "/home" },
-  { icon: "", label: "All Entries", to: "/entries" },
-  { icon: "", label: "Guidelines", to: "/guidelines" },
+  { icon: homeIcon, label: "Home", to: "/home" },
+  { icon: entriesIcon, label: "All Entries", to: "/entries" },
+  { icon: guidelinesIcon, label: "Guidelines", to: "/guidelines" },
 ];
 
 export const NavSection = ({ compact }: { compact: boolean }) => {
@@ -34,7 +38,7 @@ const NavLinksList = styled.ul`
   align-items: center;
   gap: ${6 * GU}px;
   list-style: none;
-  ${textStyle("body2")};
+  ${textStyle("body3")};
   color: ${(props) => props.theme.content};
 
   li:first-child {

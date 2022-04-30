@@ -46,13 +46,14 @@ export const ContractForm = ({ loading, onSubmit }: ContractFormProps) => {
           }}
         >
           <Field label="Contract address">
-            <MainTextInput
+            <TextInput
               value={contractAddress}
               placeholder="0x…"
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 setErrorMsg("");
                 setContractAddress(e.target.value);
               }}
+              size="medium"
               wide
             />
           </Field>
@@ -62,7 +63,7 @@ export const ContractForm = ({ loading, onSubmit }: ContractFormProps) => {
           {loading ? (
             <>
               <LoadingRing style={{ marginRight: 1 * GU }} mode="half-circle" />
-              Loading…
+              <Load>Loading…</Load>
             </>
           ) : (
             <>Next</>
@@ -81,10 +82,10 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const MainTextInput = styled(TextInput)`
+const NextButton = styled(Button)`
   height: ${8 * GU}px;
 `;
 
-const NextButton = styled(Button)`
-  height: ${8 * GU}px;
+const Load = styled.div`
+  color: ${({ theme }) => theme.contentSecondary};
 `;

@@ -48,6 +48,7 @@ const Container = styled.div`
 
   & > div:first-child {
     ${textStyle("body1")};
+    color: ${({ theme }) => theme.content};
     margin: 0 ${2 * GU}px;
     margin-bottom: ${3 * GU}px;
   }

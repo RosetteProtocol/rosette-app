@@ -1,6 +1,19 @@
-import { Button, GU } from "@blossom-labs/rosette-ui";
-import { forwardRef, memo, useCallback } from "react";
-import type { FocusEventHandler, KeyboardEventHandler } from "react";
+import {
+  Button,
+  Box,
+  Modal,
+  GU,
+  Field,
+  TextInput,
+  Header,
+  textStyle,
+} from "@blossom-labs/rosette-ui";
+import { forwardRef, memo, useCallback, useState } from "react";
+import type {
+  FocusEventHandler,
+  KeyboardEventHandler,
+  ChangeEvent,
+} from "react";
 import styled from "styled-components";
 import { StatusLabel } from "~/components/StatusLabel";
 import { FnDescriptionStatus } from "~/types";
@@ -18,6 +31,8 @@ type FunctionDescriptorProps = {
 export const FunctionDescriptor = memo(
   forwardRef<HTMLTextAreaElement, FunctionDescriptorProps>(
     ({ fnDescriptorEntry, description, onEntryChange, ...props }, ref) => {
+      const [showModal, setShowModal] = useState(false);
+      const [callData, setCallData] = useState("");
       const entry = fnDescriptorEntry.entry;
       const { notice, status } = entry || {};
       const descriptorStatus = status || FnDescriptionStatus.Available;
@@ -50,6 +65,12 @@ export const FunctionDescriptor = memo(
         [onEntryChange, fnDescriptorEntry.sigHash]
       );
 
+      const handleTestModal = () => {
+        setShowModal(true);
+      };
+
+      const handleDescribeCalldata = () => {};
+
       return (
         <Container>
           <DescriptorHeader>
@@ -66,16 +87,37 @@ export const FunctionDescriptor = memo(
             onKeyDown={handleKeyDown}
             {...props}
           />
-          <div style={{ margin: `${2 * GU}px 0` }}>
-            {fnDescriptorEntry.fullName}
-          </div>
+          <DescriptorEntry>
+            {fnDescriptorEntry.fullName.split(" returns (")[0]}
+          </DescriptorEntry>
           <Button
             label="Test function"
             wide
-            // TODO: implement test functionality
-            onClick={() => {}}
+            onClick={handleTestModal}
             disabled={!(notice || description)}
           />
+          <Modal visible={showModal}>
+            <Box>
+              <Header primary="Test function" />
+              <Field label="Calldata">
+                <TextInput
+                  value={callData}
+                  placeholder="0x…"
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setCallData(e.target.value);
+                  }}
+                  size="medium"
+                  wide
+                />
+              </Field>
+              <Button
+                label="Test"
+                wide
+                onClick={handleDescribeCalldata}
+                mode="strong"
+              />
+            </Box>
+          </Modal>
         </Container>
       );
     }
@@ -93,4 +135,13 @@ const DescriptorHeader = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: ${1 * GU}px;
+  color: ${({ theme }) => theme.content};
+  ${textStyle("body3")};
+`;
+
+const DescriptorEntry = styled.div`
+  margin: ${2 * GU}px 0;
+  word-break: break-word;
+  color: ${({ theme }) => theme.content};
+  ${textStyle("title4")};
 `;

@@ -130,7 +130,6 @@ export const Pagination = ({
             index={pageIndex}
             selected={selected === pageIndex}
             onChange={onChange}
-            touchMode={touchMode}
             size={size}
           />
         )

@@ -58,9 +58,7 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
       <a.div
         style={{
           borderRadius: 10,
-          backgroundColor: openProgress.to((v) =>
-            theme.surfacePressed.alpha(v)
-          ),
+          backgroundColor: openProgress.to((v) => theme.helpContent.alpha(v)),
         }}
       >
         <ActionButtonWrapper onClick={() => onUse(fn)}>Use</ActionButtonWrapper>
@@ -99,7 +97,7 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
               borderBottomLeftRadius: 10,
               borderBottomRightRadius: 10,
               backgroundColor: openProgress.to((v) =>
-                theme.surfacePressed.alpha(v)
+                theme.helpContent.alpha(v)
               ),
               height: openProgress.to((v) => `${v * contentHeight.current}px`),
             }}
@@ -119,6 +117,7 @@ const Container = styled.section`
   position: relative;
   margin: 0;
 `;
+
 const EntryButton = styled.div`
   position: relative;
   width: 100%;
@@ -132,7 +131,7 @@ const FnNameWrapper = styled.h1`
   margin-left: ${0.5 * GU}px;
   color: ${({ theme }) => theme.surfaceContent};
   font-weight: bold;
-  ${textStyle("body2")};
+  ${textStyle("body3")};
 `;
 
 const AnimatedContainer = styled(a.div)`

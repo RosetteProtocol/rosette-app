@@ -29,7 +29,16 @@ export const MenuItem = ({
         }}
       >
         <InnerNavLink>
-          {icon && <img src={icon} alt="" />}
+          {icon && (
+            <img
+              style={{
+                width: "24px",
+                height: "24px",
+              }}
+              src={icon}
+              alt=""
+            />
+          )}
           <span>{label}</span>
         </InnerNavLink>
       </Link>

@@ -24,7 +24,7 @@ export const DescriptionField = forwardRef<
       description,
       disabled = false,
       height = `${10 * GU}px`,
-      textSize = "body2",
+      textSize = "title4",
       placeholder = "Add description…",
       onChange,
       ...props
@@ -72,8 +72,8 @@ const DescriptionTextArea = styled.textarea<{
 }>`
   height: ${(props) => props.height};
   padding: ${1 * GU}px ${1.5 * GU}px;
-  background: ${(props) => props.theme.surfaceUnder};
-  color: ${(props) => props.theme.surfaceContent};
+  background: ${(props) => props.theme.surface.alpha(0.5)};
+  color: ${(props) => props.theme.contentSecondary};
   appearance: none;
   border-radius: ${RADIUS}px;
   width: 100%;
@@ -83,20 +83,21 @@ const DescriptionTextArea = styled.textarea<{
 
   &:focus {
     outline: none;
-    border-color: ${(props) => props.theme.selected};
+    border-color: ${(props) => props.theme.focus};
   }
   &:read-only {
     color: ${(props) => props.theme.hint};
-    border-color: ${(props) => props.theme.border};
+    border-color: ${(props) => props.theme.borderDark};
   }
   &::placeholder {
-    color: ${(props) => props.theme.hint};
+    color: ${(props) => props.theme.border};
     opacity: 0.5;
   }
   &:invalid {
     box-shadow: none;
   }
 
+  // TODO: Check with Paulo how the following styles render to check if we need to update the colors
   &::-webkit-scrollbar {
     width: 12px;
     background-color: ${(props) => props.theme.surfaceSelected};

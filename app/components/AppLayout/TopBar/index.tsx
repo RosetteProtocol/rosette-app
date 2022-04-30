@@ -13,7 +13,7 @@ export const TopBar = () => {
   const mobileMode = below("medium");
 
   return (
-    <NavContainer compact={compactMode}>
+    <NavContainer>
       {appReadyTransition(
         ({ progress, topBarTransform }, ready) =>
           ready && (
@@ -33,7 +33,7 @@ export const TopBar = () => {
   );
 };
 
-const NavContainer = styled.nav<{ compact: boolean }>`
+const NavContainer = styled.nav`
   position: relative;
   margin: 0 auto;
   height: ${8 * GU}px;

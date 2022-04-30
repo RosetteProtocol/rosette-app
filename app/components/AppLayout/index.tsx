@@ -14,6 +14,7 @@ type AppLayoutProps = {
   displayTopBar?: boolean;
   displayBottomBar?: boolean;
 };
+
 export const AppLayout = ({
   children,
   displayTopBar = true,
@@ -49,7 +50,7 @@ const Container = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   flex-direction: column;
   background-image: url(${({ compactMode, tabletMode }) =>
     compactMode ? mobile : tabletMode ? tablet : background});
-  background-size: cover; ;
+  background-size: cover;
 `;
 
 const ChildrenWrapper = styled.div`

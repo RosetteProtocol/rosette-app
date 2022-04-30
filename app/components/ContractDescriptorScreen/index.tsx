@@ -171,6 +171,7 @@ export const ContractDescriptorScreen = ({
           <SubmitButton
             label={`Submit  (${fnDescriptionsCounter})`}
             type="submit"
+            mode="strong"
             wide
             disabled={!accountData?.address}
           />
@@ -251,6 +252,7 @@ const Layout = styled.div<{ compactMode: boolean }>`
 
 const FiltersContainer = styled.div`
   justify-self: center;
+  color: ${({ theme }) => theme.content};
 `;
 
 const PaginationContainer = styled.div`
@@ -261,6 +263,7 @@ const PaginationContainer = styled.div`
 
 const PaginationIcon = styled.img<{ size: number }>`
   ${({ size }) => `width: ${size}px; height: ${size}px;`};
+  color: ${({ theme }) => theme.border};
 `;
 
 const CarouselContainer = styled.div`

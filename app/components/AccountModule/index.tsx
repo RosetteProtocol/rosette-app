@@ -126,12 +126,11 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
       {displayAccountButton ? (
         <AccountButton onClick={actions.toggleOpened} />
       ) : (
-        <Button
+        <ConnectButton
           icon={<IconConnect />}
           label="Connect account"
           onClick={actions.toggleOpened}
           display={compact ? "icon" : "all"}
-          size="small"
         />
       )}
       <HeaderPopover
@@ -157,4 +156,8 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-around;
   outline: 0;
+`;
+
+const ConnectButton = styled(Button)`
+  border: 1px solid ${({ theme }) => theme.content};
 `;

@@ -3,7 +3,7 @@ import {
   EthIdenticon,
   GU,
   IconDown,
-  RADIUS,
+  BIG_RADIUS,
   shortenAddress,
   textStyle,
   useTheme,
@@ -67,37 +67,44 @@ export const AccountButton = ({ onClick }: AccountButtonProps) => {
   const { address, ens } = accountData || {};
 
   return (
-    <AccountButtonWrapper
-      hasPopover
-      onClick={onClick}
-      icon={
-        <div style={{ position: "relative" }}>
-          <EthIdenticon address={address} radius={RADIUS} />
-          <ConnectedCircle />
-        </div>
-      }
-      content={
-        <>
-          {!!address && (
-            <LabelWrapper>
-              <LabelInnerWrapper>
-                {ens?.name || shortenAddress(address ?? "")}
-              </LabelInnerWrapper>
-            </LabelWrapper>
-          )}
-          <div
-            style={{
-              fontSize: "11px", //  doesn’t exist in aragonUI
-              color: theme.positive,
-            }}
-          >
-            Connected to {networkData.chain?.name}
+    <Container>
+      <AccountButtonWrapper
+        hasPopover
+        onClick={onClick}
+        icon={
+          <div style={{ position: "relative" }}>
+            <EthIdenticon address={address} radius={BIG_RADIUS} />
+            <ConnectedCircle />
           </div>
-        </>
-      }
-    />
+        }
+        content={
+          <>
+            {!!address && (
+              <LabelWrapper>
+                <LabelInnerWrapper>
+                  {ens?.name || shortenAddress(address ?? "")}
+                </LabelInnerWrapper>
+              </LabelWrapper>
+            )}
+            <div
+              style={{
+                fontSize: "11px", //  doesn’t exist in aragonUI
+                color: theme.positive,
+              }}
+            >
+              Connected to {networkData.chain?.name}
+            </div>
+          </>
+        }
+      />
+    </Container>
   );
 };
+
+const Container = styled.div`
+  border: 1px solid ${(props) => props.theme.content};
+  border-radius: 8px;
+`;
 
 const AccountButtonBase = styled(ButtonBase)`
   height: 100%;
@@ -121,15 +128,15 @@ const ConnectedCircle = styled.div`
   right: -3px;
   width: 10px;
   height: 10px;
-  background: ${(props) => props.theme.positive};
-  border: 2px solid ${(props) => props.theme.surface};
+  background: ${({ theme }) => theme.positive};
+  border: 2px solid #141313;
   border-radius: 50%;
 `;
 
 const LabelWrapper = styled.div`
   margin-bottom: -5px;
-
-  ${textStyle("body2")};
+  color: ${({ theme }) => theme.content};
+  ${textStyle("body3")};
 `;
 
 const LabelInnerWrapper = styled.div`

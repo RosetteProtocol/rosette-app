@@ -116,8 +116,9 @@ export const ContractItem = ({
 const Wrapper = styled.div<{ isClicked: boolean }>`
   position: relative;
   padding: ${2 * GU}px;
-  background-color: ${({ theme }) => theme.surface};
+  background-color: ${({ theme }) => theme.surface.alpha(0.5)};
   border-radius: 10px;
+  border: 1px solid ${({ theme }) => theme.borderDark};
   transition: background-color ease-out 200ms;
   min-width: 45vmin;
   max-width: 85vmin;
@@ -126,7 +127,7 @@ const Wrapper = styled.div<{ isClicked: boolean }>`
   ${({ isClicked, theme }) =>
     !isClicked
       ? `&:hover {
-    background-color: ${theme.surfaceHighlight};
+    background-color: ${theme.surfaceUnder.alpha(0.1)};
   }`
       : ""};
 `;
@@ -140,6 +141,7 @@ const ItemHeader = styled.div`
 const ItemContent = styled.div`
   & > div:nth-child(1) {
     ${textStyle("body1")};
+    color: ${({ theme }) => theme.content};
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -184,6 +186,7 @@ const Loader = styled(a.div)`
   flex-wrap: nowrap;
   gap: ${1 * GU}px;
   ${textStyle("body3")};
+  color: ${({ theme }) => theme.contentSecondary};
 `;
 
 const NetworkImg = styled.img<{ isTestnet: boolean }>`

@@ -64,6 +64,7 @@ const Title = styled.h1`
   padding-top: ${2 * GU}px;
   font-weight: 600;
   ${textStyle("body1")};
+  color: ${({ theme }) => theme.content};
 `;
 
 const Subtitle = styled.p`

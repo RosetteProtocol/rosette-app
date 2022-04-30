@@ -124,6 +124,7 @@ const ErrorContainer = styled.div`
 const Title = styled.h1`
   font-weight: 600;
   ${textStyle("body1")};
+  color: ${({ theme }) => theme.content};
 `;
 
 const ButtonContainer = styled.div`

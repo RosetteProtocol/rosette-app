@@ -40,6 +40,7 @@ const LabelContainer = styled.div<{
   border-radius: 4px;
   padding-right: ${1 * GU}px;
   ${textStyle("body4")};
+  color: ${({ theme }) => theme.content};
 
   div:first-child {
     display: flex;
