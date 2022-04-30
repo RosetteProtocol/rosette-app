@@ -17,6 +17,7 @@ const navigationItem: NavigationItem[] = [
   { icon: homeIcon, label: "Home", to: "/home" },
   { icon: entriesIcon, label: "All Entries", to: "/entries" },
   { icon: guidelinesIcon, label: "Guidelines", to: "/guidelines" },
+  { icon: "", label: "Get RST", to: "/swap" },
 ];
 
 export const NavSection = ({ compact }: { compact: boolean }) => {
