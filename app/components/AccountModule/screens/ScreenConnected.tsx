@@ -49,7 +49,13 @@ export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
       }}
     >
       <Title>Active Wallet</Title>
-      <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -111,7 +117,6 @@ const WalletIcon = styled.img<{ size: string | number }>`
 const CopyButton = styled(ButtonBase)`
   display: flex;
   align-items: center;
-  justify-self: flex-end;
   &:active {
     color: ${(props) => props.theme.focus};
   }

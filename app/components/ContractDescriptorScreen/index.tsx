@@ -173,7 +173,7 @@ export const ContractDescriptorScreen = ({
             type="submit"
             mode="strong"
             wide
-            disabled={!accountData?.address}
+            disabled={!accountData?.address || fnDescriptionsCounter === 0}
           />
         </SubmitContainer>
       </Layout>

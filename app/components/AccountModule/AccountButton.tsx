@@ -12,7 +12,7 @@ import {
 import { Fragment } from "react";
 import type { ReactNode } from "react";
 import styled from "styled-components";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 
 type AccountButtonWrapperProps = {
   content: ReactNode;
@@ -40,7 +40,7 @@ const AccountButtonWrapper = ({
               <div
                 style={{
                   paddingLeft: `${1 * GU}px`,
-                  paddingRight: `${0.5 * GU}px`,
+                  paddingRight: `${2.5 * GU}px`,
                 }}
               >
                 {content}
@@ -61,10 +61,8 @@ type AccountButtonProps = {
 };
 
 export const AccountButton = ({ onClick }: AccountButtonProps) => {
-  const theme = useTheme();
   const { above } = useViewport();
   const [{ data: accountData }] = useAccount({ fetchEns: true });
-  const [{ data: networkData }] = useNetwork();
   const { address, ens } = accountData || {};
 
   return (
@@ -87,14 +85,6 @@ export const AccountButton = ({ onClick }: AccountButtonProps) => {
                 </LabelInnerWrapper>
               </LabelWrapper>
             )}
-            <div
-              style={{
-                fontSize: "11px", //  doesn’t exist in aragonUI
-                color: theme.positive,
-              }}
-            >
-              Connected to {networkData.chain?.name}
-            </div>
           </>
         }
       />
@@ -120,7 +110,7 @@ const InnerContainer = styled.div`
   display: flex;
   align-items: center;
   text-align: left;
-  padding: 0 ${1 * GU}px;
+  padding: ${1 * GU}px ${1.75 * GU}px ${1 * GU}px ${1 * GU}px;
 `;
 
 const ConnectedCircle = styled.div`
@@ -142,7 +132,7 @@ const LabelWrapper = styled.div`
 
 const LabelInnerWrapper = styled.div`
   overflow: hidden;
-  max-width: ${16 * GU}px;
+  max-width: 128px;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;

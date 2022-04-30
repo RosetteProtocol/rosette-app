@@ -52,7 +52,7 @@ const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
       : `
     padding-right: ${6 * GU}px;
     padding-left: ${6 * GU}px;
-    padding-top: ${5 * GU}px;
+    padding-top: ${6 * GU}px;
   `};
   display: flex;
   justify-content: space-between;

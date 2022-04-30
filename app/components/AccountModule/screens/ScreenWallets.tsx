@@ -113,6 +113,9 @@ const WalletButtonBase = styled(ButtonBase)`
   width: 100%;
   height: ${12 * GU}px;
   border: 1px solid ${(props) => props.theme.border};
+  &:hover {
+    background-color: ${({ theme }) => theme.surfaceUnder.alpha(0.1)};
+  }
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
   &:active {
     top: 1px;

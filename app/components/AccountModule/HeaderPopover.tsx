@@ -1,4 +1,4 @@
-import { GU, Popover, springs } from "@blossom-labs/rosette-ui";
+import { GU, Popover, springs, useViewport } from "@blossom-labs/rosette-ui";
 import { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { a, Spring, useTransition } from "@react-spring/web";
@@ -24,6 +24,7 @@ export const HeaderPopover = ({
   visible,
   width,
 }: PopoverProps) => {
+  const { above } = useViewport();
   const [height, setHeight] = useState(30 * GU);
 
   // Prevents to lose the focus on the popover when a screen leaves while an
@@ -52,6 +53,7 @@ export const HeaderPopover = ({
   return (
     <StyledPopover
       closeOnOpenerFocus
+      large={above("large")}
       onClose={onClose}
       opener={opener}
       placement="bottom-end"
@@ -110,7 +112,7 @@ const Container = styled.section`
   overflow: hidden;
 `;
 
-const StyledPopover = styled(Popover)`
-  margin-top: 3px;
+const StyledPopover = styled(Popover)<{ large: boolean }>`
+  margin-top: ${({ large }) => (large ? "17px" : "8px")};
   width: ${(props) => `${props.width}px`};
 `;

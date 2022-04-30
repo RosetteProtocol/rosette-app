@@ -38,7 +38,7 @@ const MainContainer = styled.div<{ compactMode: boolean }>`
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: ${({ compactMode }) => (compactMode ? 5 * GU : 17 * GU)}px;
+  padding-top: ${({ compactMode }) => (compactMode ? 7 * GU : 23 * GU)}px;
   width: 100%;
   height: 100%;
 `;

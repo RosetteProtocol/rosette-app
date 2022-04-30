@@ -144,11 +144,7 @@ const ActionButtonWrapper = styled(ButtonBase)`
   position: absolute;
   top: 10px;
   right: 10px;
-  color: ${({ theme }) => theme.link.alpha(0.6)};
+  color: ${({ theme }) => theme.link};
   z-index: 2;
   ${textStyle("body3")};
-
-  &:hover {
-    color: ${({ theme }) => theme.link};
-  }
 `;

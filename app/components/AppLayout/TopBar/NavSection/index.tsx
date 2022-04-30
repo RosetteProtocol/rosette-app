@@ -43,6 +43,7 @@ const NavLinksList = styled.ul`
 
   li:first-child {
     ${textStyle("title2")};
+    text-decoration: none;
   }
 
   > li {
