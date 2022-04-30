@@ -165,7 +165,7 @@ const InfoError = styled.span`
 const ProxySwitchWrapper = styled.div`
   display: flex;
   gap: ${0.5 * GU}px;
-  ${({ theme }) => theme.contentSecondary};
+  color: ${({ theme }) => theme.contentSecondary};
   ${textStyle("body3")};
 
   & > div {

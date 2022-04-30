@@ -62,12 +62,13 @@ type AccountButtonProps = {
 
 export const AccountButton = ({ onClick }: AccountButtonProps) => {
   const theme = useTheme();
+  const { above } = useViewport();
   const [{ data: accountData }] = useAccount({ fetchEns: true });
   const [{ data: networkData }] = useNetwork();
   const { address, ens } = accountData || {};
 
   return (
-    <Container>
+    <Container large={above("medium")}>
       <AccountButtonWrapper
         hasPopover
         onClick={onClick}
@@ -101,8 +102,8 @@ export const AccountButton = ({ onClick }: AccountButtonProps) => {
   );
 };
 
-const Container = styled.div`
-  border: 1px solid ${(props) => props.theme.content};
+const Container = styled.div<{ large: boolean }>`
+  ${({ large, theme }) => large && `border: 1px solid ${theme.content};`}
   border-radius: 8px;
 `;
 
