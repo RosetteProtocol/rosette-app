@@ -1,4 +1,4 @@
-import { GU, LoadingRing, useViewport } from "@blossom-labs/rosette-ui";
+import { GU, useViewport } from "@blossom-labs/rosette-ui";
 import {
   useCatch,
   useNavigate,
@@ -23,19 +23,12 @@ export default function Home() {
   return (
     <AppScreen>
       <MainContainer compactMode={below("medium")}>
-        {describeIsPending || transition.state !== "loading" ? (
-          <ContractForm
-            loading={describeIsPending}
-            onSubmit={(contractAddress) =>
-              navigate(`/describe?contract=${contractAddress}`)
-            }
-          />
-        ) : (
-          <>
-            <LoadingRing style={{ marginRight: 1 * GU }} mode="half-circle" />
-            Loading…
-          </>
-        )}
+        <ContractForm
+          loading={describeIsPending}
+          onSubmit={(contractAddress) =>
+            navigate(`/describe?contract=${contractAddress}`)
+          }
+        />
       </MainContainer>
     </AppScreen>
   );

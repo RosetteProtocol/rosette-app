@@ -101,6 +101,7 @@ const NoticeContainer = styled.div`
   -webkit-box-orient: vertical;
   overflow: hidden;
   ${textStyle("title3")};
+  color: ${({ theme }) => theme.content};
 `;
 
 const InfoContainer = styled.div`
@@ -113,4 +114,5 @@ const InfoContainer = styled.div`
 
 const Hash = styled.div`
   ${textStyle("title4")};
+  color: ${({ theme }) => theme.content};
 `;
