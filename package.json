@@ -35,7 +35,7 @@
     "zustand": "^3.7.1"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.4.0",
+    "@remix-run/dev": "^1.4.3",
     "@remix-run/eslint-config": "^1.4.0",
     "@types/lodash.debounce": "^4.0.7",
     "@types/react": "^17.0.24",
