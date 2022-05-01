@@ -99,6 +99,7 @@ const NoticeContainer = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  word-wrap: break-word;
   overflow: hidden;
   ${textStyle("title3")};
   color: ${({ theme }) => theme.content};
