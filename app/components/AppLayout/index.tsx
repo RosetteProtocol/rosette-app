@@ -44,7 +44,7 @@ export const AppLayout = ({
 
 const Container = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   position: relative;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
