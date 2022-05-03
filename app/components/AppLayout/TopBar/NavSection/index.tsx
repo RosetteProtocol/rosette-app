@@ -1,5 +1,5 @@
 import { GU, textStyle } from "@blossom-labs/rosette-ui";
-import { NavLink } from "@remix-run/react";
+import { NavLink, useLocation } from "@remix-run/react";
 import styled from "styled-components";
 import { CompactMenu } from "./CompactMenu";
 
@@ -21,18 +21,29 @@ const navigationItem: NavigationItem[] = [
 ];
 
 export const NavSection = ({ compact }: { compact: boolean }) => {
+  const { pathname } = useLocation();
+
   return compact ? (
     <CompactMenu items={navigationItem} />
   ) : (
     <NavLinksList>
-      {navigationItem.map(({ label, to }) => (
-        <li key={label}>
-          <NavLink to={to}>{label === "Home" ? "rosette" : label}</NavLink>
-        </li>
-      ))}
+      {navigationItem.map(({ label, to }) => {
+        const renderBottom = to !== "/home" && pathname === to;
+
+        return (
+          <LiStyled key={label} renderBottom={renderBottom}>
+            <NavLink to={to}>{label === "Home" ? "rosette" : label}</NavLink>
+          </LiStyled>
+        );
+      })}
     </NavLinksList>
   );
 };
+
+const LiStyled = styled.li<{ renderBottom: boolean }>`
+  ${({ renderBottom }) =>
+    renderBottom && "padding-bottom: 2px; border-bottom: 1px solid;"}
+`;
 
 const NavLinksList = styled.ul`
   display: flex;
@@ -44,13 +55,13 @@ const NavLinksList = styled.ul`
 
   li:first-child {
     ${textStyle("title2")};
-    text-decoration: none;
   }
 
   > li {
-    transition: all 200ms ease-out;
-    &:hover {
-      color: ${(props) => props.theme.surfaceUnder.alpha(0.1)};
+    transition: all 200ms ease;
+    padding-bottom: 2px;
+    &:not(:first-child):hover {
+      border-bottom: 1px solid;
     }
   }
 

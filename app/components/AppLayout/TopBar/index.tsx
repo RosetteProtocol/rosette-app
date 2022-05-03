@@ -42,6 +42,7 @@ const NavContainer = styled.nav`
 const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
   position: absolute;
   inset: 0;
+  z-index: 1;
   border-bottom: ${({ $compactMode, theme }) =>
     $compactMode ? `1px solid ${theme.border}` : ""};
   ${({ $compactMode }) =>
