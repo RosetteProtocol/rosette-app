@@ -50,9 +50,7 @@ function EntryCard({ fn }: { fn: FnEntry }) {
 
   return (
     <EntryContainer onClick={() => navigate(`/entries/${fn.id}`)}>
-      <NoticeContainer>
-        swapExactETHForTokens(uint256,address[],address,uint256)
-      </NoticeContainer>
+      <NoticeContainer>{fn.notice}</NoticeContainer>
       <InfoContainer>
         <Hash>{fn.sigHash}</Hash>
         <StatusLabel status={fn.status} />
@@ -99,6 +97,7 @@ const NoticeContainer = styled.div`
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  word-wrap: break-word;
   overflow: hidden;
   ${textStyle("title3")};
   color: ${({ theme }) => theme.content};
