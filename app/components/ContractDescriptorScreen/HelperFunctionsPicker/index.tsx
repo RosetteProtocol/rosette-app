@@ -1,4 +1,11 @@
-import { Button, GU, IconMenu, Popover, SearchInput } from "@1hive/1hive-ui";
+import {
+  Button,
+  GU,
+  IconMenu,
+  Popover,
+  SearchInput,
+  textStyle,
+} from "@blossom-labs/rosette-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WheelEventHandler } from "react";
 import styled from "styled-components";
@@ -61,7 +68,7 @@ export const HelperFunctionsPicker = ({
 
   return (
     <div onWheel={handlePickerWheelEvent}>
-      <Button
+      <PickerButton
         display="icon"
         label="Helper functions"
         ref={opener}
@@ -76,7 +83,7 @@ export const HelperFunctionsPicker = ({
       >
         <PopoverWrapper>
           <PopoverLayout>
-            <div>Functions library</div>
+            <Header>Functions library</Header>
             <SearchInput
               placeholder="Search function…"
               wide
@@ -97,6 +104,10 @@ export const HelperFunctionsPicker = ({
     </div>
   );
 };
+
+const PickerButton = styled(Button)`
+  border: 1px solid;
+`;
 
 const PopoverWrapper = styled.div`
   max-height: 700px;
@@ -123,6 +134,11 @@ const PopoverLayout = styled.div`
   gap: ${2 * GU}px;
   box-sizing: border-box;
   padding: ${2 * GU}px;
+`;
+
+const Header = styled.div`
+  color: ${({ theme }) => theme.content};
+  ${textStyle("body2")};
 `;
 
 const FunctionsSection = styled.div`

@@ -1,11 +1,11 @@
-import { springs } from "@1hive/1hive-ui";
+import { springs } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { TransitionFn } from "@react-spring/web";
 import { a, useTransition } from "@react-spring/web";
 
-import { BlossomLabsLogo } from "~/components/BlossomLabsLogo";
+import { BlossomLabsIcon } from "~/components/BlossomLabs";
 
 export type AppReadyTransition = TransitionFn<
   boolean,
@@ -87,7 +87,7 @@ export function AppReady({ children }: AppReadyProps) {
                   height: "48px",
                 }}
               >
-                <BlossomLabsLogo iconSize="40px" showIconOnly />
+                <BlossomLabsIcon />
               </a.div>
             </AnimatedSplashContainer>
           )

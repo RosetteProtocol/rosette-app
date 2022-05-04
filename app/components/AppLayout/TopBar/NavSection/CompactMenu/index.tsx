@@ -1,4 +1,9 @@
-import { ButtonBase, GU, IconMenu, useViewport } from "@1hive/1hive-ui";
+import {
+  ButtonBase,
+  GU,
+  IconMenu,
+  useViewport,
+} from "@blossom-labs/rosette-ui";
 import { useState } from "react";
 import { useLocation } from "@remix-run/react";
 import styled from "styled-components";
@@ -15,7 +20,7 @@ const MenuButton = ({ onClick }: { onClick(): void }) => (
         align-items: center;
       `}
     >
-      <StyledMenuIcon color="grey" />
+      <StyledMenuIcon />
     </ButtonBase>
   </ButtonContainer>
 );
@@ -68,6 +73,7 @@ const ButtonContainer = styled.div`
 const StyledMenuIcon = styled(IconMenu)`
   width: ${4 * GU}px;
   height: ${4 * GU}px;
+  color: ${({ theme }) => theme.border};
 `;
 
 const NavContainer = styled.ul`

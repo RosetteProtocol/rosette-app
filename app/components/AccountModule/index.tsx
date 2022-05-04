@@ -1,4 +1,4 @@
-import { Button, GU, IconConnect } from "@1hive/1hive-ui";
+import { Button, GU, IconConnect } from "@blossom-labs/rosette-ui";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useAccount, useConnect, useNetwork } from "wagmi";
@@ -126,7 +126,7 @@ export const AccountModule = ({ compact }: { compact?: boolean }) => {
       {displayAccountButton ? (
         <AccountButton onClick={actions.toggleOpened} />
       ) : (
-        <Button
+        <ConnectButton
           icon={<IconConnect />}
           label="Connect account"
           onClick={actions.toggleOpened}
@@ -156,4 +156,8 @@ const Container = styled.div`
   align-items: center;
   justify-content: space-around;
   outline: 0;
+`;
+
+const ConnectButton = styled(Button)`
+  border: 1px solid ${({ theme }) => theme.content};
 `;

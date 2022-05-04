@@ -5,7 +5,7 @@ import {
   noop,
   textStyle,
   useTheme,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import { useEffect, useRef, useState } from "react";
 import { a, useSpring } from "@react-spring/web";
 import styled from "styled-components";
@@ -58,9 +58,7 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
       <a.div
         style={{
           borderRadius: 10,
-          backgroundColor: openProgress.to((v) =>
-            theme.surfacePressed.alpha(v)
-          ),
+          backgroundColor: openProgress.to((v) => theme.helpContent.alpha(v)),
         }}
       >
         <ActionButtonWrapper onClick={() => onUse(fn)}>Use</ActionButtonWrapper>
@@ -99,7 +97,7 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
               borderBottomLeftRadius: 10,
               borderBottomRightRadius: 10,
               backgroundColor: openProgress.to((v) =>
-                theme.surfacePressed.alpha(v)
+                theme.helpContent.alpha(v)
               ),
               height: openProgress.to((v) => `${v * contentHeight.current}px`),
             }}
@@ -119,6 +117,7 @@ const Container = styled.section`
   position: relative;
   margin: 0;
 `;
+
 const EntryButton = styled.div`
   position: relative;
   width: 100%;
@@ -145,11 +144,7 @@ const ActionButtonWrapper = styled(ButtonBase)`
   position: absolute;
   top: 10px;
   right: 10px;
-  color: ${({ theme }) => theme.link.alpha(0.6)};
+  color: ${({ theme }) => theme.link};
   z-index: 2;
-  ${textStyle("body3")};
-
-  &:hover {
-    color: ${({ theme }) => theme.link};
-  }
+  ${textStyle("body2")};
 `;

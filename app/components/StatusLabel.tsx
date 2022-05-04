@@ -1,4 +1,4 @@
-import { textStyle, GU } from "@1hive/1hive-ui";
+import { textStyle, GU } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { FnDescriptionStatus } from "~/types";
 import { getFnEntryStatusIconData } from "~/utils/client/icons.client";
@@ -40,6 +40,7 @@ const LabelContainer = styled.div<{
   border-radius: 4px;
   padding-right: ${1 * GU}px;
   ${textStyle("body4")};
+  color: ${({ theme }) => theme.content};
 
   div:first-child {
     display: flex;

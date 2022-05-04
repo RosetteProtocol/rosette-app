@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { utils } from "ethers";
-import { Button, GU, useViewport } from "@1hive/1hive-ui";
+import { Button, GU, useViewport } from "@blossom-labs/rosette-ui";
 import { useFetcher } from "@remix-run/react";
 import styled from "styled-components";
 import scrollIcon from "./assets/scroll-icon.svg";
@@ -171,8 +171,9 @@ export const ContractDescriptorScreen = ({
           <SubmitButton
             label={`Submit  (${fnDescriptionsCounter})`}
             type="submit"
+            mode="strong"
             wide
-            disabled={!accountData?.address}
+            disabled={!accountData?.address || fnDescriptionsCounter === 0}
           />
         </SubmitContainer>
       </Layout>
@@ -251,6 +252,7 @@ const Layout = styled.div<{ compactMode: boolean }>`
 
 const FiltersContainer = styled.div`
   justify-self: center;
+  color: ${({ theme }) => theme.content};
 `;
 
 const PaginationContainer = styled.div`
@@ -261,6 +263,7 @@ const PaginationContainer = styled.div`
 
 const PaginationIcon = styled.img<{ size: number }>`
   ${({ size }) => `width: ${size}px; height: ${size}px;`};
+  color: ${({ theme }) => theme.border};
 `;
 
 const CarouselContainer = styled.div`

@@ -1,4 +1,4 @@
-import { GU, LoadingRing, useViewport } from "@1hive/1hive-ui";
+import { GU, useViewport } from "@blossom-labs/rosette-ui";
 import {
   useCatch,
   useNavigate,
@@ -23,19 +23,12 @@ export default function Home() {
   return (
     <AppScreen>
       <MainContainer compactMode={below("medium")}>
-        {describeIsPending || transition.state !== "loading" ? (
-          <ContractForm
-            loading={describeIsPending}
-            onSubmit={(contractAddress) =>
-              navigate(`/describe?contract=${contractAddress}`)
-            }
-          />
-        ) : (
-          <>
-            <LoadingRing style={{ marginRight: 1 * GU }} mode="half-circle" />
-            Loading…
-          </>
-        )}
+        <ContractForm
+          loading={describeIsPending}
+          onSubmit={(contractAddress) =>
+            navigate(`/describe?contract=${contractAddress}`)
+          }
+        />
       </MainContainer>
     </AppScreen>
   );
@@ -45,7 +38,7 @@ const MainContainer = styled.div<{ compactMode: boolean }>`
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: ${({ compactMode }) => (compactMode ? 5 * GU : 17 * GU)}px;
+  padding-top: ${({ compactMode }) => (compactMode ? 7 * GU : 23 * GU)}px;
   width: 100%;
   height: 100%;
 `;

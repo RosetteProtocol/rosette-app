@@ -8,7 +8,7 @@ import {
   RADIUS,
   textStyle,
   useTheme,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import { useCallback, useEffect } from "react";
 import styled from "styled-components";
 import { useAccount, useNetwork } from "wagmi";
@@ -49,7 +49,13 @@ export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
       }}
     >
       <Title>Active Wallet</Title>
-      <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -62,7 +68,9 @@ export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
             alt=""
             size={3 * GU}
           />
-          <span>{wallet?.id === "unknown" ? "Wallet" : wallet?.name}</span>
+          <WalletName>
+            {wallet?.id === "unknown" ? "Wallet" : wallet?.name}
+          </WalletName>
         </div>
         <div style={{ width: "100%" }}>
           <CopyButton onClick={handleCopyAddress} focusRingRadius={RADIUS}>
@@ -72,7 +80,10 @@ export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
               badgeOnly
               style={{ cursor: "pointer" }}
             />
-            <IconCopy style={{ verticalAlign: "middle" }} color={theme.hint} />
+            <IconCopy
+              style={{ verticalAlign: "middle" }}
+              color={theme.surfaceIcon}
+            />
           </CopyButton>
         </div>
       </div>
@@ -92,9 +103,9 @@ export const ScreenConnected = ({ onBack }: ScreenConnectedProps) => {
 };
 
 const Title = styled.h4`
-  color: ${(props) => props.theme.contentSecondary};
-  margin-bottom: ${2 * GU}px, ${textStyle("label2")};
-  ${textStyle("label2")};
+  color: ${(props) => props.theme.border};
+  margin-bottom: ${2 * GU}px;
+  ${textStyle("body4")};
 `;
 
 const WalletIcon = styled.img<{ size: string | number }>`
@@ -106,10 +117,8 @@ const WalletIcon = styled.img<{ size: string | number }>`
 const CopyButton = styled(ButtonBase)`
   display: flex;
   align-items: center;
-  justify-self: flex-end;
-  padding: ${0.5 * GU}px;
   &:active {
-    background: ${(props) => props.theme.surfacePressed};
+    color: ${(props) => props.theme.focus};
   }
 `;
 
@@ -117,5 +126,10 @@ const NetworkInfo = styled.div`
   display: flex;
   align-items: center;
   color: ${(props) => props.theme.positive};
-  ${textStyle("label2")};
+  ${textStyle("body4")};
+`;
+
+const WalletName = styled.span`
+  color: ${(props) => props.theme.border};
+  ${textStyle("body2")};
 `;

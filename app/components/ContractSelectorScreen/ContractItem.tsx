@@ -1,4 +1,10 @@
-import { GU, LoadingRing, Switch, Tag, textStyle } from "@1hive/1hive-ui";
+import {
+  GU,
+  LoadingRing,
+  Switch,
+  Tag,
+  textStyle,
+} from "@blossom-labs/rosette-ui";
 import type { MouseEventHandler } from "react";
 import { useEffect, useState } from "react";
 import { a, useTransition } from "@react-spring/web";
@@ -110,8 +116,9 @@ export const ContractItem = ({
 const Wrapper = styled.div<{ isClicked: boolean }>`
   position: relative;
   padding: ${2 * GU}px;
-  background-color: ${({ theme }) => theme.surface};
+  background-color: ${({ theme }) => theme.surface.alpha(0.5)};
   border-radius: 10px;
+  border: 1px solid ${({ theme }) => theme.borderDark};
   transition: background-color ease-out 200ms;
   min-width: 45vmin;
   max-width: 85vmin;
@@ -120,7 +127,7 @@ const Wrapper = styled.div<{ isClicked: boolean }>`
   ${({ isClicked, theme }) =>
     !isClicked
       ? `&:hover {
-    background-color: ${theme.surfaceHighlight};
+    background-color: ${theme.surfaceUnder.alpha(0.1)};
   }`
       : ""};
 `;
@@ -134,13 +141,14 @@ const ItemHeader = styled.div`
 const ItemContent = styled.div`
   & > div:nth-child(1) {
     ${textStyle("body1")};
+    color: ${({ theme }) => theme.content};
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   & > div:nth-child(2) {
-    ${textStyle("body3")};
+    ${textStyle("body2")};
     color: ${({ theme }) => theme.contentSecondary};
     white-space: nowrap;
     overflow: hidden;
@@ -157,7 +165,7 @@ const InfoError = styled.span`
 const ProxySwitchWrapper = styled.div`
   display: flex;
   gap: ${0.5 * GU}px;
-  ${({ theme }) => theme.contentSecondary};
+  color: ${({ theme }) => theme.contentSecondary};
   ${textStyle("body3")};
 
   & > div {
@@ -177,7 +185,8 @@ const Loader = styled(a.div)`
   align-items: center;
   flex-wrap: nowrap;
   gap: ${1 * GU}px;
-  ${textStyle("body3")};
+  ${textStyle("body2")};
+  color: ${({ theme }) => theme.contentSecondary};
 `;
 
 const NetworkImg = styled.img<{ isTestnet: boolean }>`

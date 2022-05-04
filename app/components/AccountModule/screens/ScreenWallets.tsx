@@ -1,4 +1,10 @@
-import { ButtonBase, GU, Link, RADIUS, textStyle } from "@1hive/1hive-ui";
+import {
+  ButtonBase,
+  GU,
+  Link,
+  RADIUS,
+  textStyle,
+} from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { useConnect } from "wagmi";
 import type { Connector } from "wagmi";
@@ -70,9 +76,9 @@ function WalletButton({
 const MainHeader = styled.h4`
   padding-top: ${2 * GU}px;
   padding-left: ${2 * GU}px;
-  color: ${(props) => props.theme.contentSecondary};
+  color: ${({ theme }) => theme.border};
   margin-bottom: ${2 * GU}px;
-  ${textStyle("label2")};
+  ${textStyle("body2")};
 `;
 
 const Container = styled.div`
@@ -106,9 +112,11 @@ const WalletButtonBase = styled(ButtonBase)`
   justify-content: center;
   width: 100%;
   height: ${12 * GU}px;
-  background: ${(props) => props.surface};
+  border: 1px solid ${(props) => props.theme.border};
+  &:hover {
+    background-color: ${({ theme }) => theme.surfaceUnder.alpha(0.1)};
+  }
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
-  border-radius: ${RADIUS}px;
   &:active {
     top: 1px;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
@@ -118,9 +126,11 @@ const WalletButtonBase = styled(ButtonBase)`
 const WalletName = styled.div`
   margin-top: ${1 * GU}px;
   ${textStyle("body1")};
+  color: ${({ theme }) => theme.content};
 `;
 
 const Subtitle = styled.div`
   margin-top: ${-0.5 * GU}px;
   ${textStyle("body4")};
+  color: ${({ theme }) => theme.contentSecondary};
 `;

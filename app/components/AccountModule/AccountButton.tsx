@@ -3,16 +3,16 @@ import {
   EthIdenticon,
   GU,
   IconDown,
-  RADIUS,
+  BIG_RADIUS,
   shortenAddress,
   textStyle,
   useTheme,
   useViewport,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import { Fragment } from "react";
 import type { ReactNode } from "react";
 import styled from "styled-components";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 
 type AccountButtonWrapperProps = {
   content: ReactNode;
@@ -40,7 +40,7 @@ const AccountButtonWrapper = ({
               <div
                 style={{
                   paddingLeft: `${1 * GU}px`,
-                  paddingRight: `${0.5 * GU}px`,
+                  paddingRight: `${2.5 * GU}px`,
                 }}
               >
                 {content}
@@ -61,43 +61,41 @@ type AccountButtonProps = {
 };
 
 export const AccountButton = ({ onClick }: AccountButtonProps) => {
-  const theme = useTheme();
+  const { above } = useViewport();
   const [{ data: accountData }] = useAccount({ fetchEns: true });
-  const [{ data: networkData }] = useNetwork();
   const { address, ens } = accountData || {};
 
   return (
-    <AccountButtonWrapper
-      hasPopover
-      onClick={onClick}
-      icon={
-        <div style={{ position: "relative" }}>
-          <EthIdenticon address={address} radius={RADIUS} />
-          <ConnectedCircle />
-        </div>
-      }
-      content={
-        <>
-          {!!address && (
-            <LabelWrapper>
-              <LabelInnerWrapper>
-                {ens?.name || shortenAddress(address ?? "")}
-              </LabelInnerWrapper>
-            </LabelWrapper>
-          )}
-          <div
-            style={{
-              fontSize: "11px", //  doesn’t exist in aragonUI
-              color: theme.positive,
-            }}
-          >
-            Connected to {networkData.chain?.name}
+    <Container large={above("medium")}>
+      <AccountButtonWrapper
+        hasPopover
+        onClick={onClick}
+        icon={
+          <div style={{ position: "relative" }}>
+            <EthIdenticon address={address} radius={BIG_RADIUS} />
+            <ConnectedCircle />
           </div>
-        </>
-      }
-    />
+        }
+        content={
+          <>
+            {!!address && (
+              <LabelWrapper>
+                <LabelInnerWrapper>
+                  {ens?.name || shortenAddress(address ?? "")}
+                </LabelInnerWrapper>
+              </LabelWrapper>
+            )}
+          </>
+        }
+      />
+    </Container>
   );
 };
+
+const Container = styled.div<{ large: boolean }>`
+  ${({ large, theme }) => large && `border: 1px solid ${theme.content};`}
+  border-radius: 8px;
+`;
 
 const AccountButtonBase = styled(ButtonBase)`
   height: 100%;
@@ -112,7 +110,7 @@ const InnerContainer = styled.div`
   display: flex;
   align-items: center;
   text-align: left;
-  padding: 0 ${1 * GU}px;
+  padding: ${1 * GU}px ${1.75 * GU}px ${1 * GU}px ${1 * GU}px;
 `;
 
 const ConnectedCircle = styled.div`
@@ -121,20 +119,20 @@ const ConnectedCircle = styled.div`
   right: -3px;
   width: 10px;
   height: 10px;
-  background: ${(props) => props.theme.positive};
-  border: 2px solid ${(props) => props.theme.surface};
+  background: ${({ theme }) => theme.positive};
+  border: 2px solid #141313;
   border-radius: 50%;
 `;
 
 const LabelWrapper = styled.div`
   margin-bottom: -5px;
-
+  color: ${({ theme }) => theme.content};
   ${textStyle("body2")};
 `;
 
 const LabelInnerWrapper = styled.div`
   overflow: hidden;
-  max-width: ${16 * GU}px;
+  max-width: 128px;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;

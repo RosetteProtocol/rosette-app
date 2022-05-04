@@ -1,4 +1,4 @@
-import { IconCaution, IconCheck, IconInfo } from "@1hive/1hive-ui";
+import { IconCaution, IconCheck, IconInfo } from "@blossom-labs/rosette-ui";
 import type { FunctionComponent } from "react";
 import ethereum from "~/assets/ethereum.svg";
 import gnosisChain from "~/assets/gnosis-chain.svg";

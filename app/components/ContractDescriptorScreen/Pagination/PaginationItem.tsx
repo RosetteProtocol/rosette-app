@@ -1,4 +1,4 @@
-import { ButtonBase, RADIUS, textStyle } from "@1hive/1hive-ui";
+import { ButtonBase, RADIUS, textStyle } from "@blossom-labs/rosette-ui";
 import { useCallback } from "react";
 import styled from "styled-components";
 
@@ -9,13 +9,11 @@ type PaginationItemProps = {
   index: number;
   selected: boolean;
   size: number;
-  touchMode: boolean;
   onChange(index: number): void;
 };
 
 export const PaginationItem = ({
   direction = "horizontal",
-  touchMode,
   selected,
   size,
   index,
@@ -32,7 +30,6 @@ export const PaginationItem = ({
         onClick={handleClick}
         focusRingRadius={RADIUS}
         disabled={selected}
-        touchMode={touchMode}
         selected={selected}
         size={size}
       >
@@ -56,28 +53,23 @@ const Dot = styled.div<{ direction: Direction }>`
       top: calc(50% - 1px);
       left: calc(-10%);
   `};
-  background: ${({ theme }) => theme.accentContent};
+  background: ${({ theme }) => theme.content};
 `;
 
 const StyledButtonBase = styled(ButtonBase)<{
   selected: boolean;
-  touchMode: boolean;
 }>`
   border-radius: ${RADIUS}px;
-  ${({ selected, theme, touchMode, size }) => `
+  ${({ selected, theme, size }) => `
     width: ${size}px;
     height: ${size}px;
-    color: ${theme.surfaceContent};
-    ${textStyle(touchMode ? "body1" : "title2")};
-
-    &:active {
-      background: ${theme.surfacePressed};
-    }
+    color: ${theme.border};
+    ${textStyle("title3")};
     ${
       selected &&
       `
         && {
-          color: ${theme.accentContent};
+          color: ${theme.content};
         }
       `
     };

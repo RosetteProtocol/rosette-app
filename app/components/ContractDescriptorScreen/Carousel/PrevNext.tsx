@@ -5,7 +5,7 @@ import {
   IconUp,
   IconRight,
   IconLeft,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 
 type PrevNextProps = {

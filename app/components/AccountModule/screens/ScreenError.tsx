@@ -5,7 +5,7 @@ import {
   Link,
   textStyle,
   useTheme,
-} from "@1hive/1hive-ui";
+} from "@blossom-labs/rosette-ui";
 import { useMemo } from "react";
 import styled from "styled-components";
 import {
@@ -124,6 +124,7 @@ const ErrorContainer = styled.div`
 const Title = styled.h1`
   font-weight: 600;
   ${textStyle("body1")};
+  color: ${({ theme }) => theme.content};
 `;
 
 const ButtonContainer = styled.div`

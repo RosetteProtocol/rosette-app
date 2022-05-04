@@ -1,4 +1,4 @@
-import { GU, textStyle, useTheme } from "@1hive/1hive-ui";
+import { GU, textStyle, useTheme } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 
 import { getWalletIconPath } from "../helpers";
@@ -62,4 +62,5 @@ const Title = styled.h1`
   padding-top: ${2 * GU}px;
   font-weight: 600;
   ${textStyle("body1")};
+  color: ${({ theme }) => theme.content};
 `;

@@ -1,4 +1,4 @@
-import { GU, noop, useViewport } from "@1hive/1hive-ui";
+import { GU, noop, useViewport } from "@blossom-labs/rosette-ui";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { a, useSpring } from "@react-spring/web";

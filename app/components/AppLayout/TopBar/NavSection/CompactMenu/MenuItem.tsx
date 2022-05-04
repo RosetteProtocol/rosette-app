@@ -1,4 +1,4 @@
-import { GU, useTheme } from "@1hive/1hive-ui";
+import { GU, useTheme } from "@blossom-labs/rosette-ui";
 import { Link } from "@remix-run/react";
 import styled from "styled-components";
 import type { NavigationItem } from "..";
@@ -29,7 +29,16 @@ export const MenuItem = ({
         }}
       >
         <InnerNavLink>
-          {icon && <img src={icon} alt="" />}
+          {icon && (
+            <img
+              style={{
+                width: "24px",
+                height: "24px",
+              }}
+              src={icon}
+              alt=""
+            />
+          )}
           <span>{label}</span>
         </InnerNavLink>
       </Link>

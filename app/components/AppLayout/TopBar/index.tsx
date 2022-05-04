@@ -1,4 +1,4 @@
-import { GU, useViewport } from "@1hive/1hive-ui";
+import { GU, useViewport } from "@blossom-labs/rosette-ui";
 import { a } from "@react-spring/web";
 import styled from "styled-components";
 
@@ -42,15 +42,18 @@ const NavContainer = styled.nav`
 const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
   position: absolute;
   inset: 0;
-  border-bottom: 1px solid ${({ theme }) => theme.border};
+  z-index: 1;
+  border-bottom: ${({ $compactMode, theme }) =>
+    $compactMode ? `1px solid ${theme.border}` : ""};
   ${({ $compactMode }) =>
     $compactMode
       ? `
     padding-right: ${1 * GU}px;
   `
       : `
-    padding-right: ${5 * GU}px;
-    padding-left: ${5 * GU}px;
+    padding-right: ${6 * GU}px;
+    padding-left: ${6 * GU}px;
+    padding-top: ${6 * GU}px;
   `};
   display: flex;
   justify-content: space-between;

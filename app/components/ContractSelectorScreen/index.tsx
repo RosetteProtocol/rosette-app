@@ -1,4 +1,4 @@
-import { GU, textStyle } from "@1hive/1hive-ui";
+import { GU, textStyle } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { a, useTransition } from "@react-spring/web";
 import type { ContractData, AggregateContract } from "~/types";
@@ -48,6 +48,7 @@ const Container = styled.div`
 
   & > div:first-child {
     ${textStyle("body1")};
+    color: ${({ theme }) => theme.content};
     margin: 0 ${2 * GU}px;
     margin-bottom: ${3 * GU}px;
   }

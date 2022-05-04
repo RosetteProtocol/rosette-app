@@ -1,4 +1,4 @@
-import { Main } from "@1hive/1hive-ui";
+import { Main } from "@blossom-labs/rosette-ui";
 import {
   Links,
   LiveReload,

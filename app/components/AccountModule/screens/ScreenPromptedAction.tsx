@@ -1,4 +1,4 @@
-import { GU, textStyle } from "@1hive/1hive-ui/";
+import { GU, textStyle } from "@blossom-labs/rosette-ui/";
 import styled from "styled-components";
 
 import { LoadingRing } from "../LoadingRing";
@@ -64,6 +64,7 @@ const Title = styled.h1`
   padding-top: ${2 * GU}px;
   font-weight: 600;
   ${textStyle("body1")};
+  color: ${({ theme }) => theme.content};
 `;
 
 const Subtitle = styled.p`

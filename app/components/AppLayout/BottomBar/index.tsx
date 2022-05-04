@@ -1,8 +1,8 @@
-import { GU, useTheme, useViewport } from "@1hive/1hive-ui";
+import { GU, useTheme, useViewport } from "@blossom-labs/rosette-ui";
 import { a } from "@react-spring/web";
 import styled from "styled-components";
 import { useAppReady } from "~/providers/AppReady";
-import { BlossomLabsLogo } from "~/components/BlossomLabsLogo";
+import { BlossomLabsLogo } from "~/components/BlossomLabs";
 
 const OPACITY = 0.8;
 export const BottomBar = () => {
@@ -21,7 +21,7 @@ export const BottomBar = () => {
               $compactMode={compactMode}
             >
               <div style={{ color: theme.surfaceContent, opacity: OPACITY }}>
-                powered by &nbsp; <BlossomLabsLogo />
+                powered by <BlossomLabsLogo />
               </div>
             </AnimatedContainer>
           )

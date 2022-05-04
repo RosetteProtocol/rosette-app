@@ -1,4 +1,4 @@
-import { GU } from "@1hive/1hive-ui";
+import { GU } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { PaginationItem } from "./PaginationItem";
 import { PaginationSeparator } from "./PaginationSeparator";
@@ -130,7 +130,6 @@ export const Pagination = ({
             index={pageIndex}
             selected={selected === pageIndex}
             onChange={onChange}
-            touchMode={touchMode}
             size={size}
           />
         )
