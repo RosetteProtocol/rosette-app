@@ -1,6 +1,6 @@
 import { RADIUS, useViewport, GU, useTheme } from "@blossom-labs/rosette-ui";
-import type { Theme } from "@uniswap/widgets";
-import { SwapWidget } from "@uniswap/widgets";
+// import type { Theme } from "@uniswap/widgets";
+// import { SwapWidget } from "@uniswap/widgets";
 import styled from "styled-components";
 import { useSigner } from "wagmi";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
@@ -11,32 +11,32 @@ export default function EntriesRoute() {
   const theme = useTheme();
   const [{ data }] = useSigner();
 
-  const uniswapTheme: Theme = {
-    primary: `${theme.content}`,
-    secondary: `${theme.contentSecondary}`,
-    interactive: `${theme.surfaceContent}`,
-    container: `${theme.surface.alpha(0.5)}`,
-    module: `${theme.floatingContent}`,
-    accent: `${theme.accent}`,
-    outline: `${theme.borderDark}`,
-    dialog: `${theme.surface}`,
-    fontFamily: "rosette-ui",
-    borderRadius: RADIUS,
-    active: `${theme.selected}`,
-    error: `${theme.negative}`,
-    success: `${theme.positive}`,
-    warning: `${theme.warning}`,
-  };
+  // const uniswapTheme: Theme = {
+  //   primary: `${theme.content}`,
+  //   secondary: `${theme.contentSecondary}`,
+  //   interactive: `${theme.surfaceContent}`,
+  //   container: `${theme.surface.alpha(0.5)}`,
+  //   module: `${theme.floatingContent}`,
+  //   accent: `${theme.accent}`,
+  //   outline: `${theme.borderDark}`,
+  //   dialog: `${theme.surface}`,
+  //   fontFamily: "rosette-ui",
+  //   borderRadius: RADIUS,
+  //   active: `${theme.selected}`,
+  //   error: `${theme.negative}`,
+  //   success: `${theme.positive}`,
+  //   warning: `${theme.warning}`,
+  // };
 
   return (
     <AppScreen hideBottomBar>
       <SmoothDisplayContainer>
         <Container compactMode={below("medium")}>
-          <SwapWidget
+          {/* <SwapWidget
             provider={data?.provider as any}
             jsonRpcEndpoint={window.ENV.RPC_URL}
             theme={uniswapTheme}
-          />
+          /> */}
         </Container>
       </SmoothDisplayContainer>
     </AppScreen>
