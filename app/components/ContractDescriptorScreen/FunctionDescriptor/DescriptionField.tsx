@@ -1,7 +1,8 @@
-import { GU, RADIUS, textStyle } from "@1hive/1hive-ui";
 import { forwardRef, useEffect, useState } from "react";
 import type { FocusEventHandler, KeyboardEventHandler } from "react";
+import { GU, RADIUS, textStyle } from "@1hive/1hive-ui";
 import styled from "styled-components";
+import Description from "./Description";
 import { useDebounce } from "~/hooks/useDebounce";
 
 type DescriptionFieldProps = {
@@ -32,7 +33,7 @@ export const DescriptionField = forwardRef<
     ref
   ) => {
     const [value, setValue] = useState<string | undefined>(description);
-    const debouncedValue = useDebounce(value, 400);
+    const debouncedValue = useDebounce(value, 0);
 
     useEffect(() => {
       if (debouncedValue !== undefined) {
@@ -49,17 +50,33 @@ export const DescriptionField = forwardRef<
     }, [description]);
 
     return (
-      <DescriptionTextArea
-        tabIndex={-1}
-        ref={ref}
-        height={height}
-        textSize={textSize}
-        value={value}
-        placeholder={placeholder}
-        disabled={disabled}
-        onChange={(e) => setValue(e.target.value)}
-        {...props}
-      />
+      <div style={{ position: "relative", width: "100%", height }}>
+        <DescriptionTextArea
+          tabIndex={-1}
+          ref={ref}
+          height={height}
+          textSize={textSize}
+          value={value}
+          placeholder={placeholder}
+          disabled={disabled}
+          onChange={(e) => setValue(e.target.value)}
+          {...props}
+        />
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            bottom: 0,
+            height,
+            padding: `${1 * GU}px ${1.5 * GU}px`,
+            width: "100%",
+            margin: 0,
+            wordBreak: "break-all",
+          }}
+        >
+          <Description text={value || ""} />
+        </div>
+      </div>
     );
   }
 );
@@ -70,10 +87,17 @@ const DescriptionTextArea = styled.textarea<{
   height: string;
   textSize: string;
 }>`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+
+  word-break: break-all;
   height: ${(props) => props.height};
   padding: ${1 * GU}px ${1.5 * GU}px;
-  background: ${(props) => props.theme.surfaceUnder};
-  color: ${(props) => props.theme.surfaceContent};
+  background: transparent;
+  color: transparent;
+  caret-color: white;
   appearance: none;
   border-radius: ${RADIUS}px;
   width: 100%;
