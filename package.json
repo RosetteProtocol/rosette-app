@@ -21,6 +21,7 @@
     "@remix-run/node": "^1.4.0",
     "@remix-run/react": "^1.4.0",
     "@udecode/zustood": "^0.4.4",
+    "@uniswap/widgets": "^1.0.10",
     "buffer": "^6.0.3",
     "clipboard-polyfill": "^4.0.0-rc1",
     "ethers": "^5.6.1",
@@ -28,6 +29,8 @@
     "lodash.debounce": "^4.0.8",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^8.0.2",
+    "redux": "^4.2.0",
     "styled-components": "^5.3.3",
     "wagmi": "^0.2.26",
     "zustand": "^3.7.1"
