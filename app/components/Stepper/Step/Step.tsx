@@ -1,14 +1,19 @@
+import React, { useMemo } from "react";
+import PropTypes from "prop-types";
+import { Transition, animated } from "@react-spring/web";
+import {
+  TransactionBadge,
+  textStyle,
+  useTheme,
+  GU,
+} from "@blossom-labs/rosette-ui";
 import { IndividualStepTypes } from "../stepper-statuses";
 import Divider from "./Divider";
 import StatusVisual from "./StatusVisual";
-import { TransactionBadge, textStyle, useTheme, GU } from "@1hive/1hive-ui";
 import { getNetwork } from "@/networks";
-import { springs } from "@/style/springs";
-import { useDisableAnimation } from "@hooks/useDisableAnimation";
+import { useDisableAnimation } from "~/hooks/useDisableAnimation";
+import { springs } from "~/springs";
 import { useWallet } from "@providers/Wallet";
-import PropTypes from "prop-types";
-import React, { useMemo } from "react";
-import { Transition, animated } from "react-spring/renderprops";
 
 const AnimatedSpan = animated.span;
 

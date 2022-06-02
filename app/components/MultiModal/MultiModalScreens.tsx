@@ -13,20 +13,14 @@ import {
   useLayout,
   useTheme,
   Viewport,
-  springs as baseSprings,
 } from "@blossom-labs/rosette-ui";
 import { useInside } from "use-inside";
 import { useDisableAnimation } from "~/hooks/useDisableAnimation";
+import { springs } from "~/springs";
 import { MultiModalProvider, useMultiModal } from "./MultiModalProvider";
 
 const DEFAULT_MODAL_WIDTH = 80 * GU;
 const AnimatedDiv = animated.div;
-
-const springs = {
-  ...baseSprings,
-  gentle: { mass: 1, tension: 200, friction: 20 },
-  tight: { mass: 0.6, tension: 500, friction: 40 },
-};
 
 type MultiModalScreensType = {
   screens: Array<any>;
@@ -228,7 +222,7 @@ const MultiModalContent = React.memo(function ModalContent({
         >
           <Transition
             config={(_, state) =>
-              //TransitionPhase LEAVE
+              // TransitionPhase LEAVE
               state === 3 ? springs.instant : springs.tight
             }
             items={step}

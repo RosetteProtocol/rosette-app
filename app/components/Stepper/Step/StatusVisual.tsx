@@ -8,11 +8,11 @@ import {
   IconCross,
   IconCheck,
   useTheme,
-  springs as baseSprings,
 } from "@blossom-labs/rosette-ui";
+import { springs } from "~/springs";
+import { useDisableAnimation } from "~/hooks/useDisableAnimation";
 import { IndividualStepTypes } from "../stepper-statuses";
 import Illustration from "./Illustration";
-import { useDisableAnimation } from "~/hooks/useDisableAnimation";
 
 const STATUS_ICONS = {
   [IndividualStepTypes.Error]: IconCross,
@@ -20,12 +20,6 @@ const STATUS_ICONS = {
 };
 
 const AnimatedDiv = animated.div;
-
-const springs = {
-  ...baseSprings,
-  gentle: { mass: 1, tension: 200, friction: 20 },
-  tight: { mass: 0.6, tension: 500, friction: 40 },
-};
 
 const spinAnimation = css`
   mask-image: linear-gradient(35deg, rgba(0, 0, 0, 0.1) 10%, rgba(0, 0, 0, 1));
