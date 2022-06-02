@@ -2,7 +2,7 @@ import { GU, textStyle, useTheme } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 
 import { getWalletIconPath } from "../helpers";
-import { LoadingRing } from "../LoadingRing";
+import { LoadingRing } from "../../LoadingRing";
 import { useAccounModuleStore } from "../use-account-module-store";
 
 export const ScreenConnecting = () => {

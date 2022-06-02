@@ -14,6 +14,7 @@
     "lint": "eslint ./app"
   },
   "dependencies": {
+    "@blossom-labs/rosette-react": "^0.1.1",
     "@blossom-labs/rosette-ui": "^0.0.1-alpha.6",
     "@netlify/functions": "^1.0.0",
     "@react-spring/web": "^9.4.4",

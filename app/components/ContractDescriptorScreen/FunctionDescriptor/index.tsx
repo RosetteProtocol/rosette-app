@@ -7,6 +7,7 @@ import {
   TextInput,
   Header,
   textStyle,
+  Info,
 } from "@blossom-labs/rosette-ui";
 import { forwardRef, memo, useCallback, useState } from "react";
 import type {
@@ -21,6 +22,8 @@ import { actions } from "../use-contract-descriptor-store";
 import type { Function } from "../use-contract-descriptor-store";
 import { DescriptionField } from "./DescriptionField";
 import { canTab, getSelectionRange } from "~/utils/client/selection.client";
+import { useTxDescribe } from "@blossom-labs/rosette-react";
+import { constants } from "ethers";
 
 type FunctionDescriptorProps = {
   fnDescriptorEntry: Function;
@@ -33,6 +36,7 @@ export const FunctionDescriptor = memo(
     ({ fnDescriptorEntry, description, onEntryChange, ...props }, ref) => {
       const [showModal, setShowModal] = useState(false);
       const [callData, setCallData] = useState("");
+      const [testDescriptionError, setTestDescriptionError] = useState("");
       const entry = fnDescriptorEntry.entry;
       const { notice, status } = entry || {};
       const descriptorStatus = status || FnDescriptionStatus.Available;
@@ -69,7 +73,14 @@ export const FunctionDescriptor = memo(
         setShowModal(true);
       };
 
-      const handleDescribeCalldata = () => {};
+      const handleDescribeCalldata = useCallback( () => {
+        useTxDescribe({
+          to: constants.AddressZero,
+          data: callData
+        })
+        setTestDescriptionError()
+      },[]);
+
 
       return (
         <Container>
@@ -109,6 +120,7 @@ export const FunctionDescriptor = memo(
                 wide
               />
             </Field>
+            <Info></Info>
             <Button
               label="Test"
               wide
