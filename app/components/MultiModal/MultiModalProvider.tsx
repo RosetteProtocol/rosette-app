@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useContext, useEffect, useMemo, useCallback } from 'react'
+import React, { useContext, useEffect, useMemo, useCallback } from "react";
 import { useAccount } from "wagmi";
-import { noop } from '@blossom-labs/rosette-ui'
-import { useSteps } from '~/hooks/useSteps'
+import { noop } from "@blossom-labs/rosette-ui";
+import { useSteps } from "~/hooks/useSteps";
 
 type State = {
-  currentScreen: any
-  close: () => void
-  direction: any
-  getScreen: any
-  next: any
-  prev: any
-  step: any
-}
+  currentScreen: any;
+  close: () => void;
+  direction: any;
+  getScreen: any;
+  next: any;
+  prev: any;
+  step: any;
+};
 
 const MultiModalContext = React.createContext<State>({
   currentScreen: null,
@@ -23,31 +23,30 @@ const MultiModalContext = React.createContext<State>({
   next: null,
   prev: null,
   step: null,
-})
+});
 
 type MultiModalProviderType = {
-  screens: Array<any>
-  onClose: () => void
-  children: React.ReactNode
-}
+  screens: Array<any>;
+  onClose: () => void;
+  children: React.ReactNode;
+};
 
 function MultiModalProvider({
   screens,
   onClose,
   children,
 }: MultiModalProviderType) {
-  const [{ data: accountData }] = useAccount({ fetchEns: true });
-  const { address, ens } = accountData || {};
-  const { account } = useWallet()
-  const { direction, next, prev, setStep, step } = useSteps(screens.length)
-  const getScreen = useCallback((step) => screens[step], [screens])
-  const currentScreen = useMemo(() => getScreen(step), [getScreen, step])
+  const [{ data: accountData }] = useAccount();
+  const { address } = accountData || {};
+  const { direction, next, prev, setStep, step } = useSteps(screens.length);
+  const getScreen = useCallback((step) => screens[step], [screens]);
+  const currentScreen = useMemo(() => getScreen(step), [getScreen, step]);
 
-  const handleClose = useCallback(() => onClose(), [onClose])
+  const handleClose = useCallback(() => onClose(), [onClose]);
 
   useEffect(() => {
-    setStep(0)
-  }, [account])
+    setStep(0);
+  }, [address]);
 
   const multiModalState = useMemo(
     () => ({
@@ -61,21 +60,21 @@ function MultiModalProvider({
       step,
     }),
     [currentScreen, direction, getScreen, next, prev, step, handleClose]
-  )
+  );
 
   return (
     <MultiModalContext.Provider value={multiModalState}>
       {children}
     </MultiModalContext.Provider>
-  )
+  );
 }
 
 MultiModalProvider.defaultProps = {
   onClose: noop,
-}
+};
 
 function useMultiModal() {
-  return useContext(MultiModalContext)
+  return useContext(MultiModalContext);
 }
 
-export { MultiModalProvider, useMultiModal }
+export { MultiModalProvider, useMultiModal };

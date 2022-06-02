@@ -1,43 +1,46 @@
-import React, { useEffect, useMemo } from 'react'
-import { keyframes } from 'styled-components'
-
-import { GU, useTheme } from '@blossom-labs/rosette-ui'
+import React, { useEffect, useMemo } from "react";
+import { useSigner } from "wagmi";
 
 import { LoadingRing } from "../LoadingRing";
-import { useMultiModal } from '@components/MultiModal/MultiModalProvider'
-import MultiModalScreens from '@components/MultiModal/MultiModalScreens'
-import Stepper from '@components/Stepper/Stepper'
+import { useMultiModal } from "../MultiModal/MultiModalProvider";
+import MultiModalScreens from "../MultiModal/MultiModalScreens";
+import Stepper from "../Stepper/Stepper";
 
-import { useActivity } from '@providers/ActivityProvider'
-import { useWallet } from '@providers/Wallet'
+// import { useActivity } from '@providers/ActivityProvider'
 
-import { setAccountSetting } from '@/local-settings'
-import { TransactionType } from '@/hooks/constants'
+type TransactionType = {
+  data: any;
+  from: string | undefined;
+  to: string | undefined;
+  description?: string;
+  type?: string;
+  gasLimit?: number;
+};
 
-const INDEX_NUMBER = ['First', 'Second', 'Third', 'Fourth', 'Fifth']
+const INDEX_NUMBER = ["First", "Second", "Third", "Fourth", "Fifth"];
 
 type ModalFlowBaseType = {
-  loading: boolean
-  screens: Array<any>
-  transactions: Array<any>
-  onComplete: () => void
-  onCompleteActions: React.ReactNode
-  frontLoad?: boolean
-  transactionTitle?: string
-}
+  loading: boolean;
+  screens: Array<any>;
+  transactions: Array<any>;
+  onComplete: () => void;
+  onCompleteActions: any;
+  frontLoad?: boolean;
+  transactionTitle?: string;
+};
 
 type HandleSignParamsType = {
-  setSuccess: () => void
-  setWorking: () => void
-  setError: () => void
-  setHash: (hash: any) => void
-}
+  setSuccess: () => void;
+  setWorking: () => void;
+  setError: () => void;
+  setHash: (hash: any) => void;
+};
 
 type TransactionStepsType = {
-  title: string
-  handleSign: (params: HandleSignParamsType) => Promise<void>
-}
-type ArrayTransactionStepsType = Array<TransactionStepsType> | null
+  title: string;
+  handleSign: (params: HandleSignParamsType) => Promise<void>;
+};
+type ArrayTransactionStepsType = Array<TransactionStepsType> | null;
 
 function ModalFlowBase({
   loading,
@@ -46,11 +49,10 @@ function ModalFlowBase({
   onComplete,
   onCompleteActions,
   frontLoad = true,
-  transactionTitle = 'Create transaction',
+  transactionTitle = "Create transaction",
 }: ModalFlowBaseType) {
-  const { addActivity } = useActivity()
-  const { account, chainId, ethers } = useWallet()
-  const signer = useMemo(() => ethers.getSigner(), [ethers])
+  // const { addActivity } = useActivity();
+  const [{ data: signer }] = useSigner();
 
   const transactionSteps: ArrayTransactionStepsType = useMemo(
     () =>
@@ -59,8 +61,8 @@ function ModalFlowBase({
             const title = transaction.description
               ? transaction.description
               : transactions.length === 1
-              ? 'Sign transaction'
-              : `${INDEX_NUMBER[index]} transaction`
+              ? "Sign transaction"
+              : `${INDEX_NUMBER[index]} transaction`;
 
             return {
               // TODO: Add titles from description
@@ -77,48 +79,51 @@ function ModalFlowBase({
                     to: transaction.to,
                     data: transaction.data,
                     gasLimit: transaction.gasLimit,
-                  }
-                  const tx = await signer.sendTransaction(trx)
+                  };
 
-                  await addActivity(
-                    tx,
-                    transaction.type,
-                    transaction.description
-                  )
-                  setHash(tx.hash)
+                  // TODO: use useTransaction hook
+                  const tx = await signer!.sendTransaction(trx);
 
-                  setWorking()
+                  // await addActivity(
+                  //   tx,
+                  //   transaction.type,
+                  //   transaction.description
+                  // );
+                  setHash(tx.hash);
+
+                  setWorking();
 
                   // We need to wait for pre-transactions to mine before asking for the next signature
                   // TODO: Provide a better user experience than waiting on all transactions
-                  await tx.wait()
+                  await tx.wait();
 
-                  setAccountSetting('lastTxHash', account, chainId, tx.hash)
+                  // setAccountSetting("lastTxHash", account, chainId, tx.hash);
 
-                  setSuccess()
+                  setSuccess();
                 } catch (err) {
-                  console.error(err)
-                  setError()
+                  console.error(err);
+                  setError();
                 }
               },
-            }
+            };
           })
         : null,
-    [addActivity, transactions, signer]
-  )
+    [transactions, signer] // addActivity
+  );
+
   const extendedScreens = useMemo(() => {
-    const allScreens = []
+    const allScreens = [];
 
     // Add loading screen as first item if enabled
     if (frontLoad) {
       allScreens.push({
         content: <LoadingScreen loading={loading} />,
-      })
+      });
     }
 
     // Spread in our flow screens
     if (screens) {
-      allScreens.push(...screens)
+      allScreens.push(...screens);
     }
 
     // Apply transaction singing at the end
@@ -133,10 +138,10 @@ function ModalFlowBase({
             onCompleteActions={onCompleteActions}
           />
         ),
-      })
+      });
     }
 
-    return allScreens
+    return allScreens;
   }, [
     frontLoad,
     loading,
@@ -146,73 +151,43 @@ function ModalFlowBase({
     transactionTitle,
     onComplete,
     onCompleteActions,
-  ])
+  ]);
 
-  return <MultiModalScreens screens={extendedScreens} />
+  return <MultiModalScreens screens={extendedScreens} />;
 }
 
 function LoadingScreen({ loading }: { loading: boolean }) {
-  const theme = useTheme()
-  const { next } = useMultiModal()
+  const { next } = useMultiModal();
 
   useEffect(() => {
-    let timeout: number
+    let timeout: number;
 
     if (!loading) {
       // Provide a minimum appearance duration to avoid visual confusion on very fast requests
       timeout = window.setTimeout(() => {
-        next()
-      }, 100)
+        next();
+      }, 100);
     }
 
     return () => {
-      clearTimeout(timeout)
-    }
-  }, [loading, next])
+      clearTimeout(timeout);
+    };
+  }, [loading, next]);
 
-  return (
-    <div
-      css={`
-        display: flex;
-        justify-content: center;
-        padding-top: ${16 * GU}px;
-        padding-bottom: ${16 * GU}px;
-      `}
-    >
-      <div
-        css={`
-          animation: ${keyframes`
-            from {
-              transform: scale(1.3);
-            }
-
-            to {
-              transform: scale(1);
-            }
-          `} 0.3s ease;
-        `}
-      >
-        <LoadingRing
-          css={`
-            color: ${theme.accent};
-          `}
-        />
-      </div>
-    </div>
-  )
+  return <LoadingRing />;
 }
 
 function modalWidthFromCount(count: number) {
   if (count >= 3) {
-    return 865
+    return 865;
   }
 
   if (count === 2) {
-    return 700
+    return 700;
   }
 
   // Modal will fallback to the default
-  return null
+  return null;
 }
 
-export default ModalFlowBase
+export default ModalFlowBase;

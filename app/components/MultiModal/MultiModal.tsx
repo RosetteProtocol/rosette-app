@@ -1,31 +1,31 @@
-import React, { useCallback, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
-import { noop } from '@blossom-labs/rosette-ui'
-import { Inside } from 'use-inside'
+import React, { useCallback, useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { noop } from "@blossom-labs/rosette-ui";
+import { Inside } from "use-inside";
 
 type MultiModalType = {
-  visible: boolean
-  onClose: () => void
-  onClosed: () => void
-  children: React.ReactNode
-}
+  visible: boolean;
+  onClose: () => void;
+  onClosed: () => void;
+  children: React.ReactNode;
+};
 
 function MultiModal({ visible, onClose, onClosed, children }: MultiModalType) {
-  const [render, setRender] = useState(visible)
+  const [render, setRender] = useState(visible);
 
   useEffect(() => {
     if (visible) {
-      setRender(true)
+      setRender(true);
     }
-  }, [render, visible])
+  }, [render, visible]);
 
   const handleOnClosed = useCallback(() => {
     // Ensure react-spring has properly cleaned up state prior to unmount
     setTimeout(() => {
-      onClosed()
-      setRender(false)
-    })
-  }, [setRender, onClosed])
+      onClosed();
+      setRender(false);
+    });
+  }, [setRender, onClosed]);
 
   return (
     <>
@@ -35,7 +35,7 @@ function MultiModal({ visible, onClose, onClosed, children }: MultiModalType) {
         </Inside>
       )}
     </>
-  )
+  );
 }
 
 MultiModal.propTypes = {
@@ -43,11 +43,11 @@ MultiModal.propTypes = {
   onClosed: PropTypes.func,
   visible: PropTypes.bool,
   children: PropTypes.node,
-}
+};
 
 MultiModal.defaultProps = {
   onClose: noop,
   onClosed: noop,
-}
+};
 
-export default MultiModal
+export default MultiModal;
