@@ -16,18 +16,18 @@ function useStepperLayout() {
   useLayoutEffect(() => {
     if (!innerBounds) {
       // @ts-expect-error
-      setInnerBounds(innerBoundsRef.current.offsetWidth);
+      setInnerBounds(innerBoundsRef?.current?.offsetWidth);
     }
   }, [innerBounds]);
 
   useEffect(() => {
     const outerMeasured = outerBounds.width > 0;
 
-    if (outerMeasured && outerBounds.width < innerBounds!) {
+    if (outerMeasured && innerBounds && outerBounds.width < innerBounds) {
       setLayout("collapsed");
     }
 
-    if (outerMeasured && outerBounds.width >= innerBounds!) {
+    if (outerMeasured && innerBounds && outerBounds.width >= innerBounds) {
       setLayout("expanded");
     }
   }, [outerBounds, innerBounds]);

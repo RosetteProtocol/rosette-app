@@ -8,15 +8,6 @@ import Stepper from "../Stepper/Stepper";
 
 // import { useActivity } from '@providers/ActivityProvider'
 
-type TransactionType = {
-  data: any;
-  from: string | undefined;
-  to: string | undefined;
-  description?: string;
-  type?: string;
-  gasLimit?: number;
-};
-
 const INDEX_NUMBER = ["First", "Second", "Third", "Fourth", "Fifth"];
 
 type ModalFlowBaseType = {
@@ -40,7 +31,17 @@ type TransactionStepsType = {
   title: string;
   handleSign: (params: HandleSignParamsType) => Promise<void>;
 };
+
 type ArrayTransactionStepsType = Array<TransactionStepsType> | null;
+
+type TransactionType = {
+  data: any;
+  from: string | undefined;
+  to: string | undefined;
+  description?: string;
+  type?: string;
+  gasLimit?: number;
+};
 
 function ModalFlowBase({
   loading,
@@ -96,8 +97,6 @@ function ModalFlowBase({
                   // We need to wait for pre-transactions to mine before asking for the next signature
                   // TODO: Provide a better user experience than waiting on all transactions
                   await tx.wait();
-
-                  // setAccountSetting("lastTxHash", account, chainId, tx.hash);
 
                   setSuccess();
                 } catch (err) {

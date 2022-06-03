@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import { Transition, animated } from "@react-spring/web";
@@ -7,13 +8,13 @@ import {
   useTheme,
   GU,
 } from "@blossom-labs/rosette-ui";
+import { useNetwork } from "wagmi";
 import { IndividualStepTypes } from "../stepper-statuses";
 import Divider from "./Divider";
 import StatusVisual from "./StatusVisual";
-import { getNetwork } from "@/networks";
 import { useDisableAnimation } from "~/hooks/useDisableAnimation";
 import { springs } from "~/springs";
-import { useWallet } from "@providers/Wallet";
+import styled from "styled-components";
 
 const AnimatedSpan = animated.span;
 
@@ -28,8 +29,8 @@ function Step({
   ...props
 }: any) {
   const theme = useTheme();
-  const { chainId } = useWallet();
-  const network = getNetwork(chainId);
+  const [{ data: networkData }] = useNetwork();
+  const { chain } = networkData || {};
   const [animationDisabled, enableAnimation] = useDisableAnimation();
 
   const { visualColor, descColor } = useMemo(() => {
@@ -66,47 +67,18 @@ function Step({
 
   return (
     <>
-      <div
-        css={`
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-
-          width: ${31 * GU}px;
-        `}
-        {...props}
-      >
-        <StatusVisual
+      <Container {...props}>
+        <StatusVisualStyled
           status={status}
           color={visualColor}
           number={number}
-          css={`
-            margin-bottom: ${3 * GU}px;
-          `}
           withoutFirstStep={withoutFirstStep}
         />
-        <h2
-          css={`
-            ${textStyle("title4")}
-            height:${6 * GU}px;
-            line-height: 1.2;
-            text-align: center;
-            margin-bottom: ${1 * GU}px;
-          `}
-        >
+        <StyledH2>
           {status === IndividualStepTypes.Error ? "Transaction failed" : title}
-        </h2>
+        </StyledH2>
 
-        <p
-          css={`
-            width: 100%;
-            position: relative;
-            text-align: center;
-            color: ${theme.contentSecondary};
-            line-height: 1.2;
-          `}
-        >
+        <StyledP>
           <Transition
             config={springs.gentle}
             items={[{ currentDesc: desc, currentColor: descColor }]}
@@ -130,32 +102,19 @@ function Step({
           >
             {(item) =>
               item &&
-              ((transitionProps) => (
-                <AnimatedSpan
-                  css={`
-                    display: flex;
-                    justify-content: center;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                    color: ${item.currentColor};
-                  `}
+              ((transitionProps: any) => (
+                <AnimatedSpanStyled
+                  color={item.currentColor}
                   style={transitionProps}
                 >
                   {item.currentDesc}
-                </AnimatedSpan>
+                </AnimatedSpanStyled>
               ))
             }
           </Transition>
-        </p>
+        </StyledP>
 
-        <div
-          css={`
-            margin-top: ${1.5 * GU}px;
-            position: relative;
-            width: 100%;
-          `}
-        >
+        <TransitionContainer>
           <Transition
             config={springs.gentle}
             items={transactionHash}
@@ -176,39 +135,22 @@ function Step({
             }}
             native
           >
-            {(currentHash) => (transitionProps) =>
+            {(currentHash) => (transitionProps: any) =>
               currentHash ? (
-                <AnimatedSpan
-                  style={transitionProps}
-                  css={`
-                    display: flex;
-                    justify-content: center;
-                    width: 100%;
-                  `}
-                >
+                <TransitionAnimatedSpanStyled style={transitionProps}>
                   <TransactionBadge
                     transaction={currentHash}
-                    networkType={network.type}
-                    explorerProvider={network.explorer}
+                    networkType={chain?.name}
+                    // TODO: update TransactionBadge component to use wagmi format
+                    // explorerProvider={chain?.blockExplorers}
                   />
-                </AnimatedSpan>
+                </TransitionAnimatedSpanStyled>
               ) : null}
           </Transition>
-        </div>
+        </TransitionContainer>
 
-        {showDivider && (
-          <Divider
-            color={visualColor}
-            css={`
-              position: absolute;
-              top: ${6 * GU}px;
-              right: 0;
-
-              transform: translateX(50%);
-            `}
-          />
-        )}
-      </div>
+        {showDivider && <DividerStyled color={visualColor} />}
+      </Container>
     </>
   );
 }
@@ -229,3 +171,61 @@ Step.propTypes = {
 };
 
 export default Step;
+
+const Container = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: ${31 * GU}px;
+`;
+
+const StatusVisualStyled = styled(StatusVisual)`
+  margin-bottom: ${3 * GU}px;
+`;
+
+const StyledH2 = styled.h2`
+  ${textStyle("title4")}
+  height:${6 * GU}px;
+  line-height: 1.2;
+  text-align: center;
+  margin-bottom: ${1 * GU}px;
+`;
+
+const StyledP = styled.p`
+  width: 100%;
+  position: relative;
+  text-align: center;
+  color: ${({ theme }) => theme.contentSecondary};
+  line-height: 1.2;
+`;
+
+const AnimatedSpanStyled = styled(AnimatedSpan)<{ color: string }>`
+  display: flex;
+  justify-content: center;
+  left: 0;
+  top: 0;
+  width: 100%;
+  color: ${({ color }) => color};
+`;
+
+const TransitionContainer = styled.div`
+  margin-top: ${1.5 * GU}px;
+  position: relative;
+  width: 100%;
+`;
+
+const TransitionAnimatedSpanStyled = styled(AnimatedSpan)`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+`;
+
+const DividerStyled = styled(Divider)`
+  position: absolute;
+  top: ${6 * GU}px;
+  right: 0;
+
+  transform: translateX(50%);
+`;

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React from "react";
 import styled from "styled-components";
 import { IndividualStepTypes } from "../stepper-statuses";
@@ -12,13 +13,7 @@ const illustrations = {
   [IndividualStepTypes.Error]: signRequestFailIllustration,
 };
 
-function Illustration({
-  status,
-  index,
-}: {
-  status: IndividualStepTypes;
-  index: number;
-}) {
+function Illustration({ status, index }: { status: string; index: number }) {
   return (
     <>
       {status === IndividualStepTypes.Prompting ? (

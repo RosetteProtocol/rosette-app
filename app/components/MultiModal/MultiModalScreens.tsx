@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
@@ -94,34 +95,17 @@ function MultiModalFrame({ visible, onClosed }: MultiModalFrameType) {
           >
             {({ width }) => {
               return (
-                <Modal
+                <StyledModal
                   padding={0}
                   width={width}
                   onClose={handleModalClose}
                   onClosed={onClosed}
                   visible={visible}
                   closeButton={false}
-                  css={`
-                    z-index: 2;
-
-                    /* TODO: Add radius option to Modal in @rosette/ui */
-                    & > div > div > div {
-                      border-radius: ${2 * RADIUS}px !important;
-                    }
-                  `}
                 >
                   <div style={{ position: "relative" }}>
                     {!disableClose && (
-                      <ButtonIcon
-                        label=""
-                        css={`
-                          position: absolute;
-                          top: ${2.5 * GU}px;
-                          right: ${2.5 * GU}px;
-                          z-index: 2;
-                        `}
-                        onClick={handleModalClose}
-                      >
+                      <StyledButtonIcon label="" onClick={handleModalClose}>
                         <IconCross
                           color={
                             graphicHeader
@@ -129,12 +113,12 @@ function MultiModalFrame({ visible, onClosed }: MultiModalFrameType) {
                               : theme.surfaceContentSecondary
                           }
                         />
-                      </ButtonIcon>
+                      </StyledButtonIcon>
                     )}
 
                     <MultiModalContent viewportWidth={viewportWidth} />
                   </div>
-                </Modal>
+                </StyledModal>
               );
             }}
           </Spring>
@@ -150,7 +134,6 @@ const MultiModalContent = React.memo(function ModalContent({
 }: {
   viewportWidth: number;
 }) {
-  const theme = useTheme();
   const { step, direction, getScreen } = useMultiModal();
   const [applyStaticHeight, setApplyStaticHeight] = useState(false);
   const [height, setHeight] = useState(0);
@@ -204,7 +187,7 @@ const MultiModalContent = React.memo(function ModalContent({
         </>
       );
     },
-    [smallMode, theme, viewportWidth]
+    [smallMode, viewportWidth]
   );
 
   return (
@@ -281,6 +264,21 @@ const MultiModalContent = React.memo(function ModalContent({
 /* eslint-enable react/prop-types */
 
 export default MultiModalScreens;
+
+/* TODO: Add radius option to Modal in @rosette/ui */
+const StyledModal = styled(Modal)`
+  z-index: 2;
+  & > div > div > div {
+    border-radius: ${2 * RADIUS}px !important;
+  }
+`;
+
+const StyledButtonIcon = styled(ButtonIcon)`
+  position: absolute;
+  top: ${2.5 * GU}px;
+  right: ${2.5 * GU}px;
+  z-index: 2;
+`;
 
 const HeaderContainer = styled.div<{
   standardPadding: number;

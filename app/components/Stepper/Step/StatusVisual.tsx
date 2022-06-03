@@ -1,14 +1,8 @@
 import React, { useMemo } from "react";
 import PropTypes from "prop-types";
 import { Transition, animated } from "@react-spring/web";
-import { css, keyframes } from "styled-components";
-import {
-  GU,
-  textStyle,
-  IconCross,
-  IconCheck,
-  useTheme,
-} from "@blossom-labs/rosette-ui";
+import styled, { css, keyframes } from "styled-components";
+import { GU, textStyle, IconCross, IconCheck } from "@blossom-labs/rosette-ui";
 import { springs } from "~/springs";
 import { useDisableAnimation } from "~/hooks/useDisableAnimation";
 import { IndividualStepTypes } from "../stepper-statuses";
@@ -53,7 +47,6 @@ function StatusVisual({
   withoutFirstStep,
   ...props
 }: any) {
-  const theme = useTheme();
   const [animationDisabled, enableAnimation] = useDisableAnimation();
 
   const [statusIcon, illustration] = useMemo(() => {
@@ -62,6 +55,7 @@ function StatusVisual({
 
     return [
       Icon && <Icon />,
+      // eslint-disable-next-line react/jsx-key
       <StepIllustration
         number={number}
         status={status}
@@ -81,25 +75,16 @@ function StatusVisual({
       {...props}
     >
       <div
-        css={`
-          display: flex;
-          flex: 1;
-          align-items: center;
-          justify-content: center;
-        `}
+        style={{
+          display: "flex",
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <div
-          css={`
-            position: relative;
-            z-index: 1;
-          `}
-        >
+        <div style={{ position: "relative", zIndex: 1 }}>
           <div
-            css={`
-              position: absolute;
-              bottom: ${0.5 * GU}px;
-              right: 0;
-            `}
+            style={{ position: "absolute", bottom: `${0.5 * GU}px`, right: 0 }}
           >
             <Transition
               config={(_, state) =>
@@ -124,23 +109,9 @@ function StatusVisual({
               {(currentStatusIcon) =>
                 currentStatusIcon &&
                 ((animProps: any) => (
-                  <AnimatedDiv
-                    css={`
-                      display: flex;
-                      justify-content: center;
-                      align-items: center;
-                      border-radius: 100%;
-                      padding: ${0.25 * GU}px;
-                      background-color: ${theme.surface};
-                      color: ${color};
-                      border: 1px solid currentColor;
-                      bottom: 0;
-                      right: 0;
-                    `}
-                    style={animProps}
-                  >
+                  <StyledAnimatedDiv color={color} style={animProps}>
                     {currentStatusIcon}
-                  </AnimatedDiv>
+                  </StyledAnimatedDiv>
                 ))
               }
             </Transition>
@@ -148,24 +119,7 @@ function StatusVisual({
 
           {illustration}
         </div>
-        <div
-          css={`
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-
-            border-radius: 100%;
-            border: 2px solid
-              ${status === IndividualStepTypes.Waiting ? "transparent" : color};
-            ${status === IndividualStepTypes.Prompting ? pulseAnimation : ""}
-            ${status === IndividualStepTypes.Working ? spinAnimation : ""}
-            ${status === IndividualStepTypes.Prompting
-              ? `background-color: ${theme.contentSecondary};`
-              : ""}
-          `}
-        />
+        <StyledDiv color={color} status={status} />
       </div>
     </div>
   );
@@ -185,7 +139,6 @@ StatusVisual.propTypes = {
 
 /* eslint-disable react/prop-types */
 function StepIllustration({ number, status, withoutFirstStep }: any) {
-  const theme = useTheme();
   const renderIllustration =
     status === IndividualStepTypes.Working ||
     status === IndividualStepTypes.Error ||
@@ -193,38 +146,68 @@ function StepIllustration({ number, status, withoutFirstStep }: any) {
     withoutFirstStep;
 
   return (
-    <div
-      css={`
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: ${12 * GU}px;
-        height: ${12 * GU}px;
-      `}
-    >
+    <Container>
       {renderIllustration ? (
         <Illustration status={status} index={number} />
       ) : (
-        <div
-          css={`
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: ${theme.contentSecondary};
-            height: 100%;
-            width: 100%;
-            border-radius: 100%;
-            color: ${theme.positiveContent};
-            ${textStyle("title1")};
-            font-weight: 600;
-          `}
-        >
-          {number}
-        </div>
+        <NumberContainer>{number}</NumberContainer>
       )}
-    </div>
+    </Container>
   );
 }
 /* eslint-enable react/prop-types */
 
 export default StatusVisual;
+
+const StyledAnimatedDiv = styled(AnimatedDiv)<{ color: string }>`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 100%;
+  padding: ${0.25 * GU}px;
+  background-color: ${({ theme }) => theme.surface};
+  color: ${({ color }) => color};
+  border: 1px solid currentColor;
+  bottom: 0;
+  right: 0;
+`;
+
+const StyledDiv = styled.div<{ status: string; color: string }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  border-radius: 100%;
+  ${({ theme, status, color }) => `border: 2px solid
+    ${status === IndividualStepTypes.Waiting ? "transparent" : color};
+    ${status === IndividualStepTypes.Prompting ? pulseAnimation : ""}
+    ${status === IndividualStepTypes.Working ? spinAnimation : ""}
+    ${
+      status === IndividualStepTypes.Prompting
+        ? `background-color: ${theme.contentSecondary};`
+        : ""
+    }`}
+`;
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: ${12 * GU}px;
+  height: ${12 * GU}px;
+`;
+
+const NumberContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: ${({ theme }) => theme.contentSecondary};
+  height: 100%;
+  width: 100%;
+  border-radius: 100%;
+  color: ${({ theme }) => theme.positiveContent};
+  ${textStyle("title1")};
+  font-weight: 600;
+`;

@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import PropTypes from "prop-types";
 import { Transition, animated } from "@react-spring/web";
@@ -146,7 +147,7 @@ function Stepper({ steps, onComplete, onCompleteActions }: any) {
     if (steps.length > 0) {
       handleSign();
     }
-  }, [stepperStage]);
+  }, [handleSign, stepperStage, steps.length]);
 
   const completed =
     stepperStage === stepsCount &&
@@ -239,7 +240,7 @@ function Stepper({ steps, onComplete, onCompleteActions }: any) {
               margin-top: ${5 * GU}px;
             `}
           >
-            You might need to wait a few seconds for the UI to update
+            The UI may take a few seconds to update
           </Info>
           {onCompleteActions && (
             <div style={{ marginTop: `${3 * GU}px` }}>{onCompleteActions}</div>
