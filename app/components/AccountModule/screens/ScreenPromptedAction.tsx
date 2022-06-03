@@ -1,7 +1,7 @@
 import { GU, textStyle } from "@blossom-labs/rosette-ui/";
 import styled from "styled-components";
 
-import { LoadingRing } from "../LoadingRing";
+import { LoadingRing } from "../../LoadingRing";
 import { useAccounModuleStore } from "../use-account-module-store";
 
 export const ScreenPromptedAction = () => {

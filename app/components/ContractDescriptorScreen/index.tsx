@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { utils } from "ethers";
 import { Button, GU, useViewport } from "@blossom-labs/rosette-ui";
@@ -22,6 +22,8 @@ import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
 import type { IPFSFnDescription } from "~/routes/fn-descriptions-upload";
 import debounce from "lodash.debounce";
+import MultiModal from "../MultiModal/MultiModal";
+import SubmitEntriesScreens from "../ModalFlows/SubmitEntriesScreens";
 
 const FN_DESCRIPTOR_HEIGHT = "527px";
 
@@ -54,6 +56,8 @@ export const ContractDescriptorScreen = ({
   contractData: { abi, bytecode },
   currentFnEntries,
 }: ContractDescriptorScreenProps) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMode, setModalMode] = useState(null);
   const { below } = useViewport();
   const [{ data: accountData }] = useAccount();
   const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
@@ -65,27 +69,18 @@ export const ContractDescriptorScreen = ({
   const actionFetcher = useFetcher();
   const { upsertEntries } = useRosetteActions();
 
-  const handleSubmit = useCallback(
-    (event) => {
-      event.preventDefault();
+  const handleHideModal = useCallback(() => {
+    setModalVisible(false);
+  }, []);
 
-      const fnDescriptionsJSON = buildUploadDataJSON(
-        fnDescriptorEntries,
-        userFnDescriptions
-      );
+  const handleShowModal = useCallback((mode) => {
+    setModalVisible(true);
+    setModalMode(mode);
+  }, []);
 
-      actionFetcher.submit(
-        {
-          fnDescriptions: JSON.stringify(fnDescriptionsJSON),
-        },
-        {
-          method: "post",
-          action: "/fn-descriptions-upload",
-        }
-      );
-    },
-    [actionFetcher, fnDescriptorEntries, userFnDescriptions]
-  );
+  const handleSubmit = useCallback(() => {
+    handleShowModal("submit");
+  }, [handleShowModal]);
 
   useEffect(() => {
     const submitEntries = async () => {
@@ -176,6 +171,13 @@ export const ContractDescriptorScreen = ({
             disabled={!accountData?.address || fnDescriptionsCounter === 0}
           />
         </SubmitContainer>
+        <MultiModal
+          visible={modalVisible}
+          onClose={handleHideModal}
+          onClosed={() => setModalMode(null)}
+        >
+          {modalMode === "Submit" && <SubmitEntriesScreens />}
+        </MultiModal>
       </Layout>
     </form>
   );
