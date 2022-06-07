@@ -12,7 +12,13 @@ export const SmoothDisplayContainer = ({
   });
 
   return (
-    <a.div style={{ ...smoothDisplayStyles, width: "100%", height: "100%" }}>
+    <a.div
+      style={{
+        ...smoothDisplayStyles,
+        width: "100%",
+        height: "100%",
+      }}
+    >
       {children}
     </a.div>
   );
