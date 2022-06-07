@@ -48,9 +48,10 @@ const Container = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+  overflow: auto;
+  background-size: cover;
   background-image: url(${({ compactMode, tabletMode }) =>
     compactMode ? mobile : tabletMode ? tablet : background});
-  background-size: cover;
 `;
 
 const ChildrenWrapper = styled.div`
