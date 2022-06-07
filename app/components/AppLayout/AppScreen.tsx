@@ -32,7 +32,7 @@ export const AppScreen = ({
         <AnimatedContainer
           style={{ opacity: progress, transform: screenTransform }}
         >
-          <InnerContainer>{children}</InnerContainer>
+          {children}
         </AnimatedContainer>
       )
   );
@@ -44,10 +44,4 @@ const AnimatedContainer = styled(a.div)`
   flex-grow: 1;
   width: 100%;
   margin: 0 auto;
-`;
-
-const InnerContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
 `;
