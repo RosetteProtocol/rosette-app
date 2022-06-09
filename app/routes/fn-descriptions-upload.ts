@@ -4,29 +4,30 @@ import { ipfs } from "~/utils/server/ipfs.server";
 
 type IPFSResponseData = Record<string, string>;
 
-export type IPFSFnDescription = {
-  description: string;
-  minimalName: string;
-  sigHash: string;
+export type IPFSData = {
+  bytecodeHash: string;
+  functions: {
+    description: string;
+    fullName: string;
+    sigHash: string;
+  }[];
 };
 
-const FN_DESCRIPTIONS_KEY = "fnDescriptions";
-
 export const action: ActionFunction = async ({ request }) => {
-  const data = await request.formData();
+  const uploadData = await request.formData();
 
-  if (!data.has(FN_DESCRIPTIONS_KEY)) {
+  if (!uploadData.has("functions") || !uploadData.has("bytecodeHash")) {
     return new Response("Function descriptions not provided", { status: 400 });
   }
 
-  const fnDescriptionsString = data.get(FN_DESCRIPTIONS_KEY)?.toString() || "";
-  const fnDescriptions = JSON.parse(
-    fnDescriptionsString
-  ) as IPFSFnDescription[];
+  const bytecodeHash = uploadData.get("bytecodeHash");
+  const fnsString = uploadData.get("functions")!.toString();
+  const fnDescriptionsData = JSON.parse(fnsString) as IPFSData["functions"];
 
-  const uploadRequests = fnDescriptions.map(({ description, minimalName }) => {
+  const uploadRequests = fnDescriptionsData.map(({ description, fullName }) => {
     const descriptionJson = JSON.stringify({
-      abi: minimalName,
+      bytecodeHash,
+      abi: fullName,
       notice: description,
     });
 
@@ -37,7 +38,7 @@ export const action: ActionFunction = async ({ request }) => {
     const addResults = await Promise.all(uploadRequests);
 
     const responseData = addResults.reduce((data, addResult, index) => {
-      const fnDescription = fnDescriptions[index];
+      const fnDescription = fnDescriptionsData[index];
       data[fnDescription.sigHash] = addResult.cid.toString();
       return data;
     }, {} as IPFSResponseData);
@@ -46,7 +47,7 @@ export const action: ActionFunction = async ({ request }) => {
   } catch (err) {
     console.error(err);
     throw new Response(
-      "An error occured when uploading function descriptions",
+      "An error occured when uploading the function descriptions",
       { status: 500 }
     );
   }

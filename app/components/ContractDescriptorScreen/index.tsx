@@ -1,9 +1,11 @@
-import { useCallback, useEffect } from "react";
-import { useAccount } from "wagmi";
-import { utils } from "ethers";
-import { Button, GU, useViewport } from "@blossom-labs/rosette-ui";
+import { Button, GU, LoadingRing, useViewport } from "@blossom-labs/rosette-ui";
 import { useFetcher } from "@remix-run/react";
+import type { Fetcher } from "@remix-run/react/transition";
+import { utils } from "ethers";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
+import { useAccount } from "wagmi";
+
 import scrollIcon from "./assets/scroll-icon.svg";
 import handIcon from "./assets/hand-icon.svg";
 import { Pagination } from "./Pagination";
@@ -20,10 +22,10 @@ import type { ContractData, FnEntry } from "~/types";
 import useRosetteActions from "./useRosetteActions";
 import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
-import type { IPFSFnDescription } from "~/routes/fn-descriptions-upload";
+import type { IPFSData } from "~/routes/fn-descriptions-upload";
 import debounce from "lodash.debounce";
 
-const FN_DESCRIPTOR_HEIGHT = "527px";
+const FN_DESCRIPTOR_DEFAULT_HEIGHT = "527px";
 
 type ContractDescriptorScreenProps = {
   contractAddress: string;
@@ -31,86 +33,105 @@ type ContractDescriptorScreenProps = {
   currentFnEntries: FnEntry[];
 };
 
-const buildUploadDataJSON = (
+const buildIPFSUploadData = (
   fnDescriptorEntries: Function[],
   userFnDescriptions: Record<string, UserFnDescription>
-): IPFSFnDescription[] => {
-  return Object.values(userFnDescriptions).map(
-    ({ description, sigHash }): IPFSFnDescription => {
-      const minimalName = fnDescriptorEntries.find(
-        (e) => e.sigHash === sigHash
-      )?.minimalName;
-      return {
-        description,
-        minimalName: minimalName ?? "",
-        sigHash,
-      };
+): IPFSData["functions"] => {
+  return Object.keys(userFnDescriptions).map((sigHash) => {
+    const fullName = fnDescriptorEntries.find(
+      (e) => e.sigHash === sigHash
+    )?.fullName;
+
+    if (!fullName) {
+      throw new Error(
+        `Couldn't upload to IPFS: function ${sigHash} not found.`
+      );
     }
-  );
+
+    return {
+      description: userFnDescriptions[sigHash].description,
+      fullName,
+      sigHash,
+    };
+  });
 };
+
+const uploadFetcherReturnedData = (fetcher: Fetcher): boolean =>
+  fetcher.state === "loading" &&
+  fetcher.type === "actionReload" &&
+  fetcher.data;
 
 export const ContractDescriptorScreen = ({
   contractAddress,
   contractData: { abi, bytecode },
   currentFnEntries,
 }: ContractDescriptorScreenProps) => {
+  const [callingContract, setCallingContract] = useState(false);
   const { below } = useViewport();
   const [{ data: accountData }] = useAccount();
   const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
     useContractDescriptorStore();
-  const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
-  const compactMode = below("large");
-
-  // Submit entries handler
   const actionFetcher = useFetcher();
   const { upsertEntries } = useRosetteActions();
+  const bytecodeHash = utils.id(bytecode);
+  const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
+  const compactMode = below("large");
+  const submittingEntries =
+    actionFetcher.state === "submitting" ||
+    actionFetcher.state === "loading" ||
+    callingContract;
+  const disableSubmit =
+    !accountData?.address || fnDescriptionsCounter === 0 || submittingEntries;
 
   const handleSubmit = useCallback(
     (event) => {
       event.preventDefault();
 
-      const fnDescriptionsJSON = buildUploadDataJSON(
+      const fnsData = buildIPFSUploadData(
         fnDescriptorEntries,
         userFnDescriptions
       );
 
       actionFetcher.submit(
-        {
-          fnDescriptions: JSON.stringify(fnDescriptionsJSON),
-        },
+        { bytecodeHash, functions: JSON.stringify(fnsData) },
         {
           method: "post",
           action: "/fn-descriptions-upload",
         }
       );
     },
-    [actionFetcher, fnDescriptorEntries, userFnDescriptions]
+    [actionFetcher, bytecodeHash, fnDescriptorEntries, userFnDescriptions]
   );
 
   useEffect(() => {
     const submitEntries = async () => {
       try {
-        const sigs = Object.values(userFnDescriptions).map(
-          ({ sigHash }) => sigHash
-        );
-        const scopes = new Array(sigs.length).fill(utils.id(bytecode));
+        const sigs = Object.keys(userFnDescriptions).map((sigHash) => sigHash);
+        const scopes = new Array(sigs.length).fill(bytecodeHash);
         const cids: string[] = Object.values(actionFetcher.data);
 
+        setCallingContract(true);
         await upsertEntries(scopes, sigs, cids);
         window.alert("Entries submitted!"); // TODO: Use tx feedback implementation
 
-        // Should we redirect to the enties page?
+        // Should we redirect to the entries page?
       } catch (err) {
         console.error(`Error submitting entries: ${err}`);
+      } finally {
+        setCallingContract(false);
       }
     };
 
-    if (actionFetcher.data) {
+    /**
+     * It keeps this effect from running more than once after action
+     * fetcher returns data.
+     */
+    if (uploadFetcherReturnedData(actionFetcher)) {
       submitEntries();
     }
   }, [
-    actionFetcher.data,
-    bytecode,
+    actionFetcher,
+    bytecodeHash,
     contractAddress,
     upsertEntries,
     userFnDescriptions,
@@ -169,11 +190,25 @@ export const ContractDescriptorScreen = ({
         </FunctionsPickerContainer>
         <SubmitContainer>
           <SubmitButton
-            label={`Submit  (${fnDescriptionsCounter})`}
+            label={
+              submittingEntries ? (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 1 * GU,
+                  }}
+                >
+                  <LoadingRing mode="half-circle" />
+                  Submitting entries…
+                </div>
+              ) : (
+                `Submit  (${fnDescriptionsCounter})`
+              )
+            }
             type="submit"
             mode="strong"
             wide
-            disabled={!accountData?.address || fnDescriptionsCounter === 0}
+            disabled={disableSubmit}
           />
         </SubmitContainer>
       </Layout>
@@ -236,7 +271,7 @@ const Layout = styled.div<{ compactMode: boolean }>`
       [row3-start] "carousel" 5fr [row3-end]
       [row4-start] "pagination" 1fr [row4-end]
       [row5-start] "submit" 1fr [row5-end]
-      / minmax(200px,${FN_DESCRIPTOR_HEIGHT});
+      / minmax(200px,${FN_DESCRIPTOR_DEFAULT_HEIGHT});
 
       justify-content: center;
     `
@@ -244,7 +279,7 @@ const Layout = styled.div<{ compactMode: boolean }>`
       [row1-start] "filters filters filters" 1fr [row1-end]
       [row2-start] "pagination carousel picker" 8fr [row2-end]
       [row3-start] ". . submit" 1fr [row3-end]
-      / 1fr minmax(200px,${FN_DESCRIPTOR_HEIGHT}) 1fr;
+      / 1fr minmax(200px,${FN_DESCRIPTOR_DEFAULT_HEIGHT}) 1fr;
     `
    }
   `};
