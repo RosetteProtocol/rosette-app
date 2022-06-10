@@ -6,6 +6,7 @@ import { AppReady } from "~/providers/AppReady";
 import Wagmi from "~/providers/Wagmi";
 import { AppLayout } from "~/components/AppLayout";
 import { Outlet } from "@remix-run/react";
+import { RosetteStone } from "./providers/RosetteStone";
 
 export type AppContext = {
   displayTopBar(display: boolean): void;
@@ -21,19 +22,21 @@ export const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <Wagmi>
-        <AppReady>
-          <AppLayout
-            displayTopBar={displayTopBar}
-            displayBottomBar={displayBottomBar}
-          >
-            <Outlet
-              context={{
-                displayTopBar: setDisplayTopBar,
-                displayBottomBar: setDisplayBottomBar,
-              }}
-            />
-          </AppLayout>
-        </AppReady>
+        <RosetteStone>
+          <AppReady>
+            <AppLayout
+              displayTopBar={displayTopBar}
+              displayBottomBar={displayBottomBar}
+            >
+              <Outlet
+                context={{
+                  displayTopBar: setDisplayTopBar,
+                  displayBottomBar: setDisplayBottomBar,
+                }}
+              />
+            </AppLayout>
+          </AppReady>
+        </RosetteStone>
       </Wagmi>
     </ThemeProvider>
   );
