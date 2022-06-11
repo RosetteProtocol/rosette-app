@@ -53,7 +53,7 @@ export const FnDescriptorsCarousel = ({
   }, [carouselMoveAnimationEnded, fnSelected]);
 
   /**
-   * Lost focus on last element when a new one was selected to not mess up
+   * Lose focus on last element when a new one was selected to not mess up
    * the transition animation if user types in.
    */
   useEffect(() => {

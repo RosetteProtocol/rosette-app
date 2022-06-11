@@ -80,7 +80,7 @@ export const ContractDescriptorScreen = ({
     actionFetcher.state === "submitting" ||
     actionFetcher.state === "loading" ||
     callingContract;
-  const disableSubmit =
+  const submitDisabled =
     !accountData?.address || fnDescriptionsCounter === 0 || submittingEntries;
 
   const handleSubmit = useCallback(
@@ -208,7 +208,7 @@ export const ContractDescriptorScreen = ({
             type="submit"
             mode="strong"
             wide
-            disabled={disableSubmit}
+            disabled={submitDisabled}
           />
         </SubmitContainer>
       </Layout>
