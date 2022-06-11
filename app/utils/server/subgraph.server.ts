@@ -45,6 +45,11 @@ type QueryFnResult = {
 
 const gql = String.raw;
 
+const buildContractId = (
+  rosetteStoneAddress: string,
+  bytecodeHash: string
+): string => `${rosetteStoneAddress.toLowerCase()}-${bytecodeHash}`;
+
 const fetchFromGraphQL = async (query: string) => {
   if (!process.env.SUBGRAPH_URI) {
     throw new Error("SUBGRAPH_URI is required");
@@ -68,7 +73,7 @@ const getEntryStatus = (fnResult: FunctionResult): FnDescriptionStatus => {
 
   const timeSince = fnResult.upsertAt + fnResult.guideline.cooldownPeriod;
 
-  if (timeSince > date) {
+  if (date > timeSince) {
     return FnDescriptionStatus.Added;
   } else {
     return FnDescriptionStatus.Pending;
@@ -95,7 +100,10 @@ const parseFnResult = (fnResult: FunctionResult): FnEntry => {
 export const fetchContractFnEntries = async (
   bytecodeHash: string
 ): Promise<FnEntry[]> => {
-  const contractId = `${process.env.ROSETTE_STONE_ADDRESS}-${bytecodeHash}`;
+  const contractId = buildContractId(
+    process.env.ROSETTE_STONE_ADDRESS!,
+    bytecodeHash
+  );
 
   try {
     const rawResponse = await fetchFromGraphQL(
