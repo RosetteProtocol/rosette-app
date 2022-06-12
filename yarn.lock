@@ -2477,10 +2477,21 @@
     base64-sol "1.0.1"
     hardhat-watcher "^2.1.1"
 
-"@uniswap/v3-periphery@^1.0.1", "@uniswap/v3-periphery@^1.1.1", "@uniswap/v3-periphery@npm:@0xgabi/v3-periphery@latest":
+"@uniswap/v3-periphery@^1.0.1", "@uniswap/v3-periphery@^1.1.1":
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/@0xgabi/v3-periphery/-/v3-periphery-1.4.1.tgz#a95d64fa78174666a1c1fec7a8e4511d0b158e30"
   integrity sha512-BFWH+aQzTo2eNnh5mXIAlwJExcIVc0NjB+nyOo9EUA3dOH29htyIz0h6gbZVN3JWwJ4eFJ990JteRV/R5EsXkg==
+  dependencies:
+    "@openzeppelin/contracts" "3.4.2-solc-0.7"
+    "@uniswap/lib" "^4.0.1-alpha"
+    "@uniswap/v2-core" "1.0.1"
+    "@uniswap/v3-core" "1.0.0"
+    base64-sol "1.0.1"
+
+"@uniswap/v3-periphery@npm:@0xgabi/v3-periphery@1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@0xgabi/v3-periphery/-/v3-periphery-1.4.2.tgz#7e9bcb1cd40a7b5c6daaa301d5bdfc10158dbf41"
+  integrity sha512-67PniddAr+/Icb2jV+6hct1zi4A1D+lT1l7kBTyhRvw9G0muzdOASlNZuYefG7F8kwY3QrB0nPj0+NipIrYQAQ==
   dependencies:
     "@openzeppelin/contracts" "3.4.2-solc-0.7"
     "@uniswap/lib" "^4.0.1-alpha"
