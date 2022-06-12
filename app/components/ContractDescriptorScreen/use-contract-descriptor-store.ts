@@ -3,6 +3,7 @@ import type { SetImmerState, SetRecord, StoreApiGet } from "@udecode/zustood";
 import { utils } from "ethers";
 import type { FunctionFragment } from "ethers/lib/utils";
 import type { FnEntry } from "~/types";
+import { FnDescriptionStatus } from "~/types";
 import { getFnSelector } from "~/utils";
 
 export type Function = {
@@ -19,6 +20,7 @@ export type UserFnDescription = {
 type ContractDescriptorState = {
   fnSelected: number;
   fnDescriptorEntries: Function[];
+  filteredFnDescriptorEntries: Function[];
   /**
    * Use an object to index descriptions to facilitate state updates at
    * the expense of having some function data duplication (sigHash, minimalName, etc)
@@ -26,14 +28,22 @@ type ContractDescriptorState = {
   userFnDescriptions: Record<string, UserFnDescription>;
   readyToFocus: boolean;
   lastCaretPos: number;
+  filters: Record<FnDescriptionStatus, boolean>;
 };
 
 const initialState: ContractDescriptorState = {
   fnSelected: 0,
   fnDescriptorEntries: [],
+  filteredFnDescriptorEntries: [],
   userFnDescriptions: {},
   readyToFocus: false,
   lastCaretPos: 0,
+  filters: {
+    added: false,
+    available: true,
+    challenged: false,
+    pending: false,
+  },
 };
 
 const removeUserFnDescription = (
@@ -68,21 +78,44 @@ const contractDescriptorStore = createStore("contract-descriptor")(
           return {
             fullName: f.format("full"),
             sigHash,
-            entry: entries.find((e) => e.sigHash === sigHash),
+            entry: entries?.find((e) => e.sigHash === sigHash),
           };
         });
 
       set.fnDescriptorEntries(fns);
+      set.filteredFnDescriptorEntries(fns.filter((fn) => !fn.entry));
     },
     goToNextFn: () => {
       const prevFnSelected = get.fnSelected();
-      const fns = get.fnDescriptorEntries();
+      const fns = get.filteredFnDescriptorEntries();
 
       set.fnSelected(Math.min(fns.length - 1, prevFnSelected + 1));
     },
     goToPrevFn: () => {
       const prevFnSelected = get.fnSelected();
       set.fnSelected(Math.max(0, prevFnSelected - 1));
+    },
+    toggleFilter: (filterName: keyof ContractDescriptorState["filters"]) => {
+      const newFilters = { ...get.filters() };
+
+      newFilters[filterName] = !newFilters[filterName];
+
+      const newFilteredDescriptorEntries = get
+        .fnDescriptorEntries()
+        .filter((fnDescriptor) => {
+          const entry = fnDescriptor.entry;
+          const isAvailable = !entry;
+
+          if (isAvailable) {
+            return newFilters[FnDescriptionStatus.Available];
+          }
+
+          return newFilters[entry!.status];
+        });
+
+      set.fnSelected(0);
+      set.filteredFnDescriptorEntries(newFilteredDescriptorEntries);
+      set.filters(newFilters);
     },
     upsertFnDescription: (sigHash: string, description: string) => {
       const prevUserFnDescriptions = get.userFnDescriptions();
@@ -129,7 +162,7 @@ const contractDescriptorStore = createStore("contract-descriptor")(
   }))
   .extendActions((set, get) => ({
     addHelperFunction: (fnSignature: string) => {
-      const selectedEntry = get.fnDescriptorEntries()[get.fnSelected()];
+      const selectedEntry = get.filteredFnDescriptorEntries()[get.fnSelected()];
       const selectedUserFnDescription =
         get.userFnDescriptions()[selectedEntry.sigHash];
       const fieldCaretPos = get.lastCaretPos();
@@ -152,7 +185,7 @@ const contractDescriptorStore = createStore("contract-descriptor")(
   .extendSelectors((_, get) => ({
     fnDescriptionsCounter: () => Object.keys(get.userFnDescriptions()).length,
     currentFnDescriptorEntry: (): Function | undefined =>
-      get.fnDescriptorEntries()[get.fnSelected()],
+      get.filteredFnDescriptorEntries()[get.fnSelected()],
   }));
 
 export const useContractDescriptorStore = contractDescriptorStore.useStore;

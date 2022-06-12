@@ -24,6 +24,7 @@ import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
 import type { IPFSData } from "~/routes/fn-descriptions-upload";
 import debounce from "lodash.debounce";
+import { FunctionDescriptorFilters } from "./FunctionDescriptorFilters";
 
 const FN_DESCRIPTOR_DEFAULT_HEIGHT = "527px";
 
@@ -69,7 +70,7 @@ export const ContractDescriptorScreen = ({
   const [callingContract, setCallingContract] = useState(false);
   const { below } = useViewport();
   const [{ data: accountData }] = useAccount();
-  const { fnSelected, fnDescriptorEntries, userFnDescriptions } =
+  const { fnSelected, filteredFnDescriptorEntries, userFnDescriptions } =
     useContractDescriptorStore();
   const actionFetcher = useFetcher();
   const { upsertEntries } = useRosetteActions();
@@ -88,7 +89,7 @@ export const ContractDescriptorScreen = ({
       event.preventDefault();
 
       const fnsData = buildIPFSUploadData(
-        fnDescriptorEntries,
+        filteredFnDescriptorEntries,
         userFnDescriptions
       );
 
@@ -100,7 +101,12 @@ export const ContractDescriptorScreen = ({
         }
       );
     },
-    [actionFetcher, bytecodeHash, fnDescriptorEntries, userFnDescriptions]
+    [
+      actionFetcher,
+      bytecodeHash,
+      filteredFnDescriptorEntries,
+      userFnDescriptions,
+    ]
   );
 
   useEffect(() => {
@@ -164,12 +170,14 @@ export const ContractDescriptorScreen = ({
   return (
     <form style={{ height: "100%" }} onSubmit={handleSubmit}>
       <Layout compactMode={compactMode}>
-        <FiltersContainer>FILTERS</FiltersContainer>
-        {fnDescriptorEntries.length > 1 && (
+        <FiltersContainer>
+          <FunctionDescriptorFilters compactMode={compactMode} />
+        </FiltersContainer>
+        {filteredFnDescriptorEntries.length > 1 && (
           <PaginationContainer>
             <Pagination
               direction={compactMode ? "horizontal" : "vertical"}
-              pages={fnDescriptorEntries.length}
+              pages={filteredFnDescriptorEntries.length}
               selected={fnSelected}
               size={(compactMode ? 3 : 4) * GU}
               onChange={actions.fnSelected}
@@ -183,7 +191,11 @@ export const ContractDescriptorScreen = ({
           </PaginationContainer>
         )}
         <CarouselContainer>
-          <FnDescriptorsCarousel compactMode={compactMode} />
+          {filteredFnDescriptorEntries.length ? (
+            <FnDescriptorsCarousel compactMode={compactMode} />
+          ) : (
+            <EmptyContainer>No functions found.</EmptyContainer>
+          )}
         </CarouselContainer>
         <FunctionsPickerContainer>
           <HelperFunctionsPicker popoverPlacement="left-start" />
@@ -276,7 +288,7 @@ const Layout = styled.div<{ compactMode: boolean }>`
       justify-content: center;
     `
        : `grid: 
-      [row1-start] "filters filters filters" 1fr [row1-end]
+      [row1-start] "filters filters filters" 1.5fr [row1-end]
       [row2-start] "pagination carousel picker" 8fr [row2-end]
       [row3-start] ". . submit" 1fr [row3-end]
       / 1fr minmax(200px,${FN_DESCRIPTOR_DEFAULT_HEIGHT}) 1fr;
@@ -304,6 +316,9 @@ const PaginationIcon = styled.img<{ size: number }>`
 const CarouselContainer = styled.div`
   min-width: 100%;
   height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const FunctionsPickerContainer = styled.div`
@@ -316,4 +331,8 @@ const SubmitButton = styled(Button)`
   box-sizing: border-box;
   padding: ${3 * GU}px;
   ${({ wide }) => wide && "width: 100%;"};
+`;
+
+const EmptyContainer = styled.div`
+  color: ${({ theme }) => theme.surfaceContent};
 `;
