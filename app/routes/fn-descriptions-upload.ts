@@ -45,9 +45,8 @@ export const action: ActionFunction = async ({ request }) => {
 
     return json(responseData);
   } catch (err) {
-    console.error(err);
     throw new Response(
-      "An error occured when uploading the function descriptions",
+      `An error occured when uploading the function descriptions: ${err}`,
       { status: 500 }
     );
   }
