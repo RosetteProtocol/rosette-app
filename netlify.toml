@@ -1,8 +1,12 @@
-[build.environment]
-  NPM_FLAGS = "--version"
+# [build.environment]
+#   NPM_FLAGS = "--version"
+
+# [build]
+#   command = "npx pnpm install --store=node_modules/.pnpm-store && npx pnpm build"
 
 [build]
-  command = "npx pnpm install --store=node_modules/.pnpm-store && npx pnpm build"
+  command = "yarn build"
+  publish = "public"
 
 [dev]
   command = "remix watch"

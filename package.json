@@ -6,7 +6,7 @@
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "build": "pnpm sync-assets && cross-env NODE_ENV=production remix build",
+    "build": "yarn sync-assets && cross-env NODE_ENV=production remix build",
     "dev": "pnpm sync-assets && cross-env NODE_ENV=development netlify dev",
     "start": "pnpm sync-assets && cross-env NODE_ENV=production netlify dev",
     "sync-assets": "copy-aragon-ui-assets ./public",
