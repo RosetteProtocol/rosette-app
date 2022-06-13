@@ -6,7 +6,6 @@
   "license": "",
   "sideEffects": false,
   "scripts": {
-    "prebuild": "test \"$CI\" = true && npx pnpm install -r --store=node_modules/.pnpm-store || echo skipping pnpm install",
     "build": "pnpm sync-assets && cross-env NODE_ENV=production remix build",
     "dev": "pnpm sync-assets && cross-env NODE_ENV=development netlify dev",
     "start": "pnpm sync-assets && cross-env NODE_ENV=production netlify dev",
