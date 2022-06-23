@@ -64,7 +64,7 @@ const uploadFetcherReturnedData = (fetcher: Fetcher): boolean =>
 
 export const ContractDescriptorScreen = ({
   contractAddress,
-  contractData: { abi, bytecode },
+  contractData,
   currentFnEntries,
 }: ContractDescriptorScreenProps) => {
   const [callingContract, setCallingContract] = useState(false);
@@ -74,7 +74,7 @@ export const ContractDescriptorScreen = ({
     useContractDescriptorStore();
   const actionFetcher = useFetcher();
   const { upsertEntries } = useRosetteActions();
-  const bytecodeHash = utils.id(bytecode);
+  const bytecodeHash = utils.id(contractData.bytecode);
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
   const compactMode = below("large");
   const submittingEntries =
@@ -144,10 +144,10 @@ export const ContractDescriptorScreen = ({
   ]);
 
   useEffect(() => {
-    if (abi && currentFnEntries) {
-      actions.setUpFnDescriptorEntries(abi, currentFnEntries);
+    if (contractData && currentFnEntries) {
+      actions.setUpContractDescriptorStore(contractData, currentFnEntries);
     }
-  }, [abi, currentFnEntries]);
+  }, [contractData, currentFnEntries]);
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {

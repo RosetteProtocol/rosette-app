@@ -9,11 +9,11 @@ import type { MouseEventHandler } from "react";
 import { useEffect, useState } from "react";
 import { a, useTransition } from "@react-spring/web";
 import styled from "styled-components";
-import type { ContractData, AggregateContract } from "~/types";
+import type { ContractData, AggregatedContract } from "~/types";
 import { getNetworkLogo } from "~/utils/client/icons.client";
 
 type ContractItemProps = {
-  contract: AggregateContract;
+  contract: AggregatedContract;
   loaderText?: string;
   onClick(contractData: ContractData): void;
 };

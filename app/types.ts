@@ -27,7 +27,7 @@ export type ContractData = {
   network: Chain;
 };
 
-export type AggregateContract = {
+export type AggregatedContract = {
   proxy?: ContractData;
   implementation?: ContractData;
 };
