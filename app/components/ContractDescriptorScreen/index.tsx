@@ -15,7 +15,7 @@ import {
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
 import type {
-  Function,
+  FnDescriptorEntry,
   UserFnDescription,
 } from "./use-contract-descriptor-store";
 import type { ContractData, FnEntry } from "~/types";
@@ -35,7 +35,7 @@ type ContractDescriptorScreenProps = {
 };
 
 const buildIPFSUploadData = (
-  fnDescriptorEntries: Function[],
+  fnDescriptorEntries: FnDescriptorEntry[],
   userFnDescriptions: Record<string, UserFnDescription>
 ): IPFSData["functions"] => {
   return Object.keys(userFnDescriptions).map((sigHash) => {

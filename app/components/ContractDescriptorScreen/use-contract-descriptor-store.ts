@@ -2,11 +2,11 @@ import { createStore } from "@udecode/zustood";
 import type { SetImmerState, SetRecord, StoreApiGet } from "@udecode/zustood";
 import { utils } from "ethers";
 import type { FunctionFragment } from "ethers/lib/utils";
-import type { FnEntry } from "~/types";
 import { FnDescriptionStatus } from "~/types";
+import type { ContractData, FnEntry } from "~/types";
 import { getFnSelector } from "~/utils";
 
-export type Function = {
+export type FnDescriptorEntry = {
   fullName: string;
   sigHash: string;
   entry?: FnEntry;
@@ -17,21 +17,24 @@ export type UserFnDescription = {
   description: string;
 };
 
+type ParamValues = { value: any; decimals?: number };
+
 type ContractDescriptorState = {
+  contractAddress: string;
+  contractNetworkId: number;
   fnSelected: number;
-  fnDescriptorEntries: Function[];
-  filteredFnDescriptorEntries: Function[];
-  /**
-   * Use an object to index descriptions to facilitate state updates at
-   * the expense of having some function data duplication (sigHash, minimalName, etc)
-   */
-  userFnDescriptions: Record<string, UserFnDescription>;
+  fnDescriptorEntries: FnDescriptorEntry[];
+  filteredFnDescriptorEntries: FnDescriptorEntry[];
+  userFnDescriptions: Record<string, UserFnDescription>; // Use an object to index descriptions to facilitate state updates at the expense of having some function data duplication (sigHash, minimalName, etc)
   readyToFocus: boolean;
   lastCaretPos: number;
   filters: Record<FnDescriptionStatus, boolean>;
+  fnTestingParams: Record<string, Record<string, ParamValues>>;
 };
 
 const initialState: ContractDescriptorState = {
+  contractAddress: "",
+  contractNetworkId: -1,
   fnSelected: 0,
   fnDescriptorEntries: [],
   filteredFnDescriptorEntries: [],
@@ -44,6 +47,7 @@ const initialState: ContractDescriptorState = {
     challenged: false,
     pending: false,
   },
+  fnTestingParams: {},
 };
 
 const removeUserFnDescription = (
@@ -58,6 +62,27 @@ const removeUserFnDescription = (
   set.userFnDescriptions(newUserFnDescriptions);
 };
 
+const getDefaultValue = (type: string): ParamValues => {
+  if (type.includes("uint") || type.includes("ufixed")) {
+    return { value: 1, decimals: 0 };
+  }
+
+  if (type === "string") {
+    return { value: "Text example" };
+  }
+
+  if (type === "bool") {
+    return { value: false };
+  }
+
+  return { value: "" };
+};
+
+export const buildTestingParamKey = (name: string, type: string): string =>
+  `${name}-${type}`;
+
+export const parseTestingParamKey = (key: string): string[] => key.split("-");
+
 const contractDescriptorStore = createStore("contract-descriptor")(
   initialState,
   {
@@ -65,25 +90,44 @@ const contractDescriptorStore = createStore("contract-descriptor")(
   }
 )
   .extendActions((set, get) => ({
-    setUpFnDescriptorEntries: (abi: string, entries: FnEntry[]) => {
+    setUpContractDescriptorStore: (
+      contractData: ContractData,
+      entries: FnEntry[]
+    ) => {
+      const { abi, address, network } = contractData;
       const abiInterface = new utils.Interface(abi);
       const fnFragments = abiInterface.fragments.filter(
         (f) => f.type === "function"
       ) as FunctionFragment[];
+      // Only consider functions that change state
+      const nonConstantFnFragments = fnFragments.filter((f) => !f.constant);
+      const fns = nonConstantFnFragments.map((f) => {
+        const sigHash = getFnSelector(f);
+        return {
+          fullName: f.format("full"),
+          sigHash,
+          entry: entries?.find((e) => e.sigHash === sigHash),
+        };
+      });
 
-      const fns = fnFragments
-        .filter((f) => !f.constant) // Only consider functions that does not change state
-        .map((f) => {
-          const sigHash = getFnSelector(f);
-          return {
-            fullName: f.format("full"),
-            sigHash,
-            entry: entries?.find((e) => e.sigHash === sigHash),
-          };
-        });
-
+      set.contractAddress(address);
+      set.contractNetworkId(network.id);
       set.fnDescriptorEntries(fns);
       set.filteredFnDescriptorEntries(fns.filter((fn) => !fn.entry));
+      set.fnTestingParams(
+        nonConstantFnFragments.reduce((fnTestingParams, f) => {
+          const sigHash = getFnSelector(f);
+          const params = f.inputs.reduce(
+            (params, { name, type }) => ({
+              ...params,
+              [buildTestingParamKey(name, type)]: getDefaultValue(type),
+            }),
+            {}
+          );
+
+          return { ...fnTestingParams, [sigHash]: params };
+        }, {})
+      );
     },
     goToNextFn: () => {
       const prevFnSelected = get.fnSelected();
@@ -159,6 +203,18 @@ const contractDescriptorStore = createStore("contract-descriptor")(
         },
       });
     },
+    upsertFnTestingParam: (
+      sigHash: string,
+      paramKey: string,
+      paramValue: ParamValues
+    ) => {
+      const prevfnTestingParams = get.fnTestingParams();
+      const prevTestingParams = prevfnTestingParams[sigHash];
+      set.fnTestingParams({
+        ...prevfnTestingParams,
+        [sigHash]: { ...prevTestingParams, [paramKey]: paramValue },
+      });
+    },
   }))
   .extendActions((set, get) => ({
     addHelperFunction: (fnSignature: string) => {
@@ -184,10 +240,34 @@ const contractDescriptorStore = createStore("contract-descriptor")(
   }))
   .extendSelectors((_, get) => ({
     fnDescriptionsCounter: () => Object.keys(get.userFnDescriptions()).length,
-    currentFnDescriptorEntry: (): Function | undefined =>
+    currentFnDescriptorEntry: (): FnDescriptorEntry | undefined =>
       get.filteredFnDescriptorEntries()[get.fnSelected()],
+    currentDescription: (): string => {
+      const descriptorEntry =
+        get.filteredFnDescriptorEntries()[get.fnSelected()];
+      const userDescription = get.userFnDescriptions()[descriptorEntry.sigHash];
+
+      return userDescription.description ?? descriptorEntry.entry?.notice ?? "";
+    },
   }));
 
 export const useContractDescriptorStore = contractDescriptorStore.useStore;
 export const selectors = contractDescriptorStore.use;
 export const actions = contractDescriptorStore.set;
+
+export const useTestModalData = () => {
+  const contractAddress = selectors.contractAddress();
+  const { entry, fullName, sigHash } =
+    selectors.filteredFnDescriptorEntries()[selectors.fnSelected()] ?? {};
+  const userDescription = selectors.userFnDescriptions()[sigHash];
+  const testingParams = selectors.fnTestingParams()[sigHash] ?? {};
+  const description = userDescription?.description ?? entry?.notice ?? "";
+
+  return {
+    contractAddress,
+    description,
+    fnAbi: fullName,
+    testingParams,
+    sigHash,
+  };
+};
