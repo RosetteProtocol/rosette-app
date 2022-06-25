@@ -17,8 +17,6 @@ export const getSearchParams = (
     onlyOne ? missingParams.length : missingParams.length - 1
   );
 
-  console.log(onlyOne);
-  console.log(allButLast);
   throw new Response(
     `Expected ${allButLast.join(", ")} ${
       onlyOne ? "" : `and ${missingParams[missingParams.length - 1]}`

@@ -5,7 +5,10 @@ import type { TypedParamFieldProps } from ".";
 export const BooleanParamField = (props: TypedParamFieldProps) => {
   const { value, onChange } = props;
   return (
-    <RadioGroup onChange={onChange} selected={value.toString()}>
+    <RadioGroup
+      onChange={(value: string) => onChange(value === "true")}
+      selected={value.toString()}
+    >
       <BooleanWrapper>
         {["True", "False"].map((label) => (
           <BooleanLabel key={label}>

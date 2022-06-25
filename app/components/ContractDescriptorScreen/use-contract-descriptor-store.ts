@@ -17,7 +17,7 @@ export type UserFnDescription = {
   description: string;
 };
 
-type ParamValues = { value: any; decimals?: number };
+export type ParamValues = { value: any; decimals?: number };
 
 type ContractDescriptorState = {
   contractAddress: string;
@@ -257,6 +257,7 @@ export const actions = contractDescriptorStore.set;
 
 export const useTestModalData = () => {
   const contractAddress = selectors.contractAddress();
+  const contractNetworkId = selectors.contractNetworkId();
   const { entry, fullName, sigHash } =
     selectors.filteredFnDescriptorEntries()[selectors.fnSelected()] ?? {};
   const userDescription = selectors.userFnDescriptions()[sigHash];
@@ -265,6 +266,7 @@ export const useTestModalData = () => {
 
   return {
     contractAddress,
+    contractNetworkId,
     description,
     fnAbi: fullName,
     testingParams,
