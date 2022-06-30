@@ -4,15 +4,22 @@ import type { ChangeEventHandler } from "react";
 import type { TypedParamFieldProps } from ".";
 import styled from "styled-components";
 import { useDebounce } from "~/hooks/useDebounce";
+import { DEBOUNCE_TIME } from "~/utils/client/utils.client";
 
 type NumericInputProps = {
+  error?: boolean;
   value: string | number;
   onChange(value: any): void;
   placeholder?: string;
   wide?: boolean;
 };
 
-const NumericInput = ({ value, onChange, ...props }: NumericInputProps) => {
+const NumericInput = ({
+  value,
+  onChange,
+  error,
+  ...props
+}: NumericInputProps) => {
   const handleInputChange: ChangeEventHandler<HTMLInputElement> = ({
     target: { value },
   }) => {
@@ -22,15 +29,34 @@ const NumericInput = ({ value, onChange, ...props }: NumericInputProps) => {
     }
   };
 
-  return <TextInput value={value} onChange={handleInputChange} {...props} />;
+  return (
+    <TextInput
+      value={value}
+      onChange={handleInputChange}
+      error={error}
+      {...props}
+    />
+  );
 };
 
-export const NumericParamField = (props: TypedParamFieldProps) => {
-  const { decimals, value, onChange } = props;
+export const NumericParamField = ({
+  decimals,
+  value,
+  onChange,
+  error,
+}: TypedParamFieldProps) => {
   const [decimalValue_, setDecimalValue_] = useState(decimals ?? "18");
   const [value_, setValue_] = useState(value);
-  const debouncedValue = useDebounce(value_, 400);
-  const debouncedDecimalValue = useDebounce(decimalValue_, 400);
+  const debouncedValue = useDebounce(value_, DEBOUNCE_TIME);
+  const debouncedDecimalValue = useDebounce(decimalValue_, DEBOUNCE_TIME);
+
+  /**
+   * Keep inner value in sync as it can be updated from other places of
+   * the component tree (e.g filling fields from a fetched transaction)
+   */
+  useEffect(() => {
+    setValue_(value);
+  }, [value]);
 
   useEffect(() => {
     onChange(debouncedValue, Number(debouncedDecimalValue));
@@ -39,7 +65,7 @@ export const NumericParamField = (props: TypedParamFieldProps) => {
   return (
     <InlineContainer>
       <div style={{ width: "80%" }}>
-        <NumericInput value={value_} onChange={setValue_} wide />
+        <NumericInput value={value_} onChange={setValue_} error={error} wide />
       </div>
       <div
         style={{
@@ -47,8 +73,13 @@ export const NumericParamField = (props: TypedParamFieldProps) => {
           width: "20%",
         }}
       >
-        <DecimalsWrapper>Decimals</DecimalsWrapper>
-        <NumericInput value={decimalValue_} onChange={setDecimalValue_} wide />
+        <DecimalsWrapper error={error}>Decimals</DecimalsWrapper>
+        <NumericInput
+          value={decimalValue_}
+          onChange={setDecimalValue_}
+          error={error}
+          wide
+        />
       </div>
     </InlineContainer>
   );
@@ -60,10 +91,11 @@ const InlineContainer = styled.div`
   width: 100%;
 `;
 
-const DecimalsWrapper = styled.div`
+const DecimalsWrapper = styled.div<{ error?: boolean }>`
   position: absolute;
   top: -20px;
   right: 0;
-  color: ${({ theme }) => theme.surfaceContent};
+  color: ${({ theme, error }) =>
+    error ? theme.negative : theme.surfaceContent};
   ${textStyle("body4")};
 `;

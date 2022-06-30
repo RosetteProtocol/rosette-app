@@ -18,6 +18,7 @@ export type UserFnDescription = {
 };
 
 export type ParamValues = { value: any; decimals?: number };
+export type FnTestingParams = Record<string, ParamValues>;
 
 type ContractDescriptorState = {
   contractAddress: string;
@@ -29,7 +30,7 @@ type ContractDescriptorState = {
   readyToFocus: boolean;
   lastCaretPos: number;
   filters: Record<FnDescriptionStatus, boolean>;
-  fnTestingParams: Record<string, Record<string, ParamValues>>;
+  fnsTestingParams: Record<string, FnTestingParams>;
 };
 
 const initialState: ContractDescriptorState = {
@@ -47,7 +48,7 @@ const initialState: ContractDescriptorState = {
     challenged: false,
     pending: false,
   },
-  fnTestingParams: {},
+  fnsTestingParams: {},
 };
 
 const removeUserFnDescription = (
@@ -114,7 +115,7 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       set.contractNetworkId(network.id);
       set.fnDescriptorEntries(fns);
       set.filteredFnDescriptorEntries(fns.filter((fn) => !fn.entry));
-      set.fnTestingParams(
+      set.fnsTestingParams(
         nonConstantFnFragments.reduce((fnTestingParams, f) => {
           const sigHash = getFnSelector(f);
           const params = f.inputs.reduce(
@@ -203,16 +204,26 @@ const contractDescriptorStore = createStore("contract-descriptor")(
         },
       });
     },
+    upsertFnTestingParams: (
+      sigHash: string,
+      fnTestingParams: FnTestingParams
+    ) => {
+      const prevFnsTestingParams = get.fnsTestingParams();
+      set.fnsTestingParams({
+        ...prevFnsTestingParams,
+        [sigHash]: fnTestingParams,
+      });
+    },
     upsertFnTestingParam: (
       sigHash: string,
-      paramKey: string,
+      paramName: string,
       paramValue: ParamValues
     ) => {
-      const prevfnTestingParams = get.fnTestingParams();
+      const prevfnTestingParams = get.fnsTestingParams();
       const prevTestingParams = prevfnTestingParams[sigHash];
-      set.fnTestingParams({
+      set.fnsTestingParams({
         ...prevfnTestingParams,
-        [sigHash]: { ...prevTestingParams, [paramKey]: paramValue },
+        [sigHash]: { ...prevTestingParams, [paramName]: paramValue },
       });
     },
   }))
@@ -256,12 +267,17 @@ export const selectors = contractDescriptorStore.use;
 export const actions = contractDescriptorStore.set;
 
 export const useTestModalData = () => {
-  const contractAddress = selectors.contractAddress();
-  const contractNetworkId = selectors.contractNetworkId();
+  const {
+    contractAddress,
+    contractNetworkId,
+    fnSelected,
+    userFnDescriptions,
+    fnsTestingParams,
+  } = useContractDescriptorStore();
   const { entry, fullName, sigHash } =
-    selectors.filteredFnDescriptorEntries()[selectors.fnSelected()] ?? {};
-  const userDescription = selectors.userFnDescriptions()[sigHash];
-  const testingParams = selectors.fnTestingParams()[sigHash] ?? {};
+    selectors.filteredFnDescriptorEntries()[fnSelected] ?? {};
+  const userDescription = userFnDescriptions[sigHash];
+  const testingParams = fnsTestingParams[sigHash] ?? {};
   const description = userDescription?.description ?? entry?.notice ?? "";
 
   return {

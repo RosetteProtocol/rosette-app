@@ -15,12 +15,14 @@ export type ParamFieldProps = {
   decimals?: number;
   onChange: typeof actions.upsertFnTestingParam;
   sigHash: string;
+  errorMsg?: string;
 };
 
 export type TypedParamFieldProps = Pick<
   ParamFieldProps,
   "children" | "name" | "type" | "value" | "decimals"
 > & {
+  error?: boolean;
   onChange(value: any, decimals?: number): void;
 };
 
@@ -43,7 +45,7 @@ const TypedParamField = (props: TypedParamFieldProps) => {
 };
 
 export const ParamField = (props: ParamFieldProps) => {
-  const { name, sigHash, onChange, type } = props;
+  const { name, sigHash, onChange, type, errorMsg } = props;
 
   const handleInputChange = useCallback(
     (newValue, decimals) =>
@@ -55,8 +57,10 @@ export const ParamField = (props: ParamFieldProps) => {
   );
 
   return (
-    <Field label={`${name}(${type})`}>
-      <TypedParamField {...{ ...props, onChange: handleInputChange }} />
+    <Field label={`${name}(${type})`} error={!!errorMsg} helperText={errorMsg}>
+      <TypedParamField
+        {...{ ...props, error: !!errorMsg, onChange: handleInputChange }}
+      />
     </Field>
   );
 };
