@@ -1,6 +1,6 @@
 import { Button, GU, LoadingRing, useViewport } from "@blossom-labs/rosette-ui";
 import { useFetcher } from "@remix-run/react";
-import type { Fetcher } from "@remix-run/react/transition";
+import type { Fetcher } from "@remix-run/react";
 import { utils } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";

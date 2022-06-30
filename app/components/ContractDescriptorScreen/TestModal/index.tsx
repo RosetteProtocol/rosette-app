@@ -326,60 +326,66 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
   return (
     <Modal visible={show} onClose={handleClose} onClosed={clear}>
       <Header primary="Function Tester" />
-      <Section header="Parameters">{paramFields}</Section>
-      <div style={{ margin: `${2 * GU}px 0` }}>
+      <div style={{ marginTop: -2 * GU, marginBottom: 1 * GU }}>
         <Details label="Load transaction">
           <Section description="Fill the parameter fields from a given transaction.">
-            <Field
-              label="Transaction hash"
-              error={txHashErrorMsg.length}
-              helperText={txHashErrorMsg}
-            >
-              <div style={{ display: "flex", gap: GU }}>
-                <TextInput
-                  value={txHash}
-                  adornment={
-                    txFetcher.state === "loading" ? (
-                      <LoadingRing />
-                    ) : isEveryParamFilled ? (
-                      <IconCheck />
-                    ) : null
-                  }
-                  adornmentPosition="end"
-                  adornmentSettings={{
-                    width: 70,
-                    padding: 15,
-                  }}
-                  placeholder="0x…"
-                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                    setTxHash(e.target.value);
-                    handleFetch(e.target.value);
-                  }}
-                  size="small"
-                  wide
-                  disabled={txFetcher.state === "loading"}
-                  error={txHashErrorMsg.length}
-                />
-              </div>
-            </Field>
+            <form>
+              <Field
+                label="Transaction hash"
+                error={txHashErrorMsg.length}
+                helperText={txHashErrorMsg}
+              >
+                <div style={{ display: "flex", gap: GU }}>
+                  <TextInput
+                    value={txHash}
+                    adornment={
+                      txFetcher.state === "loading" ? (
+                        <LoadingRing />
+                      ) : isEveryParamFilled ? (
+                        <IconCheck />
+                      ) : null
+                    }
+                    adornmentPosition="end"
+                    adornmentSettings={{
+                      width: 70,
+                      padding: 15,
+                    }}
+                    placeholder="0x…"
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                      setTxHash(e.target.value);
+                      handleFetch(e.target.value);
+                    }}
+                    size="small"
+                    wide
+                    disabled={txFetcher.state === "loading"}
+                    error={txHashErrorMsg.length}
+                  />
+                </div>
+              </Field>
+            </form>
           </Section>
         </Details>
       </div>
-      <Button
-        label={
-          isEvaluatorLoading ? (
-            <div style={{ display: "flex", gap: 1 * GU }}>
-              <LoadingRing mode="half-circle" /> Testing…
-            </div>
-          ) : (
-            "Test"
-          )
-        }
-        wide
-        onClick={handleTest}
-        mode="strong"
-        disabled={isEvaluatorLoading}
-      />
+      <Section header="Parameters">
+        <form>
+          {paramFields}
+          <Button
+            label={
+              isEvaluatorLoading ? (
+                <div style={{ display: "flex", gap: 1 * GU }}>
+                  <LoadingRing mode="half-circle" /> Testing…
+                </div>
+              ) : (
+                "Test"
+              )
+            }
+            wide
+            onClick={handleTest}
+            mode="strong"
+            disabled={isEvaluatorLoading}
+          />
+        </form>
+      </Section>
       {(evaluatorErrorMsg || evaluatedDescription) && (
         <div style={{ marginTop: 3 * GU }}>
           <Info mode={mode} title={title} titleColor={titleColor}>
