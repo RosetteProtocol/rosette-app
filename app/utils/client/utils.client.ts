@@ -1,4 +1,4 @@
-export const DEBOUNCE_TIME = 400; // ms
+export const DEBOUNCE_TIME = 300; // ms
 
 export const buildHref = (
   href: string,

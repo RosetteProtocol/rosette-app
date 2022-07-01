@@ -19,7 +19,6 @@ import { useCallback } from "react";
 import type { ChangeEvent, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { ParamField } from "./ParamField";
 import {
   actions,
   buildTestingParamKey,
@@ -27,38 +26,62 @@ import {
   useTestModalData,
 } from "../use-contract-descriptor-store";
 import type { FnTestingParams } from "../use-contract-descriptor-store";
-import type { ParamValues } from "../use-contract-descriptor-store";
 import { toDecimals } from "~/utils";
-import { Details } from "~/components/Details";
 import { buildHref } from "~/utils/client/utils.client";
+import type { ParamValues } from "~/utils/client/param-value.client";
+import { Details } from "~/components/Details";
+import { ParamField } from "./ParamField";
 
 const TX_HASH_REGEX = /^0x[a-fA-F0-9]{64}$/;
 
-const computeTestingParamValue = (paramValue: ParamValues): any => {
-  const { decimals, value } = paramValue;
+type ParamErrors = Record<string, string | string[]>;
 
-  if (decimals) {
-    return toDecimals(value, decimals);
-  }
+const computeTestingParamValue_ = ({ decimals, value }: ParamValues) =>
+  decimals ? toDecimals(value, decimals) : value;
 
-  return value;
+const computeTestingParamValue = (
+  paramValue: ParamValues | ParamValues[]
+): any =>
+  Array.isArray(paramValue)
+    ? paramValue.map((p) => computeTestingParamValue_(p))
+    : computeTestingParamValue_(paramValue);
+
+const processEncodeError = (err: unknown) => {
+  const err_ = err as Error;
+
+  return err_.message.split("(")[0].trim();
 };
 
 const validateTestingParams = (
   fnInterface: Interface,
   params: FnTestingParams
-): Record<string, string> | null => {
+): ParamErrors | null => {
   const fnFragment = Object.values(fnInterface.functions)[0];
-  let errors: Record<string, string> = {};
+  let errors: ParamErrors = {};
 
   fnFragment.inputs.forEach((paramType) => {
     const paramKey = buildTestingParamKey(paramType.name, paramType.type);
-    const paramValue = computeTestingParamValue(params[paramKey]);
+    const valueOrValues = computeTestingParamValue(params[paramKey]);
     try {
-      fnInterface._encodeParams([paramType], [paramValue]);
+      if (Array.isArray(valueOrValues)) {
+        const arrayErrors: string[] = [...Array(valueOrValues.length)].fill("");
+
+        valueOrValues.forEach((v, index) => {
+          try {
+            fnInterface._encodeParams([paramType.arrayChildren], [v]);
+          } catch (err) {
+            arrayErrors[index] = processEncodeError(err);
+          }
+        });
+
+        if (arrayErrors.filter((e) => e).length) {
+          errors[paramKey] = arrayErrors;
+        }
+      } else {
+        fnInterface._encodeParams([paramType], [valueOrValues]);
+      }
     } catch (err) {
-      const err_ = err as Error;
-      errors[paramKey] = err_.message.split("(")[0].trim();
+      errors[paramKey] = processEncodeError(err);
     }
   });
 
@@ -81,7 +104,7 @@ const convertBindings = (
   );
 };
 
-const processTransaction = (
+const processFetchedTransaction = (
   tx: Transaction,
   sigHash: string,
   fnAbi: string
@@ -181,9 +204,7 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
   } = useTestModalData();
   const [evaluatedDescription, setEvaluatedDescription] = useState("");
   const [evaluatorErrorMsg, setEvaluatorErrorMsg] = useState("");
-  const [paramErrorMsgs, setParamErrorMsgs] = useState<Record<string, string>>(
-    {}
-  );
+  const [paramErrorMsgs, setParamErrorMsgs] = useState<ParamErrors>({});
   /**
    * Need to pass value to input otherwise the tx hash isn't displayed when
    * adornment shows up
@@ -195,15 +216,31 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
   const { mode, title, titleColor } = getEvaluationConfig(
     !!evaluatorErrorMsg.length
   );
+  const disableTestButton =
+    isEvaluatorLoading || !!Object.keys(paramErrorMsgs).length;
 
   const handleParamFieldChange = useCallback(
-    (sigHash, paramName, paramValue) => {
+    (sigHash, paramName, paramValue, index) => {
       // When updating field remove any existing error if any
-      setParamErrorMsgs((prevErrors) => ({
-        ...prevErrors,
-        [paramName]: undefined,
-      }));
-      actions.upsertFnTestingParam(sigHash, paramName, paramValue);
+      setParamErrorMsgs((prevErrors) => {
+        const newErrors = { ...prevErrors };
+        let prevParamErrors = prevErrors[paramName];
+
+        if (Array.isArray(prevParamErrors) && index !== undefined) {
+          prevParamErrors[index] = "";
+
+          if (prevParamErrors.filter((e) => e).length) {
+            newErrors[paramName] = [...prevParamErrors];
+          } else {
+            delete newErrors[paramName];
+          }
+        } else {
+          delete newErrors[paramName];
+        }
+
+        return newErrors;
+      });
+      actions.upsertFnTestingParam(sigHash, paramName, paramValue, index);
     },
     []
   );
@@ -212,7 +249,7 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
     () =>
       Object.keys(testingParams).map((key) => {
         const [name, type] = parseTestingParamKey(key);
-        const { value, decimals } = testingParams[key];
+        const paramValues = testingParams[key];
 
         return (
           <ParamField
@@ -220,10 +257,9 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
             sigHash={sigHash}
             name={name}
             type={type}
-            value={value}
+            value={paramValues}
             onChange={handleParamFieldChange}
-            decimals={decimals}
-            errorMsg={paramErrorMsgs[key]}
+            error={paramErrorMsgs[key]}
           />
         );
       }),
@@ -250,7 +286,7 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
       return;
     }
 
-    const { result, error } = processTransaction(
+    const { result, error } = processFetchedTransaction(
       txFetcher.data.tx,
       sigHash,
       fnAbi
@@ -307,8 +343,8 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
 
     const data = fnInterface.encodeFunctionData(
       sigHash,
-      Object.keys(testingParams).map((key) =>
-        computeTestingParamValue(testingParams[key])
+      Object.values(testingParams).map((value) =>
+        computeTestingParamValue(value)
       )
     );
 
@@ -332,7 +368,7 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
             <form>
               <Field
                 label="Transaction hash"
-                error={txHashErrorMsg.length}
+                error={!!txHashErrorMsg.length}
                 helperText={txHashErrorMsg}
               >
                 <div style={{ display: "flex", gap: GU }}>
@@ -351,14 +387,16 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
                       padding: 15,
                     }}
                     placeholder="0x…"
-                    onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                      setTxHash(e.target.value);
-                      handleFetch(e.target.value);
+                    onChange={({
+                      target: { value },
+                    }: ChangeEvent<HTMLInputElement>) => {
+                      setTxHash(value);
+                      handleFetch(value);
                     }}
                     size="small"
                     wide
                     disabled={txFetcher.state === "loading"}
-                    error={txHashErrorMsg.length}
+                    error={!!txHashErrorMsg.length}
                   />
                 </div>
               </Field>
@@ -382,7 +420,7 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
             wide
             onClick={handleTest}
             mode="strong"
-            disabled={isEvaluatorLoading}
+            disabled={disableTestButton}
           />
         </form>
       </Section>

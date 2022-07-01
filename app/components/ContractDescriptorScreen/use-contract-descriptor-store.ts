@@ -5,6 +5,8 @@ import type { FunctionFragment } from "ethers/lib/utils";
 import { FnDescriptionStatus } from "~/types";
 import type { ContractData, FnEntry } from "~/types";
 import { getFnSelector } from "~/utils";
+import { getDefaultParamValues } from "~/utils/client/param-value.client";
+import type { ParamValues } from "~/utils/client/param-value.client";
 
 export type FnDescriptorEntry = {
   fullName: string;
@@ -17,8 +19,7 @@ export type UserFnDescription = {
   description: string;
 };
 
-export type ParamValues = { value: any; decimals?: number };
-export type FnTestingParams = Record<string, ParamValues>;
+export type FnTestingParams = Record<string, ParamValues | ParamValues[]>;
 
 type ContractDescriptorState = {
   contractAddress: string;
@@ -63,22 +64,6 @@ const removeUserFnDescription = (
   set.userFnDescriptions(newUserFnDescriptions);
 };
 
-const getDefaultValue = (type: string): ParamValues => {
-  if (type.includes("uint") || type.includes("ufixed")) {
-    return { value: 1, decimals: 0 };
-  }
-
-  if (type === "string") {
-    return { value: "Text example" };
-  }
-
-  if (type === "bool") {
-    return { value: false };
-  }
-
-  return { value: "" };
-};
-
 export const buildTestingParamKey = (name: string, type: string): string =>
   `${name}-${type}`;
 
@@ -116,18 +101,26 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       set.fnDescriptorEntries(fns);
       set.filteredFnDescriptorEntries(fns.filter((fn) => !fn.entry));
       set.fnsTestingParams(
-        nonConstantFnFragments.reduce((fnTestingParams, f) => {
-          const sigHash = getFnSelector(f);
-          const params = f.inputs.reduce(
-            (params, { name, type }) => ({
-              ...params,
-              [buildTestingParamKey(name, type)]: getDefaultValue(type),
-            }),
-            {}
-          );
+        nonConstantFnFragments.reduce(
+          (
+            fnsTestingParams: ContractDescriptorState["fnsTestingParams"],
+            f
+          ) => {
+            const sigHash = getFnSelector(f);
+            const params = f.inputs.reduce(
+              (params: FnTestingParams, { name, type }) => ({
+                ...params,
+                [buildTestingParamKey(name, type)]: getDefaultParamValues(type),
+              }),
+              {}
+            );
 
-          return { ...fnTestingParams, [sigHash]: params };
-        }, {})
+            fnsTestingParams[sigHash] = params;
+
+            return fnsTestingParams;
+          },
+          {}
+        )
       );
     },
     goToNextFn: () => {
@@ -208,22 +201,43 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       sigHash: string,
       fnTestingParams: FnTestingParams
     ) => {
-      const prevFnsTestingParams = get.fnsTestingParams();
-      set.fnsTestingParams({
-        ...prevFnsTestingParams,
-        [sigHash]: fnTestingParams,
-      });
+      set.state((draft) => (draft.fnsTestingParams[sigHash] = fnTestingParams));
     },
     upsertFnTestingParam: (
       sigHash: string,
-      paramName: string,
-      paramValue: ParamValues
+      paramKey: string,
+      paramValues: ParamValues,
+      index?: number
     ) => {
-      const prevfnTestingParams = get.fnsTestingParams();
-      const prevTestingParams = prevfnTestingParams[sigHash];
-      set.fnsTestingParams({
-        ...prevfnTestingParams,
-        [sigHash]: { ...prevTestingParams, [paramName]: paramValue },
+      const prevParamValues = get.fnsTestingParams()[sigHash][paramKey];
+      const { value, decimals } = paramValues;
+
+      if (Array.isArray(prevParamValues)) {
+        if (
+          index === undefined ||
+          (prevParamValues[index].value === value &&
+            prevParamValues[index].decimals === decimals)
+        ) {
+          return;
+        }
+      } else {
+        if (
+          prevParamValues.value === value &&
+          prevParamValues.decimals === decimals
+        ) {
+          return;
+        }
+      }
+
+      set.state((draft) => {
+        const testingParams = draft.fnsTestingParams[sigHash][paramKey];
+        if (Array.isArray(testingParams)) {
+          if (index !== undefined) {
+            testingParams[index] = paramValues;
+          }
+        } else {
+          draft.fnsTestingParams[sigHash][paramKey] = paramValues;
+        }
       });
     },
   }))

@@ -3,6 +3,9 @@ import { json } from "@remix-run/node";
 import type { LoaderFunction } from "@remix-run/node";
 import { getSearchParams } from "~/utils/server/utils.server";
 import { getProvider } from "~/utils/server/web3.server";
+import { constants } from "ethers";
+
+const DEFAULT_VALUE = "1".padEnd(19, "0");
 
 export const loader: LoaderFunction = async ({ request }) => {
   const [abi, description, to, data, networkId] = getSearchParams(request.url, [
@@ -13,7 +16,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     "networkId",
   ]);
   const provider = getProvider(Number(networkId));
-  const transaction = { to, data };
+  const transaction = {
+    to,
+    data,
+    from: constants.AddressZero,
+    value: DEFAULT_VALUE,
+  };
   const bindings = decodeCalldata(abi, transaction);
 
   try {

@@ -1,9 +1,14 @@
 import { GU, Radio, RadioGroup } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
-import type { TypedParamFieldProps } from ".";
 
-export const BooleanParamField = (props: TypedParamFieldProps) => {
-  const { value, onChange } = props;
+type BooleanParamFieldProps = {
+  value: any;
+  onChange(value: any): void;
+};
+export const BooleanParamField = ({
+  value,
+  onChange,
+}: BooleanParamFieldProps) => {
   return (
     <RadioGroup
       onChange={(value: string) => onChange(value === "true")}

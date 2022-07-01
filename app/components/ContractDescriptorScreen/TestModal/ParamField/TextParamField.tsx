@@ -2,13 +2,20 @@ import { TextInput } from "@blossom-labs/rosette-ui";
 import { useEffect, useState } from "react";
 import type { ChangeEvent } from "react";
 import { useDebounce } from "~/hooks/useDebounce";
-import type { TypedParamFieldProps } from ".";
+
+type TextParamFieldProps = {
+  index?: number;
+  value: any;
+  onChange(value: any, decimals?: number, index?: number): void;
+  error?: boolean;
+};
 
 export const TextParamField = ({
+  index,
   value,
   onChange,
   error,
-}: TypedParamFieldProps) => {
+}: TextParamFieldProps) => {
   const [value_, setValue_] = useState(value);
   const debouncedValue = useDebounce(value_, 400);
 
@@ -24,8 +31,8 @@ export const TextParamField = ({
     if (debouncedValue === undefined) {
       return;
     }
-    onChange(debouncedValue);
-  }, [debouncedValue, onChange]);
+    onChange(debouncedValue, undefined, index);
+  }, [debouncedValue, index, onChange]);
 
   return (
     <TextInput
