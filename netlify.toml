@@ -9,6 +9,7 @@
 [functions]
   node_bundler = "esbuild"
   included_files = ["!node_modules/hardhat/**/*", "!node_modules/hardhat-watcher/**/*"]
+  external_node_modules = ["@remix-run/react", "ipfs-utils", "@uniswap/widgets"]
 
 [[redirects]]
   from = "/*"
