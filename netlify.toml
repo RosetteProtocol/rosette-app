@@ -1,9 +1,3 @@
-[build.environment]
-  NPM_FLAGS = "--version"
-
-# [build]
-#   command = "npx pnpm install --store=node_modules/.pnpm-store && npx pnpm build"
-
 [build]
   command = "yarn build"
   publish = "public"
@@ -13,7 +7,7 @@
   port = 3000
 
 [functions]
-included_files = ["!node_modules/hardhat/**/*"]
+  included_files = ["!node_modules/hardhat/**/*", "!node_modules/hardhat-watcher/**/*"]
 
 [[redirects]]
   from = "/*"
