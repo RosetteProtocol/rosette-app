@@ -120,10 +120,12 @@ export const FnDescriptorsCarousel = ({
         itemSpacing={450}
         onTransitionEnd={() => setCarouselMoveEnded(true)}
       />
-      <TestModal
-        show={showTestingModal}
-        onClose={() => setShowTestingModal(false)}
-      />
+      <div onWheel={(e) => e.stopPropagation()}>
+        <TestModal
+          show={showTestingModal}
+          onClose={() => setShowTestingModal(false)}
+        />
+      </div>
     </>
   );
 };

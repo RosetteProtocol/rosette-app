@@ -242,8 +242,8 @@ const AnimatedItemContainer = styled(a.div)<{
   transition: opacity 150ms ease-in-out;
   flex-grow: 0;
   flex-shrink: 0;
-  ${(props) => (props.$isHorizontal ? "margin-left" : "margin-top")}: ${({
+  ${({ $isHorizontal }) => ($isHorizontal ? "margin-left" : "margin-top")}: ${({
   $isFirst,
-  $itemSpacing: itemSpacing,
-}) => (!$isFirst ? `${itemSpacing}px` : 0)}};
+  $itemSpacing,
+}) => (!$isFirst ? `${$itemSpacing}px` : 0)}};
 `;

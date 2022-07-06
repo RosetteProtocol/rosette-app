@@ -3,6 +3,7 @@ import { useFetcher } from "@remix-run/react";
 import type { Fetcher } from "@remix-run/react";
 import { utils } from "ethers";
 import { useCallback, useEffect, useState } from "react";
+import type { WheelEventHandler } from "react";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
 
@@ -23,10 +24,19 @@ import useRosetteActions from "./useRosetteActions";
 import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
 import type { IPFSData } from "~/routes/fn-descriptions-upload";
-import debounce from "lodash.debounce";
 import { FunctionDescriptorFilters } from "./FunctionDescriptorFilters";
+import debounce from "lodash.debounce";
 
 const FN_DESCRIPTOR_DEFAULT_HEIGHT = "527px";
+
+const debouncedOnWheel = debounce<WheelEventHandler>((e) => {
+  e.stopPropagation();
+  if (e.deltaY < 0) {
+    actions.goToPrevFn();
+  } else {
+    actions.goToNextFn();
+  }
+}, 100);
 
 type ContractDescriptorScreenProps = {
   contractAddress: string;
@@ -149,27 +159,9 @@ export const ContractDescriptorScreen = ({
     }
   }, [contractData, currentFnEntries]);
 
-  useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
-      if (e.deltaY < 0) {
-        actions.goToPrevFn();
-      } else {
-        actions.goToNextFn();
-      }
-    };
-
-    const debouncedOnWheel = debounce(onWheel, 100);
-
-    window.addEventListener("wheel", debouncedOnWheel);
-
-    return () => {
-      window.removeEventListener("wheel", debouncedOnWheel);
-    };
-  }, []);
-
   return (
     <form style={{ height: "100%" }} onSubmit={handleSubmit}>
-      <Layout compactMode={compactMode}>
+      <Layout compactMode={compactMode} onWheel={debouncedOnWheel}>
         <FiltersContainer>
           <FunctionDescriptorFilters compactMode={compactMode} />
         </FiltersContainer>
