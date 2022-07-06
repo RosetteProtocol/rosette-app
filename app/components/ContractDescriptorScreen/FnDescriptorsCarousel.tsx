@@ -16,7 +16,7 @@ export const FnDescriptorsCarousel = ({
   compactMode,
 }: FnDescriptorsCarouselProps) => {
   const {
-    fnDescriptorEntries,
+    filteredFnDescriptorEntries,
     fnSelected,
     lastCaretPos,
     userFnDescriptions,
@@ -31,13 +31,16 @@ export const FnDescriptorsCarousel = ({
    * Generate descriptor refs
    */
   useEffect(() => {
-    descriptorRefs.current = fnDescriptorEntries.map(
+    descriptorRefs.current = filteredFnDescriptorEntries.map(
       (_, i) => descriptorRefs.current[i] ?? createRef<HTMLTextAreaElement>()
     );
 
+    if (!descriptorRefs.current.length) {
+      return;
+    }
     // Wait a little bit for the ref to be attached before focusing first element
     setTimeout(() => descriptorRefs.current[0].current?.focus(), 200);
-  }, [fnDescriptorEntries]);
+  }, [filteredFnDescriptorEntries]);
 
   /**
    * Focus on current element once the transition animation ended.
@@ -53,10 +56,14 @@ export const FnDescriptorsCarousel = ({
   }, [carouselMoveAnimationEnded, fnSelected]);
 
   /**
-   * Lost focus on last element when a new one was selected to not mess up
+   * Lose focus on last element when a new one was selected to not mess up
    * the transition animation if user types in.
    */
   useEffect(() => {
+    if (!descriptorRefs.current.length) {
+      return;
+    }
+
     if (prevDescriptorIndexRef.current === -1) {
       prevDescriptorIndexRef.current = fnSelected;
     } else {
@@ -73,7 +80,11 @@ export const FnDescriptorsCarousel = ({
    * selection on first parameter.
    */
   useEffect(() => {
-    if (!readyToFocus || !descriptorRefs.current[fnSelected]?.current) {
+    if (
+      !readyToFocus ||
+      !descriptorRefs.current.length ||
+      !descriptorRefs.current[fnSelected]?.current
+    ) {
       return;
     }
 
@@ -92,7 +103,7 @@ export const FnDescriptorsCarousel = ({
   return (
     <Carousel
       selected={fnSelected}
-      items={fnDescriptorEntries.map((f, i) => (
+      items={filteredFnDescriptorEntries.map((f, i) => (
         <FunctionDescriptor
           ref={descriptorRefs.current[i]}
           key={f.sigHash}

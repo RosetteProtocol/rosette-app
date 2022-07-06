@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@blossom-labs/rosette-ui': ^0.0.1-alpha.6
+  '@blossom-labs/rosette-ui': ^0.0.1-alpha.7
   '@netlify/functions': ^1.0.0
   '@react-spring/web': ^9.4.4
   '@remix-run/dev': ^1.4.0
@@ -15,7 +15,6 @@ specifiers:
   '@types/styled-components': ^5.1.24
   '@types/stylis': ^4.0.2
   '@udecode/zustood': ^0.4.4
-  '@uniswap/v3-periphery': npm:@0xgabi/v3-periphery@1.4.2
   '@uniswap/widgets': ^1.1.1
   buffer: ^6.0.3
   clipboard-polyfill: ^4.0.0-rc1
@@ -23,7 +22,7 @@ specifiers:
   eslint: ^8.9.0
   ethers: ^5.6.1
   hardhat: ^2.9.9
-  ipfs-http-client: ^55.0.0
+  ipfs-http-client: 56.0.3
   lodash.debounce: ^4.0.8
   patch-package: ^6.4.7
   react: ^17.0.2
@@ -36,19 +35,18 @@ specifiers:
   zustand: ^3.7.1
 
 dependencies:
-  '@blossom-labs/rosette-ui': 0.0.1-alpha.6_zxhai4qal7ezfht52cx4u672cu
+  '@blossom-labs/rosette-ui': 0.0.1-alpha.9_zxhai4qal7ezfht52cx4u672cu
   '@netlify/functions': 1.0.0
   '@react-spring/web': 9.4.5_sfoxds7t5ydpegc3knd667wn6m
   '@remix-run/netlify': 1.5.1_suusgcsxtevevf53efhfcetshq
   '@remix-run/node': 1.5.1_sfoxds7t5ydpegc3knd667wn6m
   '@remix-run/react': 1.5.1_sfoxds7t5ydpegc3knd667wn6m
   '@udecode/zustood': 0.4.4_zustand@3.7.2
-  '@uniswap/v3-periphery': /@0xgabi/v3-periphery/1.4.2
   '@uniswap/widgets': 1.1.1_m77xohevoe6niivteiigk2qfnu
   buffer: 6.0.3
   clipboard-polyfill: 4.0.0-rc1
   ethers: 5.6.8
-  ipfs-http-client: 55.0.0
+  ipfs-http-client: 56.0.3
   lodash.debounce: 4.0.8
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
@@ -693,17 +691,16 @@ packages:
       '@babel/helper-validator-identifier': 7.16.7
       to-fast-properties: 2.0.0
 
-  /@blossom-labs/rosette-ui/0.0.1-alpha.6_zxhai4qal7ezfht52cx4u672cu:
-    resolution: {integrity: sha512-TWmE4lhmNKJbyB+ov8Km9gt87kZYvogF9FL3pch/TF3V93zA8Lj7YgiDCMddOfmKhJlWw9nELOc0ZzWjne3D5Q==}
+  /@blossom-labs/rosette-ui/0.0.1-alpha.9_zxhai4qal7ezfht52cx4u672cu:
+    resolution: {integrity: sha512-F6NjvGhV6+wPR49RMcbJ6UmvwRfO+xLfBTagd270ZgQXB+5BZW+zIgy4k+CV4bmD50Pgg9lwIbvH7n5AVSOm/Q==}
     engines: {node: '>=12.0.0'}
     hasBin: true
     peerDependencies:
-      react: ^16.3.1
-      react-dom: ^16.3.1
+      react: ^17.0.2
+      react-dom: ^17.0.2
       styled-components: '>=4.0.0'
     dependencies:
       '@babel/runtime': 7.18.3
-      airbnb-prop-types: 2.16.0_react@17.0.2
       arg: 2.0.1
       command-exists: 1.2.9
       dayjs: 1.11.3
@@ -1303,6 +1300,13 @@ packages:
   /@humanwhocodes/object-schema/1.2.1:
     resolution: {integrity: sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==}
     dev: true
+
+  /@ipld/dag-cbor/6.0.15:
+    resolution: {integrity: sha512-Vm3VTSTwlmGV92a3C5aeY+r2A18zbH2amehNhsX8PBa3muXICaWrN8Uri85A5hLH7D7ElhE8PdjxD6kNqUmTZA==}
+    dependencies:
+      cborg: 1.9.4
+      multiformats: 9.6.5
+    dev: false
 
   /@ipld/dag-cbor/7.0.2:
     resolution: {integrity: sha512-V9EhJVWXqzjjRs0kiZfUXOaq8y6R2C4AAmfGoMeszqGOBgfACr5tFAgAwZY0e8z/OpmJWpCrZhzPRTZV0c/gjA==}
@@ -3139,23 +3143,6 @@ packages:
       indent-string: 4.0.0
     dev: true
 
-  /airbnb-prop-types/2.16.0_react@17.0.2:
-    resolution: {integrity: sha512-7WHOFolP/6cS96PhKNrslCLMYAI8yB1Pp6u6XmxozQOiZbsI5ycglZr5cHhBFfuRcQQjzCMith5ZPZdYiJCxUg==}
-    peerDependencies:
-      react: ^0.14 || ^15.0.0 || ^16.0.0-alpha
-    dependencies:
-      array.prototype.find: 2.2.0
-      function.prototype.name: 1.1.5
-      is-regex: 1.1.4
-      object-is: 1.1.5
-      object.assign: 4.1.2
-      object.entries: 1.1.5
-      prop-types: 15.8.1
-      prop-types-exact: 1.2.0
-      react: 17.0.2
-      react-is: 16.13.1
-    dev: false
-
   /ajv/6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
     dependencies:
@@ -3215,13 +3202,6 @@ packages:
 
   /any-base/1.1.0:
     resolution: {integrity: sha512-uMgjozySS8adZZYePpaWs8cxB9/kdzmpX6SgJZ+wbz1K5eYk5QMYDVJaZKhxyIHUdnnJkfR7SVgStgH7LkGUyg==}
-    dev: false
-
-  /any-signal/2.1.2:
-    resolution: {integrity: sha512-B+rDnWasMi/eWcajPcCWSlYc7muXOrcYrqgyzcdKisl2H/WTlQ0gip1KyQfr0ZlxJdsuWCj/LWwQm7fhyhRfIQ==}
-    dependencies:
-      abort-controller: 3.0.0
-      native-abort-controller: 1.0.4_abort-controller@3.0.0
     dev: false
 
   /any-signal/3.0.1:
@@ -3312,15 +3292,6 @@ packages:
     resolution: {integrity: sha512-SleRWjh9JUud2wH1hPs9rZBZ33H6T9HOiL0uwGnGx9FpE6wKGyfWugmbkEOIs6qWrZhg0LWeLziLrEwQJhs5mQ==}
     engines: {node: '>=0.10.0'}
     dev: true
-
-  /array.prototype.find/2.2.0:
-    resolution: {integrity: sha512-sn40qmUiLYAcRb/1HsIQjTTZ1kCy8II8VtZJpMn2Aoen9twULhbWXisfh3HimGqMlHGUul0/TfKCnXg42LuPpQ==}
-    dependencies:
-      call-bind: 1.0.2
-      define-properties: 1.1.4
-      es-abstract: 1.20.1
-      es-shim-unscopables: 1.0.0
-    dev: false
 
   /array.prototype.flat/1.3.0:
     resolution: {integrity: sha512-12IUEkHsAhA4DY5s0FPgNXIdc8VRSqD9Zp78a5au9abH/SOBrsp082JOWFNTjkMozh8mqcdiKuaLGhPeYztxSw==}
@@ -4286,6 +4257,13 @@ packages:
   /csstype/3.1.0:
     resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
 
+  /dag-jose/1.0.0:
+    resolution: {integrity: sha512-U0b/YsIPBp6YZNTFrVjwLZAlY3qGRxZTIEcM/CcQmrVrCWq9MWQq9pheXVSPLIhF4SNwzp2SikPva4/BIrJY+g==}
+    dependencies:
+      '@ipld/dag-cbor': 6.0.15
+      multiformats: 9.6.5
+    dev: false
+
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
     dev: true
@@ -4711,6 +4689,7 @@ packages:
     resolution: {integrity: sha512-Jm6GPcCdC30eMLbZ2x8z2WuRwAws3zTBBKuusffYVUrNj/GVSUAZ+xKMaUpfNDR5IbyNA5LJbaecoUVbmUcB1w==}
     dependencies:
       has: 1.0.3
+    dev: true
 
   /es-to-primitive/1.2.1:
     resolution: {integrity: sha512-QCOllgZJtaUo9miYBcLChTUaHNjJF3PYs1VidD7AwiEj1kYxKeQTctLAezAOH5ZKRH0g2IgPn6KwB4IT8iRpvA==}
@@ -6562,10 +6541,12 @@ packages:
     engines: {node: '>= 0.10'}
     dev: true
 
-  /ipfs-core-types/0.9.0:
-    resolution: {integrity: sha512-VJ8vJSHvI1Zm7/SxsZo03T+zzpsg8pkgiIi5hfwSJlsrJ1E2v68QPlnLshGHUSYw89Oxq0IbETYl2pGTFHTWfg==}
+  /ipfs-core-types/0.10.3:
+    resolution: {integrity: sha512-GNid2lRBjR5qgScCglgk7w9Hk3TZAwPHQXxOLQx72wgyc0jF2U5NXRoKW0GRvX8NPbHmsrFszForIqxd23I1Gw==}
     dependencies:
+      '@ipld/dag-pb': 2.1.17
       interface-datastore: 6.1.0
+      ipfs-unixfs: 6.0.9
       multiaddr: 10.0.1
       multiformats: 9.6.5
     transitivePeerDependencies:
@@ -6573,15 +6554,15 @@ packages:
       - supports-color
     dev: false
 
-  /ipfs-core-utils/0.13.0:
-    resolution: {integrity: sha512-HP5EafxU4/dLW3U13CFsgqVO5Ika8N4sRSIb/dTg16NjLOozMH31TXV0Grtu2ZWo1T10ahTzMvrfT5f4mhioXw==}
+  /ipfs-core-utils/0.14.3:
+    resolution: {integrity: sha512-aBkewVhgAj3NWXPwu6imj0wADGiGVZmJzqKzODOJsibDjkx6FGdMv8kvvqtLnK8LS/dvSk9yk32IDtuDyYoV7Q==}
     dependencies:
-      any-signal: 2.1.2
+      any-signal: 3.0.1
       blob-to-it: 1.0.4
       browser-readablestream-to-it: 1.0.3
       debug: 4.3.4
       err-code: 3.0.1
-      ipfs-core-types: 0.9.0
+      ipfs-core-types: 0.10.3
       ipfs-unixfs: 6.0.9
       ipfs-utils: 9.0.6
       it-all: 1.0.6
@@ -6594,33 +6575,32 @@ packages:
       multiformats: 9.6.5
       nanoid: 3.3.4
       parse-duration: 1.0.2
-      timeout-abort-controller: 2.0.0
+      timeout-abort-controller: 3.0.0
       uint8arrays: 3.0.0
     transitivePeerDependencies:
       - node-fetch
       - supports-color
     dev: false
 
-  /ipfs-http-client/55.0.0:
-    resolution: {integrity: sha512-GpvEs7C7WL9M6fN/kZbjeh4Y8YN7rY8b18tVWZnKxRsVwM25cIFrRI8CwNt3Ugin9yShieI3i9sPyzYGMrLNnQ==}
-    engines: {node: '>=14.0.0', npm: '>=3.0.0'}
+  /ipfs-http-client/56.0.3:
+    resolution: {integrity: sha512-E3L5ylVl6BjyRUsNehvfuRBYp1hj8vQ8in4zskVPMNzXs6JiCFUbif5a6BtcAlSK4xPQyJCeLNNAWLUeFQTLNA==}
+    engines: {node: '>=15.0.0', npm: '>=3.0.0'}
     dependencies:
       '@ipld/dag-cbor': 7.0.2
       '@ipld/dag-json': 8.0.10
       '@ipld/dag-pb': 2.1.17
-      abort-controller: 3.0.0
-      any-signal: 2.1.2
+      any-signal: 3.0.1
+      dag-jose: 1.0.0
       debug: 4.3.4
       err-code: 3.0.1
-      ipfs-core-types: 0.9.0
-      ipfs-core-utils: 0.13.0
+      ipfs-core-types: 0.10.3
+      ipfs-core-utils: 0.14.3
       ipfs-utils: 9.0.6
       it-first: 1.0.7
       it-last: 1.0.6
       merge-options: 3.0.4
       multiaddr: 10.0.1
       multiformats: 9.6.5
-      native-abort-controller: 1.0.4_abort-controller@3.0.0
       parse-duration: 1.0.2
       stream-to-it: 0.2.4
       uint8arrays: 3.0.0
@@ -8381,14 +8361,6 @@ packages:
       - supports-color
     dev: true
 
-  /native-abort-controller/1.0.4_abort-controller@3.0.0:
-    resolution: {integrity: sha512-zp8yev7nxczDJMoP6pDxyD20IU0T22eX8VwN2ztDccKvSZhRaV33yP1BGwKSZfXuqWUzsXopVFjBdau9OOAwMQ==}
-    peerDependencies:
-      abort-controller: '*'
-    dependencies:
-      abort-controller: 3.0.0
-    dev: false
-
   /native-fetch/3.0.0:
     resolution: {integrity: sha512-G3Z7vx0IFb/FQ4JxvtqGABsOTIqRWvgQz6e+erkB+JJD6LrszQtMozEHI4EkmgZQvnGHrpLVzUWk7t4sJCIkVw==}
     peerDependencies:
@@ -8525,14 +8497,6 @@ packages:
   /object-inspect/1.12.2:
     resolution: {integrity: sha512-z+cPxW0QGUp0mcqcsgQyLVRDoXFQbXOwBaqyF7VIgI4TWNQsDHrBpUQslRmIfAoYWdYzs6UlKJtB2XJpTaNSpQ==}
 
-  /object-is/1.1.5:
-    resolution: {integrity: sha512-3cyDsyHgtmi7I7DfSSI2LDp6SK2lwvtbg0p0R1e0RvTqF5ceGx+K2dfSjm1bKDMVCFEDAQvy+o8c6a7VujOddw==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      call-bind: 1.0.2
-      define-properties: 1.1.4
-    dev: false
-
   /object-keys/1.1.1:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
@@ -8560,6 +8524,7 @@ packages:
       call-bind: 1.0.2
       define-properties: 1.1.4
       es-abstract: 1.20.1
+    dev: true
 
   /object.fromentries/2.0.5:
     resolution: {integrity: sha512-CAyG5mWQRRiBU57Re4FKoTBjXfDoNwdFVH2Y1tS9PqCsfUTymAohOkEMSG3aRNKmv4lV3O7p1et7c187q6bynw==}
@@ -9036,14 +9001,6 @@ packages:
       asap: 2.0.6
     dev: false
 
-  /prop-types-exact/1.2.0:
-    resolution: {integrity: sha512-K+Tk3Kd9V0odiXFP9fwDHUYRyvK3Nun3GVyPapSIs5OBkITAm15W0CPFD/YKTkMUAbc0b9CUwRQp2ybiBIq+eA==}
-    dependencies:
-      has: 1.0.3
-      object.assign: 4.1.2
-      reflect.ownkeys: 0.2.0
-    dev: false
-
   /prop-types/15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
     dependencies:
@@ -9470,10 +9427,6 @@ packages:
     resolution: {integrity: sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==}
     dependencies:
       '@babel/runtime': 7.18.3
-    dev: false
-
-  /reflect.ownkeys/0.2.0:
-    resolution: {integrity: sha512-qOLsBKHCpSOFKK1NUOCGC5VyeufB6lEsFe92AL2bhIJsacZS1qdoOZSbPk3MYKuT2cFlRDnulKXuuElIrMjGUg==}
     dev: false
 
   /reflexbox/4.0.6_react@17.0.2:
@@ -10396,11 +10349,9 @@ packages:
       xtend: 4.0.2
     dev: true
 
-  /timeout-abort-controller/2.0.0:
-    resolution: {integrity: sha512-2FAPXfzTPYEgw27bQGTHc0SzrbmnU2eso4qo172zMLZzaGqeu09PFa5B2FCUHM1tflgRqPgn5KQgp6+Vex4uNA==}
+  /timeout-abort-controller/3.0.0:
+    resolution: {integrity: sha512-O3e+2B8BKrQxU2YRyEjC/2yFdb33slI22WRdUaDx6rvysfi9anloNZyR2q0l6LnePo5qH7gSM7uZtvvwZbc2yA==}
     dependencies:
-      abort-controller: 3.0.0
-      native-abort-controller: 1.0.4_abort-controller@3.0.0
       retimer: 3.0.0
     dev: false
 

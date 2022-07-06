@@ -1,12 +1,12 @@
 import {
   Button,
-  Box,
   Modal,
   GU,
   Field,
   TextInput,
   Header,
   textStyle,
+  addressesEqual,
 } from "@blossom-labs/rosette-ui";
 import { forwardRef, memo, useCallback, useState } from "react";
 import type {
@@ -21,6 +21,7 @@ import { actions } from "../use-contract-descriptor-store";
 import type { Function } from "../use-contract-descriptor-store";
 import { DescriptionField } from "./DescriptionField";
 import { canTab, getSelectionRange } from "~/utils/client/selection.client";
+import { useAccount } from "wagmi";
 
 type FunctionDescriptorProps = {
   fnDescriptorEntry: Function;
@@ -31,11 +32,14 @@ type FunctionDescriptorProps = {
 export const FunctionDescriptor = memo(
   forwardRef<HTMLTextAreaElement, FunctionDescriptorProps>(
     ({ fnDescriptorEntry, description, onEntryChange, ...props }, ref) => {
+      const [{ data: accountData }] = useAccount();
       const [showModal, setShowModal] = useState(false);
       const [callData, setCallData] = useState("");
       const entry = fnDescriptorEntry.entry;
-      const { notice, status } = entry || {};
+      const { notice, status, submitter } = entry || {};
       const descriptorStatus = status || FnDescriptionStatus.Available;
+      const disableDescriptionField =
+        !!submitter && !addressesEqual(submitter, accountData?.address ?? "");
 
       const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
         const textArea = e.target as HTMLTextAreaElement;
@@ -80,9 +84,9 @@ export const FunctionDescriptor = memo(
           <DescriptionField
             ref={ref}
             height={`${23.5 * GU}px`}
-            description={notice ?? description}
+            description={description ?? notice}
             onChange={handleOnChange}
-            disabled={!!notice}
+            disabled={disableDescriptionField}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
             {...props}

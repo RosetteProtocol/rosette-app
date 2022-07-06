@@ -1,4 +1,5 @@
 import {
+  addressesEqual,
   Button,
   GU,
   IconMenu,
@@ -13,8 +14,9 @@ import { FunctionDetails } from "./FunctionDetails";
 import { HELPER_FUNCTIONS } from "~/radspec-helper-functions";
 import type { HelperFunction } from "~/radspec-helper-functions";
 
-import { actions } from "../use-contract-descriptor-store";
+import { actions, selectors } from "../use-contract-descriptor-store";
 import { SELECTION_SEPARATOR } from "~/utils/client/selection.client";
+import { useAccount } from "wagmi";
 
 type Placement =
   | "top"
@@ -39,6 +41,7 @@ export const HelperFunctionsPicker = ({
 }: {
   popoverPlacement?: Placement;
 }) => {
+  const [{ data: accountData }] = useAccount();
   const opener = useRef();
   const [visible, setVisible] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,6 +52,11 @@ export const HelperFunctionsPicker = ({
       ),
     [searchTerm]
   );
+  const currentEntrySubmitter =
+    selectors.currentFnDescriptorEntry()?.entry?.submitter;
+  const pickerDisabled =
+    currentEntrySubmitter &&
+    !addressesEqual(currentEntrySubmitter, accountData?.address ?? "");
 
   const handleUseFunction = useCallback((fn: HelperFunction) => {
     actions.addHelperFunction(computeFnSignature(fn));
@@ -72,6 +80,7 @@ export const HelperFunctionsPicker = ({
         display="icon"
         label="Helper functions"
         ref={opener}
+        disabled={pickerDisabled}
         icon={<IconMenu />}
         onClick={() => setVisible(true)}
       />

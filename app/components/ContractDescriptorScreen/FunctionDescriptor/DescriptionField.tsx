@@ -12,7 +12,7 @@ type DescriptionFieldProps = {
   textSize?: string;
   onChange(value: string): void;
   onBlur?: FocusEventHandler<HTMLTextAreaElement>;
-  onKeyDown?: KeyboardEventHandler<HTMLTextAreaElement>;
+  onKeyDown: KeyboardEventHandler<HTMLTextAreaElement>;
 };
 
 export const DescriptionField = forwardRef<
