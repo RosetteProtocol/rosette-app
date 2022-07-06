@@ -10,19 +10,18 @@
     "dev": "pnpm sync-assets && cross-env NODE_ENV=development netlify dev",
     "start": "pnpm sync-assets && cross-env NODE_ENV=production netlify dev",
     "sync-assets": "copy-aragon-ui-assets ./public",
-    "postinstall": "npx patch-package && remix setup node",
+    "postinstall": "remix setup node",
     "lint": "eslint ./app"
   },
   "dependencies": {
     "@blossom-labs/rosette-ui": "^0.0.1-alpha.7",
     "@netlify/functions": "^1.0.0",
     "@react-spring/web": "^9.4.4",
-    "@remix-run/netlify": "^1.5.1",
-    "@remix-run/node": "^1.5.1",
-    "@remix-run/react": "^1.5.1",
+    "@remix-run/netlify": "^1.6.3",
+    "@remix-run/node": "^1.6.3",
+    "@remix-run/react": "^1.6.3",
     "@udecode/zustood": "^0.4.4",
     "@uniswap/widgets": "^1.1.1",
-    "buffer": "^6.0.3",
     "clipboard-polyfill": "^4.0.0-rc1",
     "ethers": "^5.6.1",
     "ipfs-http-client": "56.0.3",
@@ -36,8 +35,8 @@
     "zustand": "^3.7.1"
   },
   "devDependencies": {
-    "@remix-run/dev": "^1.5.1",
-    "@remix-run/eslint-config": "^1.4.0",
+    "@remix-run/dev": "^1.6.3",
+    "@remix-run/eslint-config": "^1.6.3",
     "@types/lodash.debounce": "^4.0.7",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
@@ -46,7 +45,6 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.9.0",
     "hardhat": "^2.9.9",
-    "patch-package": "^6.4.7",
     "typescript": "^4.5.5"
   },
   "engines": {
