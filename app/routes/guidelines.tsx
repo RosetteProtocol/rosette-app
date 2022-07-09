@@ -10,30 +10,32 @@ export default function EntriesRoute() {
   return (
     <AppScreen hideBottomBar>
       <SmoothDisplayContainer>
-        <Container compactMode={below("medium")}>
-          <Title>Guideline v0 📕</Title>
-          <Content>
-            Lorem ipsum dolor sit amet consectetur adipiscing elit blandit
-            imperdiet, mauris inceptos lacinia at non aliquet nostra etiam duis
-            nibh, bibendum facilisi arcu est malesuada convallis nunc mattis.
-            Magnis interdum rutrum elementum lectus tempor ultricies ultrices
-            aptent ullamcorper, viverra scelerisque porttitor auctor condimentum
-            natoque cubilia sem potenti feugiat, mollis fringilla ut euismod
-            nunc at donec in. Elementum iaculis pharetra auctor magnis gravida
-            sollicitudin sociosqu, sodales accumsan nibh mollis curabitur eros
-            scelerisque, malesuada lacus tincidunt praesent hendrerit ultricies.
-            Nibh nulla nunc ut enim facilisi dictum convallis tincidunt a
-            cubilia, ultricies suscipit morbi hac pellentesque per blandit
-            praesent sociis. Feugiat morbi cursus condimentum ridiculus
-            vestibulum nisi penatibus, mollis nec ultricies tristique conubia
-            eget congue vivamus, tellus aenean netus elementum class sed. Vitae
-            cum aenean purus malesuada duis litora vehicula posuere donec
-            taciti, vel faucibus mi est augue fermentum eget torquent lacinia
-            pulvinar facilisis, elementum et metus laoreet per semper placerat
-            aliquam nullam.
-          </Content>
-          <Button>Sign Guideline</Button>
-        </Container>
+          <Container compactMode={below("medium")}>
+        <ContentContainer>
+              <Title>Guideline v0 📕</Title>
+              <Content>
+                Lorem ipsum dolor sit amet consectetur adipiscing elit blandit
+                imperdiet, mauris inceptos lacinia at non aliquet nostra etiam duis
+                nibh, bibendum facilisi arcu est malesuada convallis nunc mattis.
+                aliquam nullam.
+              </Content>
+              <Content>
+                Lorem ipsum dolor sit amet consectetur adipiscing elit blandit
+                imperdiet, mauris inceptos lacinia at non. 
+              </Content>
+              <Content>
+                Lorem ipsum mauris inceptos lacinia at non aliquet nostra etiam duis
+                nibh, bibendum facilisi arcu est malesuada convallis nunc mattis.
+              </Content>
+              <Content>
+                Lorem ipsum dolor sit amet consectetur adipiscing elit blandit
+                imperdiet, mauris inceptos lacinia at non aliquet nostra etiam duis
+                nibh, bibendum facilisi arcu est malesuada convallis nunc mattis.
+                aliquam nullam.
+              </Content>
+              <StyledButton>Sign Guideline</StyledButton>
+          </ContentContainer>
+            </Container>
       </SmoothDisplayContainer>
     </AppScreen>
   );
@@ -42,22 +44,44 @@ export default function EntriesRoute() {
 const Container = styled.div<{ compactMode: boolean }>`
   display: flex;
   flex-direction: column;
-  justify-content: top;
+  justify-content: center;
   align-items: center;
-  padding-top: ${({ compactMode }) => (compactMode ? 7 * GU : 23 * GU)}px;
+  /* padding-top: ${({ compactMode }) => (compactMode ? 7 * GU : 15 * GU)}px; */
   width: 100%;
   height: 100%;
+`;
+
+const ContentContainer = styled.div<{ compactMode: boolean }>`
+  display: flex;
+  flex-direction: column;
+  justify-content: top;
+  align-items: flex-start;
+  /* padding-top: ${({ compactMode }) => (compactMode ? 7 * GU : 15 * GU)}px; */
+  max-width: 773px;
+  border: 1px solid #A2957A;
+  border-radius: 20px;
+  padding: 56px 48px 48px;
 `;
 
 const Title = styled.div`
   ${textStyle("title1")};
   color: ${({ theme }) => theme.content};
-  margin-bottom: ${2 * GU}px;
+  margin-bottom: ${4 * GU}px;
+  width: 100%;
+  
+  
 `;
 
-const Content = styled.div`
+const Content = styled.p`
   ${textStyle("body2")};
   color: ${({ theme }) => theme.content};
-  max-width: 35%;
-  margin-bottom: ${2 * GU}px;
-`;
+  max-width: 100%;
+  margin-bottom: ${4 * GU}px;
+  `;
+  
+const StyledButton = styled(Button)`
+  
+  min-width: 100%;
+  border-radius: 8px;
+  padding: 24px  ;
+`
