@@ -4,6 +4,7 @@ import type { ChangeEventHandler } from "react";
 import styled from "styled-components";
 import { useDebounce } from "~/hooks/useDebounce";
 import { DEBOUNCE_TIME } from "~/utils/client/utils.client";
+import type { SpecificTypedParamFieldProps } from ".";
 
 type NumericInputProps = {
   error?: boolean;
@@ -13,13 +14,11 @@ type NumericInputProps = {
   wide?: boolean;
 };
 
-type NumericParamFieldProps = {
+type NumericParamFieldProps = SpecificTypedParamFieldProps<{
   decimals?: number;
   value: any;
-  index?: number;
-  onChange(value: any, decimals?: number, index?: number): void;
   error?: boolean;
-};
+}>;
 
 const NumericInput = ({
   value,
@@ -49,11 +48,11 @@ const NumericInput = ({
 export const NumericParamField = ({
   decimals,
   value,
-  index,
+  nestingPos,
   onChange,
   error,
 }: NumericParamFieldProps) => {
-  const [decimalValue_, setDecimalValue_] = useState(decimals ?? "18");
+  const [decimalValue_, setDecimalValue_] = useState(decimals ?? 0);
   const [value_, setValue_] = useState(value);
   const debouncedValue = useDebounce(value_, DEBOUNCE_TIME);
   const debouncedDecimalValue = useDebounce(decimalValue_, DEBOUNCE_TIME);
@@ -67,8 +66,16 @@ export const NumericParamField = ({
   }, [value]);
 
   useEffect(() => {
-    onChange(debouncedValue, Number(debouncedDecimalValue), index);
-  }, [debouncedValue, debouncedDecimalValue, index, onChange]);
+    if (!decimals) {
+      return;
+    }
+
+    setDecimalValue_(decimals);
+  }, [decimals]);
+
+  useEffect(() => {
+    onChange(nestingPos, debouncedValue, Number(debouncedDecimalValue));
+  }, [debouncedValue, debouncedDecimalValue, nestingPos, onChange]);
 
   return (
     <InlineContainer>

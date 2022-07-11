@@ -3,10 +3,12 @@ import type { SetImmerState, SetRecord, StoreApiGet } from "@udecode/zustood";
 import { utils } from "ethers";
 import type { FunctionFragment } from "ethers/lib/utils";
 import { FnDescriptionStatus } from "~/types";
+import type { ValueOrArray } from "~/types";
 import type { ContractData, FnEntry } from "~/types";
 import { getFnSelector } from "~/utils";
 import { getDefaultParamValues } from "~/utils/client/param-value.client";
-import type { ParamValues } from "~/utils/client/param-value.client";
+import type { FieldParamValue } from "~/utils/client/param-value.client";
+import { accessMultidimensionalArray } from "~/utils/client/utils.client";
 
 export type FnDescriptorEntry = {
   fullName: string;
@@ -19,7 +21,7 @@ export type UserFnDescription = {
   description: string;
 };
 
-export type FnTestingParams = Record<string, ParamValues | ParamValues[]>;
+export type TestingParam = ValueOrArray<FieldParamValue>;
 
 type ContractDescriptorState = {
   contractAddress: string;
@@ -31,8 +33,11 @@ type ContractDescriptorState = {
   readyToFocus: boolean;
   lastCaretPos: number;
   filters: Record<FnDescriptionStatus, boolean>;
-  fnsTestingParams: Record<string, FnTestingParams>;
+  fnsTestingParams: Record<string, TestingParam[]>;
 };
+
+export const parseNestingPos = (id: string): number[] =>
+  id.split(".").map((i) => Number(i));
 
 const initialState: ContractDescriptorState = {
   contractAddress: "",
@@ -63,11 +68,6 @@ const removeUserFnDescription = (
   delete newUserFnDescriptions[sigHash];
   set.userFnDescriptions(newUserFnDescriptions);
 };
-
-export const buildTestingParamKey = (name: string, type: string): string =>
-  `${name}-${type}`;
-
-export const parseTestingParamKey = (key: string): string[] => key.split("-");
 
 const contractDescriptorStore = createStore("contract-descriptor")(
   initialState,
@@ -106,17 +106,9 @@ const contractDescriptorStore = createStore("contract-descriptor")(
             fnsTestingParams: ContractDescriptorState["fnsTestingParams"],
             f
           ) => {
-            const sigHash = getFnSelector(f);
-            const params = f.inputs.reduce(
-              (params: FnTestingParams, { name, type }) => ({
-                ...params,
-                [buildTestingParamKey(name, type)]: getDefaultParamValues(type),
-              }),
-              {}
+            fnsTestingParams[getFnSelector(f)] = f.inputs.map((inp, i) =>
+              getDefaultParamValues(inp)
             );
-
-            fnsTestingParams[sigHash] = params;
-
             return fnsTestingParams;
           },
           {}
@@ -197,47 +189,125 @@ const contractDescriptorStore = createStore("contract-descriptor")(
         },
       });
     },
-    upsertFnTestingParams: (
+    updateFnTestingParams: (
       sigHash: string,
-      fnTestingParams: FnTestingParams
+      fnTestingParams: TestingParam[]
     ) => {
-      set.state((draft) => (draft.fnsTestingParams[sigHash] = fnTestingParams));
-    },
-    upsertFnTestingParam: (
-      sigHash: string,
-      paramKey: string,
-      paramValues: ParamValues,
-      index?: number
-    ) => {
-      const prevParamValues = get.fnsTestingParams()[sigHash][paramKey];
-      const { value, decimals } = paramValues;
-
-      if (Array.isArray(prevParamValues)) {
-        if (
-          index === undefined ||
-          (prevParamValues[index].value === value &&
-            prevParamValues[index].decimals === decimals)
-        ) {
-          return;
-        }
-      } else {
-        if (
-          prevParamValues.value === value &&
-          prevParamValues.decimals === decimals
-        ) {
-          return;
-        }
-      }
-
       set.state((draft) => {
-        const testingParams = draft.fnsTestingParams[sigHash][paramKey];
-        if (Array.isArray(testingParams)) {
-          if (index !== undefined) {
-            testingParams[index] = paramValues;
-          }
+        // Ignore excessively deep recursive type
+        // @ts-ignore
+        draft.fnsTestingParams[sigHash] = fnTestingParams;
+      });
+    },
+    updateFnTestingParam: (
+      sigHash: string,
+      paramValues: FieldParamValue,
+      nestingPosition: string
+    ) => {
+      set.state((draft) => {
+        const indexes = parseNestingPos(nestingPosition);
+        let fnTestingParams: ValueOrArray<TestingParam> | undefined;
+        let testingParamOrParams: ValueOrArray<TestingParam>;
+        let elementIndex: keyof TestingParam;
+
+        // For non-array param cases do the following
+        if (indexes.length === 1) {
+          fnTestingParams = draft.fnsTestingParams[sigHash];
+          elementIndex = indexes[0] as keyof TestingParam;
+
+          testingParamOrParams = fnTestingParams[elementIndex];
         } else {
-          draft.fnsTestingParams[sigHash][paramKey] = paramValues;
+          const deletedIndexes = indexes.splice(-1, 1);
+          fnTestingParams = accessMultidimensionalArray<TestingParam>(
+            draft.fnsTestingParams[sigHash],
+            indexes
+          );
+          elementIndex = deletedIndexes[0] as keyof TestingParam;
+
+          if (!fnTestingParams || !Array.isArray(fnTestingParams)) {
+            return;
+          }
+
+          testingParamOrParams = fnTestingParams[0][elementIndex];
         }
+
+        if (Array.isArray(testingParamOrParams)) {
+          return;
+        }
+
+        const { value, decimals } = testingParamOrParams || {};
+
+        // Don't update when having the same value
+        if (value == paramValues.value && decimals == paramValues.decimals) {
+          return;
+        }
+
+        fnTestingParams[elementIndex] = paramValues;
+      });
+    },
+    insertFnTestingArrayParam: (
+      sigHash: string,
+      nestingPos: string,
+      paramType: utils.ParamType
+    ) => {
+      set.state((draft) => {
+        const indexes = parseNestingPos(nestingPos);
+        const testingParams = accessMultidimensionalArray<TestingParam>(
+          // Ignore excessively deep recursive type
+          // @ts-ignore
+          draft.fnsTestingParams[sigHash],
+          indexes
+        );
+
+        if (!testingParams || !Array.isArray(testingParams)) {
+          return;
+        }
+
+        testingParams.push(getDefaultParamValues(paramType));
+      });
+    },
+    removeFnTestingArrayParam: (sigHash: string, nestingPos: string) => {
+      set.state((draft) => {
+        const indexes = parseNestingPos(nestingPos);
+        const deletedIndexes = indexes.splice(-1, 1);
+
+        let upperOneElementArray: any;
+        let upperOneElementArrayIndex: number = -1;
+        let testingParams: any = draft.fnsTestingParams[sigHash];
+
+        /**
+         * By finding and removing the upper one element array
+         * we avoid having empty nested arrays that we can't
+         * remove otherwise.
+         */
+        for (let i = 0; i < indexes.length; i++) {
+          const index = indexes[i];
+
+          if (testingParams[index].length === 1) {
+            if (i > 0 && !upperOneElementArray) {
+              upperOneElementArray = testingParams;
+              upperOneElementArrayIndex = index;
+            }
+          } else {
+            upperOneElementArray = null;
+            upperOneElementArrayIndex = -1;
+          }
+
+          testingParams = testingParams[index];
+        }
+
+        if (upperOneElementArray && upperOneElementArrayIndex > -1) {
+          upperOneElementArray.splice(upperOneElementArrayIndex, 1);
+          return;
+        }
+
+        const elementIndex = deletedIndexes[0];
+
+        if (!testingParams || !Array.isArray(testingParams)) {
+          return;
+        }
+
+        testingParams.splice(elementIndex, 1);
       });
     },
   }))

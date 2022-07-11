@@ -1,9 +1,10 @@
 import { utils, wordlists } from "ethers";
+import type { ValueOrArray } from "~/types";
 
-export type ParamValues = { decimals?: number; value: any };
+export type FieldParamValue = { decimals?: number; value: any };
 
-const SOLIDITY_TYPES_REGEX =
-  /^(?<type>address|bool|bytes?|uint|int|u?fixed|string)(?<range>(?<=uint|int)\d{1,3}|(?<=u?fixed)\d{1,2}x\d{1,3}|(?<=bytes)\d{1,2})?(?<array>\[(?<arrayLength>\d)?])?$/;
+export const SOLIDITY_TYPE_REGEX =
+  /^(?<type>[a-z]+)(?<range>\d+x?\d*)?(\[\d*\])*$/;
 
 const getRandomInt = (upperLimit: number): number =>
   Math.floor(Math.random() * upperLimit);
@@ -14,7 +15,7 @@ const generateRandomHexadecimal = (bytesLength: number): string => {
 
   return (
     "0x" +
-    // taken from https://stackoverflow.com/questions/60738424/javascript-generate-random-hexadecimal
+    // Taken from https://stackoverflow.com/questions/60738424/javascript-generate-random-hexadecimal
     [...crypto.getRandomValues(new Uint8Array(bytesLength_))]
       .map((m) => ("0" + m.toString(16)).slice(-2))
       .join("")
@@ -23,9 +24,9 @@ const generateRandomHexadecimal = (bytesLength: number): string => {
 
 const generateCollection = (
   length: number,
-  generateElement: () => any
+  generateElement: (index: number) => any
 ): any[] => {
-  return [...Array(length)].map(() => generateElement());
+  return [...Array(length)].map((_, i) => generateElement(i));
 };
 
 const generateRandomText = (): string =>
@@ -33,8 +34,8 @@ const generateRandomText = (): string =>
     " "
   );
 
-const generateParamValue = (type: string, range?: number): ParamValues => {
-  const v: ParamValues = { value: "" };
+const generateParamValue = (type: string, range?: number): FieldParamValue => {
+  const v: FieldParamValue = { value: "" };
 
   switch (type) {
     case "address":
@@ -69,25 +70,23 @@ const generateParamValue = (type: string, range?: number): ParamValues => {
   return v;
 };
 
-export const getDefaultParamValues = (
-  type: string
-): ParamValues | ParamValues[] => {
-  const res = SOLIDITY_TYPES_REGEX.exec(type);
-  let defaultValue: ParamValues | ParamValues[] = { value: "" };
+export const getDefaultParamValues = ({
+  arrayChildren,
+  arrayLength,
+  type,
+}: utils.ParamType): ValueOrArray<any> => {
+  if (!arrayChildren) {
+    const res = SOLIDITY_TYPE_REGEX.exec(type);
+    const rawType = res?.groups?.type ?? "uint";
+    const range = res?.groups?.range ?? 8;
 
-  if (!res) {
-    return defaultValue;
+    return generateParamValue(rawType, Number(range));
   }
 
-  const { type: rawType, range, array, arrayLength } = res.groups || {};
-  const arrayLength_ = Number(arrayLength ?? 1);
-  const range_ = Number(range);
+  // When having dynamic arrays generate one element only
+  const arrayLength_ = arrayLength === -1 ? 1 : arrayLength;
 
-  if (array) {
-    return generateCollection(Number(arrayLength_), () =>
-      generateParamValue(rawType, Number(range_))
-    );
-  }
-
-  return generateParamValue(rawType, range_);
+  return generateCollection(arrayLength_, () =>
+    getDefaultParamValues(arrayChildren)
+  );
 };

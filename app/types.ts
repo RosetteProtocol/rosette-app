@@ -1,5 +1,7 @@
 import type { Chain } from "wagmi";
 
+export type ValueOrArray<T> = T | ValueOrArray<T>[];
+
 export enum FnDescriptionStatus {
   Available = "available",
   Pending = "pending",

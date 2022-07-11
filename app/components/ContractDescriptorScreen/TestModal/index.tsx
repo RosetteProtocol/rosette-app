@@ -14,37 +14,34 @@ import {
   useTheme,
 } from "@blossom-labs/rosette-ui";
 import { useFetcher } from "@remix-run/react";
-import { Fragment, Interface } from "ethers/lib/utils";
-import { useCallback } from "react";
+import type { utils } from "ethers";
+import { defaultAbiCoder, Fragment, Interface } from "ethers/lib/utils";
 import type { ChangeEvent, ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import {
-  actions,
-  buildTestingParamKey,
-  parseTestingParamKey,
-  useTestModalData,
-} from "../use-contract-descriptor-store";
-import type { FnTestingParams } from "../use-contract-descriptor-store";
-import { toDecimals } from "~/utils";
+import { actions, useTestModalData } from "../use-contract-descriptor-store";
+import type { TestingParam } from "../use-contract-descriptor-store";
+import { getFnSelector, toDecimals } from "~/utils";
 import { buildHref } from "~/utils/client/utils.client";
-import type { ParamValues } from "~/utils/client/param-value.client";
+import { SOLIDITY_TYPE_REGEX } from "~/utils/client/param-value.client";
+import type { FieldParamValue } from "~/utils/client/param-value.client";
 import { Details } from "~/components/Details";
 import { ParamField } from "./ParamField";
+import type { ParamFieldProps } from "./ParamField";
 
 const TX_HASH_REGEX = /^0x[a-fA-F0-9]{64}$/;
 
-type ParamErrors = Record<string, string | string[]>;
+const computeTestingParamValue_ = ({ decimals, value }: FieldParamValue): any =>
+  // Cap the decimals value to avoid encoding huge values later on
+  decimals ? toDecimals(value, Math.min(9999, decimals)) : value;
 
-const computeTestingParamValue_ = ({ decimals, value }: ParamValues) =>
-  decimals ? toDecimals(value, decimals) : value;
+const computeTestingParamValue = (paramValue: TestingParam): any => {
+  if (!Array.isArray(paramValue)) {
+    return computeTestingParamValue_(paramValue);
+  }
 
-const computeTestingParamValue = (
-  paramValue: ParamValues | ParamValues[]
-): any =>
-  Array.isArray(paramValue)
-    ? paramValue.map((p) => computeTestingParamValue_(p))
-    : computeTestingParamValue_(paramValue);
+  return paramValue.map((p) => computeTestingParamValue(p));
+};
 
 const processEncodeError = (err: unknown) => {
   const err_ = err as Error;
@@ -52,63 +49,64 @@ const processEncodeError = (err: unknown) => {
   return err_.message.split("(")[0].trim();
 };
 
-const validateTestingParams = (
-  fnInterface: Interface,
-  params: FnTestingParams
-): ParamErrors | null => {
-  const fnFragment = Object.values(fnInterface.functions)[0];
-  let errors: ParamErrors = {};
+const validateTestingParams_ = (
+  params: TestingParam,
+  nestingPos: string,
+  type: string,
+  errorRegistry: Record<string, string>
+): void => {
+  if (Array.isArray(params)) {
+    params.map((p, i) =>
+      validateTestingParams_(p, `${nestingPos}.${i}`, type, errorRegistry)
+    );
+    return;
+  }
 
-  fnFragment.inputs.forEach((paramType) => {
-    const paramKey = buildTestingParamKey(paramType.name, paramType.type);
-    const valueOrValues = computeTestingParamValue(params[paramKey]);
-    try {
-      if (Array.isArray(valueOrValues)) {
-        const arrayErrors: string[] = [...Array(valueOrValues.length)].fill("");
-
-        valueOrValues.forEach((v, index) => {
-          try {
-            fnInterface._encodeParams([paramType.arrayChildren], [v]);
-          } catch (err) {
-            arrayErrors[index] = processEncodeError(err);
-          }
-        });
-
-        if (arrayErrors.filter((e) => e).length) {
-          errors[paramKey] = arrayErrors;
-        }
-      } else {
-        fnInterface._encodeParams([paramType], [valueOrValues]);
-      }
-    } catch (err) {
-      errors[paramKey] = processEncodeError(err);
-    }
-  });
-
-  return Object.keys(errors).length ? errors : null;
+  try {
+    console.log(type);
+    console.log(computeTestingParamValue(params));
+    defaultAbiCoder.encode([type], [computeTestingParamValue(params)]);
+  } catch (err) {
+    errorRegistry[nestingPos] = processEncodeError(err);
+  }
 };
 
-const convertBindings = (
-  bindings: Bindings,
-  fnAbi: string
-): FnTestingParams => {
-  return Fragment.from(fnAbi).inputs.reduce(
-    (testingParams: FnTestingParams, { name, type }) => {
-      testingParams[buildTestingParamKey(name, type)] = {
-        value: bindings[name].value.toString(),
-      };
+const validateTestingParams = (
+  fnInterface: Interface,
+  params: TestingParam[]
+): Record<string, string> => {
+  const errorRegistry: Record<string, string> = {};
+  const fnFragment = Object.values(fnInterface.functions)[0];
 
-      return testingParams;
-    },
-    {}
-  );
+  fnFragment.inputs.map((paramType, index) => {
+    const res = SOLIDITY_TYPE_REGEX.exec(paramType.type);
+    const { type, range = "" } = res?.groups || {};
+    const paramError = validateTestingParams_(
+      params[index],
+      index.toString(),
+      `${type}${range}`,
+      errorRegistry
+    );
+    return paramError;
+  });
+
+  return errorRegistry;
+};
+
+const convertBindings = (bindings: Bindings, fnAbi: string): TestingParam[] => {
+  return Fragment.from(fnAbi).inputs.map((input, index) => {
+    return {
+      value: bindings[input.name].value.toString(),
+      id: index.toString(),
+    };
+  });
 };
 
 const processFetchedTransaction = (
   tx: Transaction,
   sigHash: string,
   fnAbi: string
-): { result?: FnTestingParams; error?: string } => {
+): { result?: TestingParam[]; error?: string } => {
   if (!tx) {
     return {
       error: "No transaction was found for the given hash",
@@ -204,7 +202,9 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
   } = useTestModalData();
   const [evaluatedDescription, setEvaluatedDescription] = useState("");
   const [evaluatorErrorMsg, setEvaluatorErrorMsg] = useState("");
-  const [paramErrorMsgs, setParamErrorMsgs] = useState<ParamErrors>({});
+  const [paramErrorMsgs, setParamErrorMsgs] = useState<Record<string, string>>(
+    {}
+  );
   /**
    * Need to pass value to input otherwise the tx hash isn't displayed when
    * adornment shows up
@@ -218,52 +218,68 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
   );
   const disableTestButton =
     isEvaluatorLoading || !!Object.keys(paramErrorMsgs).length;
+  const fnFragment = useMemo(() => Fragment.from(fnAbi), [fnAbi]);
 
-  const handleParamFieldChange = useCallback(
-    (sigHash, paramName, paramValue, index) => {
+  const handleParamFieldChange: ParamFieldProps["onChange"] = useCallback(
+    (nestingPos, value, decimals) => {
       // When updating field remove any existing error if any
-      setParamErrorMsgs((prevErrors) => {
-        const newErrors = { ...prevErrors };
-        let prevParamErrors = prevErrors[paramName];
-
-        if (Array.isArray(prevParamErrors) && index !== undefined) {
-          prevParamErrors[index] = "";
-
-          if (prevParamErrors.filter((e) => e).length) {
-            newErrors[paramName] = [...prevParamErrors];
-          } else {
-            delete newErrors[paramName];
-          }
-        } else {
-          delete newErrors[paramName];
-        }
-
-        return newErrors;
+      setParamErrorMsgs((prevErrorRegistry) => {
+        const newErrorRegistry = { ...prevErrorRegistry };
+        delete newErrorRegistry[nestingPos];
+        return newErrorRegistry;
       });
-      actions.upsertFnTestingParam(sigHash, paramName, paramValue, index);
+      const paramValues: FieldParamValue = { value, decimals };
+
+      actions.updateFnTestingParam(
+        getFnSelector(fnFragment),
+        paramValues,
+        nestingPos
+      );
     },
-    []
+    [fnFragment]
+  );
+
+  const handleParamFieldAdd: ParamFieldProps["onAdd"] = useCallback(
+    (nestingPosition: string, paramType: utils.ParamType) => {
+      actions.insertFnTestingArrayParam(sigHash, nestingPosition, paramType);
+    },
+    [sigHash]
+  );
+
+  const handleParamFieldRemove: ParamFieldProps["onRemove"] = useCallback(
+    (id: string) => {
+      setParamErrorMsgs({});
+      actions.removeFnTestingArrayParam(sigHash, id);
+    },
+    [sigHash]
   );
 
   const paramFields = useMemo(
     () =>
-      Object.keys(testingParams).map((key) => {
-        const [name, type] = parseTestingParamKey(key);
-        const paramValues = testingParams[key];
+      fnFragment.inputs.map((input, index) => {
+        const { type, name } = input;
 
         return (
           <ParamField
-            key={key}
-            sigHash={sigHash}
-            name={name}
-            type={type}
-            value={paramValues}
+            key={`${type}-${name}`}
+            nestingPos={index.toString()}
+            paramType={input}
+            valueOrValues={testingParams[index]}
+            onAdd={handleParamFieldAdd}
             onChange={handleParamFieldChange}
-            error={paramErrorMsgs[key]}
+            onRemove={handleParamFieldRemove}
+            errors={paramErrorMsgs}
           />
         );
       }),
-    [handleParamFieldChange, sigHash, testingParams, paramErrorMsgs]
+    [
+      testingParams,
+      fnFragment,
+      paramErrorMsgs,
+      handleParamFieldAdd,
+      handleParamFieldChange,
+      handleParamFieldRemove,
+    ]
   );
 
   useEffect(() => {
@@ -286,13 +302,13 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
       return;
     }
 
-    const { result, error } = processFetchedTransaction(
+    const { result: newFnTestingParams, error } = processFetchedTransaction(
       txFetcher.data.tx,
       sigHash,
       fnAbi
     );
 
-    if (error || !result) {
+    if (error || !newFnTestingParams) {
       setTxHashErrorMsg(
         error ?? "An unknown error occurred when fetching the transaction"
       );
@@ -301,7 +317,7 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
 
     setIsEveryParamFilled(true);
 
-    actions.upsertFnTestingParams(sigHash, result);
+    actions.updateFnTestingParams(sigHash, newFnTestingParams);
   }, [fnAbi, sigHash, txFetcher.type, txFetcher.data]);
 
   const clear = () => {
@@ -334,13 +350,15 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
 
   const handleTest = () => {
     const fnInterface = new Interface([fnAbi]);
+    console.log("Validating");
     const errors = validateTestingParams(fnInterface, testingParams);
-
-    if (errors) {
+    console.log("Validated");
+    if (Object.keys(errors).length) {
       setParamErrorMsgs(errors);
       return;
     }
 
+    console.log("Encoding data!");
     const data = fnInterface.encodeFunctionData(
       sigHash,
       Object.values(testingParams).map((value) =>
@@ -411,7 +429,7 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
             label={
               isEvaluatorLoading ? (
                 <div style={{ display: "flex", gap: 1 * GU }}>
-                  <LoadingRing mode="half-circle" /> Testing…
+                  <LoadingRing /> Testing…
                 </div>
               ) : (
                 "Test"
