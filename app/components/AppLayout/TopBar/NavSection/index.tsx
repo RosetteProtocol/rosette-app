@@ -5,7 +5,7 @@ import { CompactMenu } from "./CompactMenu";
 
 import homeIcon from "~/assets/sidebar-home.svg";
 import entriesIcon from "~/assets/sidebar-entries.svg";
-import guidelinesIcon from "~/assets/sidebar-guidelines.svg";
+// import guidelinesIcon from "~/assets/sidebar-guidelines.svg";
 import swapIcon from "~/assets/sidebar-swap.svg";
 
 export type NavigationItem = {
@@ -16,9 +16,9 @@ export type NavigationItem = {
 
 const navigationItem: NavigationItem[] = [
   { icon: homeIcon, label: "Home", to: "/home" },
-  { icon: entriesIcon, label: "All Entries", to: "/entries" },
-  { icon: guidelinesIcon, label: "Guidelines", to: "/guidelines" },
-  { icon: swapIcon, label: "Swap RST", to: "/swap" },
+  { icon: entriesIcon, label: "All entries", to: "/entries" },
+  // { icon: guidelinesIcon, label: "Guidelines", to: "/guidelines" },
+  { icon: swapIcon, label: "Swap", to: "/swap" },
 ];
 
 export const NavSection = ({ compact }: { compact: boolean }) => {
