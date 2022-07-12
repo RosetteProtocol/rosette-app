@@ -57,24 +57,24 @@ const initialState: ContractDescriptorState = {
   fnsTestingParams: {},
 };
 
-const removeUserFnDescription = (
-  sigHash: string,
-  set: SetRecord<ContractDescriptorState> & {
-    state: SetImmerState<ContractDescriptorState>;
-  },
-  get: StoreApiGet<ContractDescriptorState, {}>
-) => {
-  const newUserFnDescriptions = { ...get.userFnDescriptions() };
-  delete newUserFnDescriptions[sigHash];
-  set.userFnDescriptions(newUserFnDescriptions);
-};
-
 const contractDescriptorStore = createStore("contract-descriptor")(
   initialState,
   {
     devtools: { enabled: process.env.NODE_ENV === "development" },
   }
 )
+  .extendSelectors((_, get) => ({
+    fnDescriptionsCounter: () => Object.keys(get.userFnDescriptions()).length,
+    currentFnDescriptorEntry: (): FnDescriptorEntry =>
+      get.filteredFnDescriptorEntries()[get.fnSelected()],
+    currentDescription: (): string => {
+      const descriptorEntry =
+        get.filteredFnDescriptorEntries()[get.fnSelected()];
+      const userDescription = get.userFnDescriptions()[descriptorEntry.sigHash];
+
+      return userDescription.description ?? descriptorEntry.entry?.notice ?? "";
+    },
+  }))
   .extendActions((set, get) => ({
     setUpContractDescriptorStore: (
       contractData: ContractData,
@@ -126,29 +126,25 @@ const contractDescriptorStore = createStore("contract-descriptor")(
       set.fnSelected(Math.max(0, prevFnSelected - 1));
     },
     toggleFilter: (filterName: keyof ContractDescriptorState["filters"]) => {
-      const newFilters = { ...get.filters() };
+      set.state((draft) => {
+        draft.filters[filterName] = !draft.filters[filterName];
+        draft.fnSelected = 0;
+        draft.filteredFnDescriptorEntries = draft.fnDescriptorEntries.filter(
+          (fnDescriptor) => {
+            const entry = fnDescriptor.entry;
+            const isAvailable = !entry;
 
-      newFilters[filterName] = !newFilters[filterName];
+            if (isAvailable) {
+              return draft.filters[FnDescriptionStatus.Available];
+            }
 
-      const newFilteredDescriptorEntries = get
-        .fnDescriptorEntries()
-        .filter((fnDescriptor) => {
-          const entry = fnDescriptor.entry;
-          const isAvailable = !entry;
-
-          if (isAvailable) {
-            return newFilters[FnDescriptionStatus.Available];
+            return draft.filters[entry!.status];
           }
-
-          return newFilters[entry!.status];
-        });
-
-      set.fnSelected(0);
-      set.filteredFnDescriptorEntries(newFilteredDescriptorEntries);
-      set.filters(newFilters);
+        );
+      });
     },
     upsertFnDescription: (sigHash: string, description: string) => {
-      const prevUserFnDescriptions = get.userFnDescriptions();
+      const userFnDescriptions = get.userFnDescriptions();
 
       /**
        * Don't insert a description that equals an already existing description entry.
@@ -164,29 +160,36 @@ const contractDescriptorStore = createStore("contract-descriptor")(
          * The user may edit descriptions already inserted by them and then revert the changes back to the original
          * value. When this happens, we need to remove the description.
          */
-        if (prevUserFnDescriptions[sigHash]) {
-          removeUserFnDescription(sigHash, set, get);
+        if (userFnDescriptions[sigHash]) {
+          set.state((draft) => {
+            delete draft.userFnDescriptions[sigHash];
+          });
         }
         return;
       }
 
-      if (prevUserFnDescriptions[sigHash]?.description === description) {
+      if (userFnDescriptions[sigHash]?.description === description) {
         return;
       }
 
       // Delete empty descriptions
-      if (!description && prevUserFnDescriptions[sigHash]) {
-        removeUserFnDescription(sigHash, set, get);
+      if (!description && userFnDescriptions[sigHash]) {
+        set.state((draft) => {
+          delete draft.userFnDescriptions[sigHash];
+        });
+
         return;
       }
 
-      // Upsert the new description
-      set.userFnDescriptions({
-        ...prevUserFnDescriptions,
-        [sigHash]: {
-          ...prevUserFnDescriptions[sigHash],
-          description,
-        },
+      set.state((draft) => {
+        if (draft.userFnDescriptions[sigHash]) {
+          draft.userFnDescriptions[sigHash].description = description;
+        } else {
+          draft.userFnDescriptions[sigHash] = {
+            sigHash,
+            description,
+          };
+        }
       });
     },
     updateFnTestingParams: (
@@ -313,36 +316,20 @@ const contractDescriptorStore = createStore("contract-descriptor")(
   }))
   .extendActions((set, get) => ({
     addHelperFunction: (fnSignature: string) => {
-      const selectedEntry = get.filteredFnDescriptorEntries()[get.fnSelected()];
-      const selectedUserFnDescription =
-        get.userFnDescriptions()[selectedEntry.sigHash];
+      const currentEntry = get.currentFnDescriptorEntry();
+      const currentFnDescription = get.currentDescription();
+      get.userFnDescriptions()[currentEntry.sigHash];
       const fieldCaretPos = get.lastCaretPos();
-      const oldDescription =
-        selectedUserFnDescription?.description ??
-        selectedEntry.entry?.notice ??
-        "";
-      const newDescription = `${oldDescription.slice(
+      const newDescription = `${currentFnDescription.slice(
         0,
         fieldCaretPos
-      )}\`${fnSignature}\`${oldDescription.slice(fieldCaretPos)}`;
+      )}\`${fnSignature}\`${currentFnDescription.slice(fieldCaretPos)}`;
 
-      set.upsertFnDescription(selectedEntry.sigHash, newDescription);
+      set.upsertFnDescription(currentEntry.sigHash, newDescription);
 
       // Wait a little bit for the description to update.
       setTimeout(() => set.readyToFocus(true), 100);
       setTimeout(() => set.readyToFocus(false), 100);
-    },
-  }))
-  .extendSelectors((_, get) => ({
-    fnDescriptionsCounter: () => Object.keys(get.userFnDescriptions()).length,
-    currentFnDescriptorEntry: (): FnDescriptorEntry | undefined =>
-      get.filteredFnDescriptorEntries()[get.fnSelected()],
-    currentDescription: (): string => {
-      const descriptorEntry =
-        get.filteredFnDescriptorEntries()[get.fnSelected()];
-      const userDescription = get.userFnDescriptions()[descriptorEntry.sigHash];
-
-      return userDescription.description ?? descriptorEntry.entry?.notice ?? "";
     },
   }));
 
