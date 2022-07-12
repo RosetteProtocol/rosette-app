@@ -2,9 +2,7 @@ import type { Chain } from "wagmi";
 
 export enum FnDescriptionStatus {
   Available = "available",
-  Pending = "pending",
   Added = "added",
-  Challenged = "challenged",
 }
 
 export type FnEntry = {

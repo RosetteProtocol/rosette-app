@@ -16,7 +16,7 @@ type FilterButtonProps = {
   onClick(): void;
 };
 
-const { Added, Available, Challenged, Pending } = FnDescriptionStatus;
+const { Added, Available } = FnDescriptionStatus;
 
 const { toggleFilter } = actions;
 
@@ -58,7 +58,7 @@ export const FunctionDescriptorFilters = ({
   compactMode: boolean;
 }) => {
   const { filters } = useContractDescriptorStore();
-  const { added, available, challenged, pending } = filters;
+  const { added, available } = filters;
 
   return (
     <Container compactMode={compactMode}>
@@ -73,16 +73,6 @@ export const FunctionDescriptorFilters = ({
           label="Added"
           active={added}
           onClick={() => toggleFilter(Added)}
-        />
-        <FilterButton
-          label="Challenged"
-          active={challenged}
-          onClick={() => toggleFilter(Challenged)}
-        />
-        <FilterButton
-          label="Pending"
-          active={pending}
-          onClick={() => toggleFilter(Pending)}
         />
       </FlexContainer>
     </Container>
