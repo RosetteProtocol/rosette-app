@@ -102,6 +102,7 @@ export const HelperFunctionsPicker = ({
             <FunctionsSection>
               {filteredHelperFunctions.map((fn) => (
                 <Details
+                  key={`${fn.name}-${fn.params?.toString()}`}
                   label={fn.name}
                   actionLabel="Use"
                   onAction={() => handleUseFunction(fn)}
