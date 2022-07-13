@@ -1,13 +1,6 @@
-import {
-  Button,
-  Field,
-  GU,
-  Info,
-  LoadingRing,
-  TextInput,
-} from "@blossom-labs/rosette-ui";
+import { Field, GU, LoadingRing, TextInput } from "@blossom-labs/rosette-ui";
 import { utils } from "ethers";
-import type { ChangeEvent, FormEventHandler } from "react";
+import type { ChangeEventHandler } from "react";
 import { useState } from "react";
 import styled from "styled-components";
 
@@ -19,56 +12,50 @@ type ContractFormProps = {
 export const ContractForm = ({ loading, onSubmit }: ContractFormProps) => {
   const [contractAddress, setContractAddress] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const errorExists = !!errorMsg.length;
 
-  const handleSubmit: FormEventHandler = (e) => {
-    e.preventDefault();
+  const handleChange: ChangeEventHandler<HTMLInputElement> = ({
+    target: { value },
+  }) => {
+    setContractAddress(value);
+    setErrorMsg("");
 
-    if (!contractAddress) {
-      setErrorMsg("Type in a contract address.");
+    if (!value.length) {
       return;
     }
-    if (!utils.isAddress(contractAddress)) {
-      setErrorMsg("Invalid contract address.");
+
+    if (!utils.isAddress(value)) {
+      setErrorMsg("Invalid contract address");
       return;
     }
 
-    onSubmit(contractAddress);
+    onSubmit(value);
   };
 
   return (
     <Container>
-      <form onSubmit={handleSubmit}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            marginBottom: 3 * GU,
-          }}
+      <form>
+        <Field
+          label="Contract address"
+          error={errorExists}
+          helperText={errorMsg}
         >
-          <Field label="Contract address">
-            <TextInput
-              value={contractAddress}
-              placeholder="0x…"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                setErrorMsg("");
-                setContractAddress(e.target.value);
-              }}
-              size="medium"
-              wide
-            />
-          </Field>
-          {errorMsg && <Info mode="error">{errorMsg}</Info>}
-        </div>
-        <NextButton type="submit" mode="strong" disabled={loading} wide>
-          {loading ? (
-            <>
-              <LoadingRing style={{ marginRight: 1 * GU }} mode="half-circle" />
-              <Load>Loading…</Load>
-            </>
-          ) : (
-            <>Next</>
-          )}
-        </NextButton>
+          <TextInput
+            adornment={loading ? <LoadingRing /> : null}
+            adornmentPosition="end"
+            adornmentSettings={{
+              width: 70,
+              padding: 15,
+            }}
+            value={contractAddress}
+            placeholder="0x…"
+            onChange={handleChange}
+            error={errorExists}
+            disabled={loading}
+            size="medium"
+            wide
+          />
+        </Field>
       </form>
     </Container>
   );
@@ -80,12 +67,4 @@ const Container = styled.div`
   margin: 0 ${3 * GU}px;
   display: flex;
   flex-direction: column;
-`;
-
-const NextButton = styled(Button)`
-  height: ${8 * GU}px;
-`;
-
-const Load = styled.div`
-  color: ${({ theme }) => theme.contentSecondary};
 `;
