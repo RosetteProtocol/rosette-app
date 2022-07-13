@@ -21,7 +21,7 @@ const getConnectors = (chainId: string): Connector[] => {
     new WalletConnectConnector({
       chains: [chain],
       options: {
-        infuraId: window.ENV.INFURA_ID,
+        infuraId: window.ENV.INFURA_PROJECT_ID,
         qrcode: true,
       },
     }),

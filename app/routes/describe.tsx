@@ -8,17 +8,17 @@ import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { ContractDescriptorScreen } from "~/components/ContractDescriptorScreen";
 import { ContractSelectorScreen } from "~/components/ContractSelectorScreen";
 import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
-import type { ContractData, AggregateContract } from "~/types";
+import type { ContractData, AggregatedContract } from "~/types";
 import { fetchContracts } from "~/utils/server/contract-data.server";
+import { getSearchParams } from "~/utils/server/utils.server";
 
 type LoaderData = {
   contractAddress: string;
-  contracts: AggregateContract[];
+  contracts: AggregatedContract[];
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const { searchParams } = new URL(request.url);
-  const contractAddress = searchParams.get("contract");
+  const [contractAddress] = getSearchParams(request.url, ["contractAddress"]);
 
   if (!contractAddress) {
     throw new Response("Expected contract param", {

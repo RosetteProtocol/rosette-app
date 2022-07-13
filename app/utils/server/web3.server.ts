@@ -40,7 +40,13 @@ export const getProvider = (networkId: number): providers.Provider => {
     return STATIC_PROVIDERS_CACHE.get(networkId)!;
   }
 
-  const network = NETWORKS.find((n) => n.id === networkId)!;
+  const network = NETWORKS.find((n) => n.id === networkId);
+
+  if (!network) {
+    throw new Response(`No provider found for given network id ${networkId}`, {
+      status: 400,
+    });
+  }
 
   const provider = new providers.StaticJsonRpcProvider(
     buildRpcEndpoint(network),

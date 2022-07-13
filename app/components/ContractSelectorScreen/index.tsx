@@ -1,11 +1,11 @@
 import { GU, textStyle } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { a, useTransition } from "@react-spring/web";
-import type { ContractData, AggregateContract } from "~/types";
+import type { ContractData, AggregatedContract } from "~/types";
 import { ContractItem } from "./ContractItem";
 
 type ContractSelectorScreenProps = {
-  contracts: AggregateContract[];
+  contracts: AggregatedContract[];
   loaderText?: string;
   onContractDataSelected(contractData: ContractData): void;
 };

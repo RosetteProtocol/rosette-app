@@ -25,7 +25,7 @@ export async function loader() {
     ENV: {
       CHAIN_ID: process.env.CHAIN_ID,
       RPC_URL: process.env.RPC_URL,
-      INFURA_ID: process.env.INFURA_ID,
+      INFURA_PROJECT_ID: process.env.INFURA_PROJECT_ID,
       ROSETTE_STONE_ADDRESS: process.env.ROSETTE_STONE_ADDRESS,
     },
   });

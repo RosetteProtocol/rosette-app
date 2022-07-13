@@ -1,45 +1,46 @@
 import {
   Button,
-  Modal,
   GU,
-  Field,
-  TextInput,
-  Header,
   textStyle,
   addressesEqual,
 } from "@blossom-labs/rosette-ui";
-import { forwardRef, memo, useCallback, useState } from "react";
-import type {
-  FocusEventHandler,
-  KeyboardEventHandler,
-  ChangeEvent,
-} from "react";
+import { forwardRef, memo, useCallback } from "react";
+import type { FocusEventHandler, KeyboardEventHandler } from "react";
 import styled from "styled-components";
 import { StatusLabel } from "~/components/StatusLabel";
 import { FnDescriptionStatus } from "~/types";
 import { actions } from "../use-contract-descriptor-store";
-import type { Function } from "../use-contract-descriptor-store";
+import type { FnDescriptorEntry } from "../use-contract-descriptor-store";
 import { DescriptionField } from "./DescriptionField";
 import { canTab, getSelectionRange } from "~/utils/client/selection.client";
 import { useAccount } from "wagmi";
 
 type FunctionDescriptorProps = {
-  fnDescriptorEntry: Function;
+  fnDescriptorEntry: FnDescriptorEntry;
   description?: string;
   onEntryChange(sigHash: string, description: string): void;
+  onTestFunction(): void;
 };
 
 export const FunctionDescriptor = memo(
   forwardRef<HTMLTextAreaElement, FunctionDescriptorProps>(
-    ({ fnDescriptorEntry, description, onEntryChange, ...props }, ref) => {
+    (
+      {
+        fnDescriptorEntry,
+        description,
+        onEntryChange,
+        onTestFunction,
+        ...props
+      },
+      ref
+    ) => {
       const [{ data: accountData }] = useAccount();
-      const [showModal, setShowModal] = useState(false);
-      const [callData, setCallData] = useState("");
       const entry = fnDescriptorEntry.entry;
       const { notice, status, submitter } = entry || {};
       const descriptorStatus = status || FnDescriptionStatus.Available;
       const disableDescriptionField =
         !!submitter && !addressesEqual(submitter, accountData?.address ?? "");
+      const fnDescription = description ?? notice;
 
       const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
         const textArea = e.target as HTMLTextAreaElement;
@@ -69,12 +70,6 @@ export const FunctionDescriptor = memo(
         [onEntryChange, fnDescriptorEntry.sigHash]
       );
 
-      const handleTestModal = () => {
-        setShowModal(true);
-      };
-
-      const handleDescribeCalldata = () => {};
-
       return (
         <Container>
           <DescriptorHeader>
@@ -84,7 +79,7 @@ export const FunctionDescriptor = memo(
           <DescriptionField
             ref={ref}
             height={`${23.5 * GU}px`}
-            description={description ?? notice}
+            description={fnDescription}
             onChange={handleOnChange}
             disabled={disableDescriptionField}
             onBlur={handleBlur}
@@ -97,29 +92,9 @@ export const FunctionDescriptor = memo(
           <Button
             label="Test function"
             wide
-            onClick={handleTestModal}
-            disabled={!(notice || description)}
+            onClick={onTestFunction}
+            disabled={!fnDescription}
           />
-          <Modal visible={showModal} onClose={() => setShowModal(false)}>
-            <Header primary="Test function" />
-            <Field label="Calldata">
-              <TextInput
-                value={callData}
-                placeholder="0x…"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                  setCallData(e.target.value);
-                }}
-                size="medium"
-                wide
-              />
-            </Field>
-            <Button
-              label="Test"
-              wide
-              onClick={handleDescribeCalldata}
-              mode="strong"
-            />
-          </Modal>
         </Container>
       );
     }

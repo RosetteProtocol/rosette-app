@@ -26,7 +26,7 @@ export default function Home() {
         <ContractForm
           loading={describeIsPending}
           onSubmit={(contractAddress) =>
-            navigate(`/describe?contract=${contractAddress}`)
+            navigate(`/describe?contractAddress=${contractAddress}`)
           }
         />
       </MainContainer>

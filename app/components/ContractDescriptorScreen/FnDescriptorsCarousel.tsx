@@ -7,6 +7,7 @@ import {
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
 import { getSelectionRange } from "~/utils/client/selection.client";
+import { TestModal } from "./TestModal";
 
 type FnDescriptorsCarouselProps = {
   compactMode: boolean;
@@ -26,6 +27,7 @@ export const FnDescriptorsCarousel = ({
   const prevDescriptorIndexRef = useRef(-1);
   const currentDescriptorIndexRef = useRef(0);
   const [carouselMoveAnimationEnded, setCarouselMoveEnded] = useState(false);
+  const [showTestingModal, setShowTestingModal] = useState(false);
 
   /**
    * Generate descriptor refs
@@ -101,20 +103,29 @@ export const FnDescriptorsCarousel = ({
   }, [lastCaretPos, readyToFocus, fnSelected]);
 
   return (
-    <Carousel
-      selected={fnSelected}
-      items={filteredFnDescriptorEntries.map((f, i) => (
-        <FunctionDescriptor
-          ref={descriptorRefs.current[i]}
-          key={f.sigHash}
-          description={userFnDescriptions[f.sigHash]?.description}
-          fnDescriptorEntry={f}
-          onEntryChange={actions.upsertFnDescription}
+    <>
+      <Carousel
+        selected={fnSelected}
+        items={filteredFnDescriptorEntries.map((f, i) => (
+          <FunctionDescriptor
+            ref={descriptorRefs.current[i]}
+            key={f.sigHash}
+            description={userFnDescriptions[f.sigHash]?.description}
+            fnDescriptorEntry={f}
+            onEntryChange={actions.upsertFnDescription}
+            onTestFunction={() => setShowTestingModal(true)}
+          />
+        ))}
+        direction={compactMode ? "horizontal" : "vertical"}
+        itemSpacing={450}
+        onTransitionEnd={() => setCarouselMoveEnded(true)}
+      />
+      <div onWheel={(e) => e.stopPropagation()}>
+        <TestModal
+          show={showTestingModal}
+          onClose={() => setShowTestingModal(false)}
         />
-      ))}
-      direction={compactMode ? "horizontal" : "vertical"}
-      itemSpacing={450}
-      onTransitionEnd={() => setCarouselMoveEnded(true)}
-    />
+      </div>
+    </>
   );
 };

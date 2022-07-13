@@ -37,7 +37,7 @@ export default function Entries() {
               ))}
             </ListContainer>
           ) : (
-            <div>No entries found</div>
+            <EmptyContent>No entries found</EmptyContent>
           )}
         </Container>
       </SmoothDisplayContainer>
@@ -113,5 +113,10 @@ const InfoContainer = styled.div`
 
 const Hash = styled.div`
   ${textStyle("title4")};
+  color: ${({ theme }) => theme.content};
+`;
+
+const EmptyContent = styled.div`
+  ${textStyle("body2")};
   color: ${({ theme }) => theme.content};
 `;

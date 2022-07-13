@@ -10,13 +10,14 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { WheelEventHandler } from "react";
 import styled from "styled-components";
-import { FunctionDetails } from "./FunctionDetails";
 import { HELPER_FUNCTIONS } from "~/radspec-helper-functions";
 import type { HelperFunction } from "~/radspec-helper-functions";
 
 import { actions, selectors } from "../use-contract-descriptor-store";
 import { SELECTION_SEPARATOR } from "~/utils/client/selection.client";
 import { useAccount } from "wagmi";
+import { Details } from "~/components/Details";
+import { Entry } from "./Entry";
 
 type Placement =
   | "top"
@@ -100,11 +101,14 @@ export const HelperFunctionsPicker = ({
             />
             <FunctionsSection>
               {filteredHelperFunctions.map((fn) => (
-                <FunctionDetails
-                  key={fn.name}
-                  fn={fn}
-                  onUse={handleUseFunction}
-                />
+                <Details
+                  key={`${fn.name}-${fn.params?.toString()}`}
+                  label={fn.name}
+                  actionLabel="Use"
+                  onAction={() => handleUseFunction(fn)}
+                >
+                  <Entry description={fn.description} params={fn.params} />
+                </Details>
               ))}
             </FunctionsSection>
           </PopoverLayout>
