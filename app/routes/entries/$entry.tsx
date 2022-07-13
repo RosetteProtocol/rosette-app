@@ -41,4 +41,5 @@ const Container = styled.div`
   align-items: start;
   height: 100%;
   width: 100%;
+  color: ${({ theme }) => theme.content};
 `;
