@@ -1,15 +1,16 @@
-import type { ContractData, AggregateContract } from "~/types";
+import { constants } from "ethers";
+import type { Chain } from "wagmi";
+import type { ContractData, AggregatedContract } from "~/types";
 import { getProvider, NETWORKS } from "./web3.server";
 import {
-  buildExplorerFetchRequest,
+  performExplorerRequest,
+  ExplorerOperation,
   processExplorerResponse,
 } from "./blockchain-explorers.server";
 import {
   fetchImplementationAddress,
   getProxyPattern,
 } from "./proxy-patterns.server";
-import { constants } from "ethers";
-import type { Chain } from "wagmi";
 
 const processBytecodeRequest = (response: any): string => {
   const bytecode = response as string;
@@ -28,7 +29,7 @@ const processBytecodeRequest = (response: any): string => {
 
 export const fetchContracts = async (
   contractAddress: string
-): Promise<AggregateContract[]> => {
+): Promise<AggregatedContract[]> => {
   const responses = (await Promise.allSettled(
     NETWORKS.map((n) => fetchContractData(contractAddress, n))
   )) as PromiseSettledResult<ContractData>[];
@@ -74,10 +75,11 @@ export const fetchContractData = async (
 ): Promise<ContractData> => {
   const networkId = network.id;
   const provider = getProvider(networkId);
-  const explorerRequest = fetch(
-    buildExplorerFetchRequest(contractAddress, networkId)
+  const explorerRequest = performExplorerRequest(
+    ExplorerOperation.GET_SOURCECODE,
+    networkId,
+    [contractAddress]
   );
-
   const requests = [provider.getCode(contractAddress), explorerRequest];
   const responses = await Promise.all(requests);
 

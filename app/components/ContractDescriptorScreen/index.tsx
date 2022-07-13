@@ -1,8 +1,9 @@
 import { Button, GU, LoadingRing, useViewport } from "@blossom-labs/rosette-ui";
 import { useFetcher } from "@remix-run/react";
-import type { Fetcher } from "@remix-run/react/transition";
+import type { Fetcher } from "@remix-run/react";
 import { utils } from "ethers";
 import { useCallback, useEffect, useState } from "react";
+import type { WheelEventHandler } from "react";
 import styled from "styled-components";
 import { useAccount } from "wagmi";
 
@@ -15,7 +16,7 @@ import {
   useContractDescriptorStore,
 } from "./use-contract-descriptor-store";
 import type {
-  Function,
+  FnDescriptorEntry,
   UserFnDescription,
 } from "./use-contract-descriptor-store";
 import type { ContractData, FnEntry } from "~/types";
@@ -23,10 +24,19 @@ import useRosetteActions from "./useRosetteActions";
 import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
 import type { IPFSData } from "~/routes/fn-descriptions-upload";
-import debounce from "lodash.debounce";
 import { FunctionDescriptorFilters } from "./FunctionDescriptorFilters";
+import debounce from "lodash.debounce";
 
 const FN_DESCRIPTOR_DEFAULT_HEIGHT = "527px";
+
+const debouncedOnWheel = debounce<WheelEventHandler>((e) => {
+  e.stopPropagation();
+  if (e.deltaY < 0) {
+    actions.goToPrevFn();
+  } else {
+    actions.goToNextFn();
+  }
+}, 100);
 
 type ContractDescriptorScreenProps = {
   contractAddress: string;
@@ -35,7 +45,7 @@ type ContractDescriptorScreenProps = {
 };
 
 const buildIPFSUploadData = (
-  fnDescriptorEntries: Function[],
+  fnDescriptorEntries: FnDescriptorEntry[],
   userFnDescriptions: Record<string, UserFnDescription>
 ): IPFSData["functions"] => {
   return Object.keys(userFnDescriptions).map((sigHash) => {
@@ -64,7 +74,7 @@ const uploadFetcherReturnedData = (fetcher: Fetcher): boolean =>
 
 export const ContractDescriptorScreen = ({
   contractAddress,
-  contractData: { abi, bytecode },
+  contractData,
   currentFnEntries,
 }: ContractDescriptorScreenProps) => {
   const [callingContract, setCallingContract] = useState(false);
@@ -74,7 +84,7 @@ export const ContractDescriptorScreen = ({
     useContractDescriptorStore();
   const actionFetcher = useFetcher();
   const { upsertEntries } = useRosetteActions();
-  const bytecodeHash = utils.id(bytecode);
+  const bytecodeHash = utils.id(contractData.bytecode);
   const fnDescriptionsCounter = selectors.fnDescriptionsCounter();
   const compactMode = below("large");
   const submittingEntries =
@@ -144,32 +154,14 @@ export const ContractDescriptorScreen = ({
   ]);
 
   useEffect(() => {
-    if (abi && currentFnEntries) {
-      actions.setUpFnDescriptorEntries(abi, currentFnEntries);
+    if (contractData && currentFnEntries) {
+      actions.setUpContractDescriptorStore(contractData, currentFnEntries);
     }
-  }, [abi, currentFnEntries]);
-
-  useEffect(() => {
-    const onWheel = (e: WheelEvent) => {
-      if (e.deltaY < 0) {
-        actions.goToPrevFn();
-      } else {
-        actions.goToNextFn();
-      }
-    };
-
-    const debouncedOnWheel = debounce(onWheel, 100);
-
-    window.addEventListener("wheel", debouncedOnWheel);
-
-    return () => {
-      window.removeEventListener("wheel", debouncedOnWheel);
-    };
-  }, []);
+  }, [contractData, currentFnEntries]);
 
   return (
     <form style={{ height: "100%" }} onSubmit={handleSubmit}>
-      <Layout compactMode={compactMode}>
+      <Layout compactMode={compactMode} onWheel={debouncedOnWheel}>
         <FiltersContainer>
           <FunctionDescriptorFilters compactMode={compactMode} />
         </FiltersContainer>

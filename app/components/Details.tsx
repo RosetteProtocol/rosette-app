@@ -2,28 +2,32 @@ import {
   ButtonBase,
   GU,
   IconRight,
-  noop,
   textStyle,
   useTheme,
 } from "@blossom-labs/rosette-ui";
-import { useEffect, useRef, useState } from "react";
 import { a, useSpring } from "@react-spring/web";
+import type { ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import type { HelperFunction } from "~/radspec-helper-functions";
-import { Entry } from "./Entry";
 
-type FunctionDetailsProps = {
-  fn: HelperFunction;
-  onUse?(fn: HelperFunction): void;
+type DetailsProps = {
+  children: ReactNode;
+  actionLabel?: string;
+  label: ReactNode;
+  onAction?(payload: any): void;
 };
 
-export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
+export const Details = ({
+  children,
+  actionLabel,
+  label,
+  onAction,
+}: DetailsProps) => {
   const theme = useTheme();
   const contentRef = useRef<HTMLDivElement | null>(null);
   const contentHeight = useRef(0);
   const animate = useRef(false);
   const [opened, setOpened] = useState(false);
-
   const { openProgress } = useSpring({
     from: { openProgress: 0 },
     to: { openProgress: Number(opened) },
@@ -61,9 +65,13 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
           backgroundColor: openProgress.to((v) => theme.helpContent.alpha(v)),
         }}
       >
-        <ActionButtonWrapper onClick={() => onUse(fn)}>Use</ActionButtonWrapper>
+        {onAction && (
+          <ActionButtonWrapper onClick={onAction}>
+            {actionLabel ?? "Run action"}
+          </ActionButtonWrapper>
+        )}
         <EntryButton onClick={handleToggle}>
-          <FnNameWrapper>
+          <InnerWrapper>
             <div>
               <a.div
                 style={{
@@ -83,8 +91,8 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
                 </div>
               </a.div>
             </div>
-            <div style={{ marginTop: 2 }}>{fn.name}</div>
-          </FnNameWrapper>
+            <div style={{ marginTop: 2 }}>{label}</div>
+          </InnerWrapper>
         </EntryButton>
         <div
           style={{
@@ -102,8 +110,11 @@ export const FunctionDetails = ({ fn, onUse = noop }: FunctionDetailsProps) => {
               height: openProgress.to((v) => `${v * contentHeight.current}px`),
             }}
           >
-            <div ref={handleContentRef} style={{ padding: 5, marginLeft: 15 }}>
-              <Entry description={fn.description} params={fn.params} />
+            <div
+              ref={handleContentRef}
+              style={{ padding: 5, margin: "0 15px" }}
+            >
+              {children}
             </div>
           </AnimatedContainer>
         </div>
@@ -123,7 +134,7 @@ const EntryButton = styled.div`
   width: 100%;
 `;
 
-const FnNameWrapper = styled.h1`
+const InnerWrapper = styled.h1`
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -134,12 +145,6 @@ const FnNameWrapper = styled.h1`
   ${textStyle("body2")};
 `;
 
-const AnimatedContainer = styled(a.div)`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-`;
-
 const ActionButtonWrapper = styled(ButtonBase)`
   position: absolute;
   top: 10px;
@@ -147,4 +152,10 @@ const ActionButtonWrapper = styled(ButtonBase)`
   color: ${({ theme }) => theme.link};
   z-index: 2;
   ${textStyle("body2")};
+`;
+
+const AnimatedContainer = styled(a.div)`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 `;

@@ -15,6 +15,11 @@ type ExplorerResponse = {
   status: string;
 };
 
+export enum ExplorerOperation {
+  GET_SOURCECODE = "GET_SOURCECODE",
+  GET_TXLIST = "GET_TXLIST",
+}
+
 export const getExplorerAPIData = (networkId: number): ExplorerAPIData => {
   let apiKey, baseUrl;
 
@@ -78,13 +83,30 @@ export const processExplorerResponse = async (
   return result;
 };
 
-export const buildExplorerFetchRequest = (
-  contractAddress: string,
-  networkId: number
-): string => {
-  const { baseUrl, apiKey } = getExplorerAPIData(networkId);
+export const performExplorerRequest = (
+  operation: ExplorerOperation,
+  networkId: number | string,
+  params: any[]
+): Promise<any> => {
+  const { baseUrl, apiKey } = getExplorerAPIData(Number(networkId));
+  let request = baseUrl;
 
-  return `${baseUrl}?module=contract&action=getsourcecode&address=${contractAddress}${
-    apiKey ? `&apikey=${apiKey}` : ""
-  }`;
+  switch (operation) {
+    case ExplorerOperation.GET_SOURCECODE:
+      const [contractAddress] = params;
+      request = `${request}?module=contract&action=getsourcecode&address=${contractAddress}`;
+      break;
+    case ExplorerOperation.GET_TXLIST:
+      const [address] = params;
+      request = `${request}?module=account&action=txlist&address=${address}&sort=desc`;
+      break;
+    default:
+      throw new Response(
+        `Unsupported blockchain explorer operation: ${operation}`
+      );
+  }
+
+  request = request + (apiKey ? `&apikey=${apiKey}` : "");
+
+  return fetch(request);
 };
