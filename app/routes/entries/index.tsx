@@ -50,7 +50,7 @@ function EntryCard({ fn }: { fn: FnEntry }) {
 
   return (
     <EntryContainer onClick={() => navigate(`/entries/${fn.id}`)}>
-      <NoticeContainer>{fn.abi.split("function")}</NoticeContainer>
+      <NoticeContainer>{fn.abi?.split("function")}</NoticeContainer>
       <InfoContainer>
         <Hash>{fn.sigHash}</Hash>
         <StatusLabel status={fn.status} />
