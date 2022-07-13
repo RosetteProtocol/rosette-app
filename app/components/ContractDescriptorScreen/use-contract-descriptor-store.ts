@@ -51,8 +51,6 @@ const initialState: ContractDescriptorState = {
   filters: {
     added: false,
     available: true,
-    challenged: false,
-    pending: false,
   },
   fnsTestingParams: {},
 };

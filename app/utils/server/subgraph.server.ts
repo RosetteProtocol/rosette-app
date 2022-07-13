@@ -10,13 +10,7 @@ type FunctionResult = {
   };
   notice: string;
   sigHash: string;
-  submitter: {
-    address: string;
-  };
-  disputed: boolean;
-  guideline: {
-    cooldownPeriod: number;
-  };
+  submitter: string;
   upsertAt: number;
 };
 
@@ -64,22 +58,6 @@ const fetchFromGraphQL = async (query: string) => {
   });
 };
 
-const getEntryStatus = (fnResult: FunctionResult): FnDescriptionStatus => {
-  const date = Date.now() / 1000;
-
-  if (fnResult.disputed) {
-    return FnDescriptionStatus.Challenged;
-  }
-
-  const timeSince = fnResult.upsertAt + fnResult.guideline.cooldownPeriod;
-
-  if (date > timeSince) {
-    return FnDescriptionStatus.Added;
-  } else {
-    return FnDescriptionStatus.Pending;
-  }
-};
-
 const parseFnResult = (fnResult: FunctionResult): FnEntry => {
   const { id, abi, cid, contract, notice, sigHash, submitter, upsertAt } =
     fnResult;
@@ -91,8 +69,8 @@ const parseFnResult = (fnResult: FunctionResult): FnEntry => {
     contract: contract.scope,
     notice,
     sigHash,
-    status: getEntryStatus(fnResult),
-    submitter: submitter.address,
+    status: FnDescriptionStatus.Added,
+    submitter,
     upsertAt,
   };
 };
@@ -118,12 +96,7 @@ export const fetchContractFnEntries = async (
               }
               notice
               sigHash
-              submitter {
-                address
-              }
-              guideline {
-                cooldownPeriod
-              }
+              submitter
               upsertAt
             }
           }
@@ -166,12 +139,7 @@ export const fetchFnEntries = async (): Promise<FnEntry[]> => {
             cid
             notice
             sigHash
-            submitter {
-              address
-            }
-            guideline {
-              cooldownPeriod
-            }
+            submitter
             upsertAt
           }
         }
@@ -215,12 +183,7 @@ export const fetchFnEntry = async (
             cid
             notice
             sigHash
-            submitter {
-              address
-            }
-            guideline {
-              cooldownPeriod
-            }
+            submitter
             upsertAt
           }
         }
