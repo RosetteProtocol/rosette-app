@@ -96,12 +96,13 @@ const contractDescriptorStore = createStore("contract-descriptor")(
         };
       });
 
-      set.contractAddress(address);
-      set.contractNetworkId(network.id);
-      set.fnDescriptorEntries(fns);
-      set.filteredFnDescriptorEntries(fns.filter((fn) => !fn.entry));
-      set.fnsTestingParams(
-        nonConstantFnFragments.reduce(
+      set.state((draft) => {
+        draft.contractAddress = address;
+        draft.contractNetworkId = network.id;
+        draft.fnDescriptorEntries = fns;
+        draft.filteredFnDescriptorEntries = fns.filter((fn) => !fn.entry);
+        // @ts-ignore
+        draft.fnsTestingParams = nonConstantFnFragments.reduce(
           (
             fnsTestingParams: ContractDescriptorState["fnsTestingParams"],
             f
@@ -112,8 +113,8 @@ const contractDescriptorStore = createStore("contract-descriptor")(
             return fnsTestingParams;
           },
           {}
-        )
-      );
+        );
+      });
     },
     goToNextFn: () => {
       const prevFnSelected = get.fnSelected();

@@ -28,6 +28,7 @@ import type { FieldParamValue } from "~/utils/client/param-value.client";
 import { Details } from "~/components/Details";
 import { ParamField } from "./ParamField";
 import type { ParamFieldProps } from "./ParamField";
+import { ValueOrArray } from "~/types";
 
 const TX_HASH_REGEX = /^0x[a-fA-F0-9]{64}$/;
 
@@ -63,8 +64,6 @@ const validateTestingParams_ = (
   }
 
   try {
-    console.log(type);
-    console.log(computeTestingParamValue(params));
     defaultAbiCoder.encode([type], [computeTestingParamValue(params)]);
   } catch (err) {
     errorRegistry[nestingPos] = processEncodeError(err);
@@ -93,12 +92,19 @@ const validateTestingParams = (
   return errorRegistry;
 };
 
+const convertBindings_ = (valueOrValues: ValueOrArray<any>): TestingParam => {
+  if (!Array.isArray(valueOrValues)) {
+    return { value: valueOrValues.toString(), decimals: 0 };
+  }
+
+  return valueOrValues.map((v: ValueOrArray<any>) => convertBindings_(v));
+};
+
 const convertBindings = (bindings: Bindings, fnAbi: string): TestingParam[] => {
   return Fragment.from(fnAbi).inputs.map((input, index) => {
-    return {
-      value: bindings[input.name].value.toString(),
-      id: index.toString(),
-    };
+    const valueOrValues = bindings[input.name].value;
+
+    return convertBindings_(valueOrValues);
   });
 };
 
@@ -350,15 +356,13 @@ export const TestModal = ({ show, onClose: handleClose }: TestModalProps) => {
 
   const handleTest = () => {
     const fnInterface = new Interface([fnAbi]);
-    console.log("Validating");
     const errors = validateTestingParams(fnInterface, testingParams);
-    console.log("Validated");
+
     if (Object.keys(errors).length) {
       setParamErrorMsgs(errors);
       return;
     }
 
-    console.log("Encoding data!");
     const data = fnInterface.encodeFunctionData(
       sigHash,
       Object.values(testingParams).map((value) =>
