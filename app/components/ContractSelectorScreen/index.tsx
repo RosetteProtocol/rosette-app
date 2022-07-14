@@ -18,7 +18,7 @@ export const ContractSelectorScreen = ({
 }: ContractSelectorScreenProps) => {
   const navigate = useNavigate();
   const transition = useTransition(contracts, {
-    trail: 100 / contracts.length,
+    trail: 700 / contracts.length,
     from: { opacity: 0, scale: 0 },
     enter: { opacity: 1, scale: 1 },
   });

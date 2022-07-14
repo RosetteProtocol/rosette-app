@@ -70,7 +70,9 @@ const contractDescriptorStore = createStore("contract-descriptor")(
         get.filteredFnDescriptorEntries()[get.fnSelected()];
       const userDescription = get.userFnDescriptions()[descriptorEntry.sigHash];
 
-      return userDescription.description ?? descriptorEntry.entry?.notice ?? "";
+      return (
+        userDescription?.description ?? descriptorEntry.entry?.notice ?? ""
+      );
     },
   }))
   .extendActions((set, get) => ({
@@ -317,7 +319,7 @@ const contractDescriptorStore = createStore("contract-descriptor")(
     addHelperFunction: (fnSignature: string) => {
       const currentEntry = get.currentFnDescriptorEntry();
       const currentFnDescription = get.currentDescription();
-      get.userFnDescriptions()[currentEntry.sigHash];
+
       const fieldCaretPos = get.lastCaretPos();
       const newDescription = `${currentFnDescription.slice(
         0,
