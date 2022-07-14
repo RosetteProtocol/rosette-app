@@ -1,8 +1,9 @@
-import { GU, textStyle } from "@blossom-labs/rosette-ui";
+import { Button, GU, textStyle } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
 import { a, useTransition } from "@react-spring/web";
 import type { ContractData, AggregatedContract } from "~/types";
 import { ContractItem } from "./ContractItem";
+import { useNavigate } from "@remix-run/react";
 
 type ContractSelectorScreenProps = {
   contracts: AggregatedContract[];
@@ -15,6 +16,7 @@ export const ContractSelectorScreen = ({
   loaderText,
   onContractDataSelected,
 }: ContractSelectorScreenProps) => {
+  const navigate = useNavigate();
   const transition = useTransition(contracts, {
     trail: 100 / contracts.length,
     from: { opacity: 0, scale: 0 },
@@ -23,16 +25,29 @@ export const ContractSelectorScreen = ({
 
   return (
     <Container>
-      <div>The following contracts have been found for the given address:</div>
-      {transition((styles, item) => (
-        <a.div style={styles}>
-          <ContractItem
-            contract={item}
-            loaderText={loaderText}
-            onClick={onContractDataSelected}
+      {contracts.length ? (
+        <>
+          <div>The following contracts have been found:</div>
+          {transition((styles, item) => (
+            <a.div style={styles}>
+              <ContractItem
+                contract={item}
+                loaderText={loaderText}
+                onClick={onContractDataSelected}
+              />
+            </a.div>
+          ))}
+        </>
+      ) : (
+        <NoFoundContainer>
+          <div>No contract found.</div>
+          <Button
+            mode="strong"
+            label="Go back"
+            onClick={() => navigate("/home")}
           />
-        </a.div>
-      ))}
+        </NoFoundContainer>
+      )}
     </Container>
   );
 };
@@ -52,4 +67,12 @@ const Container = styled.div`
     margin: 0 ${2 * GU}px;
     margin-bottom: ${3 * GU}px;
   }
+`;
+
+const NoFoundContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: ${4 * GU}px;
 `;
