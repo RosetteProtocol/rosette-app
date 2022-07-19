@@ -28,9 +28,16 @@ export const getExplorerAPIData = (networkId: number): ExplorerAPIData => {
       apiKey = process.env.ETHERSCAN_EXPLORER_API_KEY;
       baseUrl = "https://api.etherscan.io/api";
       break;
+    case 3:
+      apiKey = process.env.ETHERSCAN_EXPLORER_API_KEY;
+      baseUrl = "https://api-ropsten.etherscan.io/api";
     case 4:
       apiKey = process.env.ETHERSCAN_EXPLORER_API_KEY;
       baseUrl = "https://api-rinkeby.etherscan.io/api";
+      break;
+    case 5:
+      apiKey = process.env.ETHERSCAN_EXPLORER_API_KEY;
+      baseUrl = "https://api-goerli.etherscan.io/api";
       break;
     case 100:
       apiKey = "";
