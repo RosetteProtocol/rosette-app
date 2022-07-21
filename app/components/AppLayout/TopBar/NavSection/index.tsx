@@ -3,6 +3,7 @@ import { NavLink, useLocation } from "@remix-run/react";
 import styled from "styled-components";
 import { CompactMenu } from "./CompactMenu";
 
+import rosetteLogo from "~/assets/rosette-logo.svg";
 import homeIcon from "~/assets/sidebar-home.svg";
 import entriesIcon from "~/assets/sidebar-entries.svg";
 // import guidelinesIcon from "~/assets/sidebar-guidelines.svg";
@@ -33,7 +34,15 @@ export const NavSection = ({ compact }: { compact: boolean }) => {
 
         return (
           <LiStyled key={label} renderBottom={renderBottom}>
-            <NavLink to={to}>{label === "Home" ? "rosette" : label}</NavLink>
+            <NavLink to={to}>
+              {label === "Home" ? (
+                <div style={{ display: "flex" }}>
+                  <img src={rosetteLogo} alt="" />
+                </div>
+              ) : (
+                label
+              )}
+            </NavLink>
           </LiStyled>
         );
       })}
