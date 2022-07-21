@@ -2,9 +2,8 @@ import { GU, useTheme, useViewport } from "@blossom-labs/rosette-ui";
 import { a } from "@react-spring/web";
 import styled from "styled-components";
 import { useAppReady } from "~/providers/AppReady";
-import { BlossomLabsLogo } from "~/components/BlossomLabs";
+import { BlossomLabsLogo } from "./BlossomLabsLogo";
 
-const OPACITY = 0.8;
 export const BottomBar = () => {
   const { below } = useViewport();
   const theme = useTheme();
@@ -20,8 +19,9 @@ export const BottomBar = () => {
               style={{ opacity: progress, transform: bottomBarTransform }}
               $compactMode={compactMode}
             >
-              <div style={{ color: theme.surfaceContent, opacity: OPACITY }}>
-                powered by <BlossomLabsLogo />
+              <div style={{ color: theme.surfaceContent }}>
+                <span style={{ opacity: 0.4 }}>powered by</span>{" "}
+                <BlossomLabsLogo />
               </div>
             </AnimatedContainer>
           )
@@ -32,13 +32,12 @@ export const BottomBar = () => {
 
 const Container = styled.div`
   position: relative;
-  height: ${7 * GU}px;
+  height: ${9 * GU}px;
 `;
 
 const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
-  position: absolute;
-  inset: 0;
   display: flex;
+  z-index: 1;
   padding: 0 ${7 * GU}px;
 
   justify-content: ${({ $compactMode }) =>

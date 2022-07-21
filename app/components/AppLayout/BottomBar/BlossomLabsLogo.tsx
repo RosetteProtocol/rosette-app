@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 import blossomLabsLogo from "~/assets/blossom-logo.svg";
-import blossomLabsIcon from "~/assets/blossom-icon.svg";
 
 export const BlossomLabsLogo = () => (
   <OutterWrapper>
@@ -16,17 +15,6 @@ export const BlossomLabsLogo = () => (
       <img src={blossomLabsLogo} alt="" />
     </a>
   </OutterWrapper>
-);
-
-export const BlossomLabsIcon = () => (
-  <img
-    style={{
-      width: "48px",
-      height: "48px",
-    }}
-    src={blossomLabsIcon}
-    alt=""
-  />
 );
 
 const OutterWrapper = styled.span`

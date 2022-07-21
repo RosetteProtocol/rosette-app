@@ -1,13 +1,11 @@
 import { useViewport } from "@blossom-labs/rosette-ui";
-import styled from "styled-components";
 import type { ReactNode } from "react";
-
-import { BottomBar } from "./BottomBar";
-import { TopBar } from "./TopBar";
-
+import styled from "styled-components";
 import background from "~/assets/background.png";
 import tablet from "~/assets/tablet.png";
 import mobile from "~/assets/mobile.png";
+import { BottomBar } from "./BottomBar";
+import { TopBar } from "./TopBar";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -42,13 +40,16 @@ export const AppLayout = ({
   );
 };
 
-const Container = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
+const Container = styled.div<{
+  compactMode: boolean;
+  tabletMode: boolean;
+}>`
   position: relative;
+  overflow: auto;
   height: 100vh;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  overflow: auto;
   background-size: cover;
   background-image: url(${({ compactMode, tabletMode }) =>
     compactMode ? mobile : tabletMode ? tablet : background});
