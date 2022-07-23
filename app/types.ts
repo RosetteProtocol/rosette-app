@@ -9,10 +9,10 @@ export enum FnDescriptionStatus {
 
 export type FnEntry = {
   id: string;
-  abi: string;
+  abi?: string;
   cid: string;
   contract: string;
-  notice: string;
+  notice?: string;
   sigHash: string;
   status: FnDescriptionStatus;
   submitter: string;

@@ -1,13 +1,13 @@
 import type { FnEntry } from "~/types";
-import { ipfsResolver } from "~/utils/ipfs";
+import { arweaveResolver } from "~/utils/arweave";
 
-const ipfs = ipfsResolver();
+const arweave = arweaveResolver();
 
 export const getSanitizedEntriesData = async (
   fns: FnEntry[]
 ): Promise<FnEntry[]> => {
   const responses = (await Promise.allSettled(
-    fns.filter((f) => !f.notice).map((f) => fetchFallbackData(f))
+    fns.map((f) => fetchFallbackData(f))
   )) as PromiseSettledResult<FnEntry>[];
 
   const fulfilledResponses = responses.filter(
@@ -28,8 +28,8 @@ export const getSanitizedEntriesData = async (
 };
 
 export const fetchFallbackData = async (f: FnEntry): Promise<FnEntry> => {
-  // fallback to fetch data from IPFS
-  const data = await ipfs.json(f.cid);
+  // fallback to fetch data from Arweave
+  const data = await arweave.json(f.cid);
 
   return {
     ...f,

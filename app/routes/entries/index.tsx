@@ -7,12 +7,15 @@ import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
 import { StatusLabel } from "~/components/StatusLabel";
 import type { FnEntry } from "~/types";
+import { getSanitizedEntriesData } from "~/utils/server/entries-data.server";
 import { fetchFnEntries } from "~/utils/server/subgraph.server";
 
 export const loader: LoaderFunction = async () => {
   const fns = await fetchFnEntries();
 
-  return json({ fns });
+  const sanitizedFns = await getSanitizedEntriesData(fns);
+
+  return json({ fns: sanitizedFns });
 };
 
 type LoaderData = {
