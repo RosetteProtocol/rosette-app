@@ -37,10 +37,10 @@ type QueryFnResult = {
 
 const gql = String.raw;
 
-const buildContractId = (
-  rosetteStoneAddress: string,
-  bytecodeHash: string
-): string => `${rosetteStoneAddress.toLowerCase()}-${bytecodeHash}`;
+// const buildContractId = (
+//   rosetteStoneAddress: string,
+//   bytecodeHash: string
+// ): string => `${rosetteStoneAddress.toLowerCase()}-${bytecodeHash}`;
 
 const fetchFromGraphQL = async (query: string) => {
   if (!process.env.SUBGRAPH_URI) {
@@ -73,10 +73,9 @@ const parseFnResult = (fnResult: FunctionResult): FnEntrySubgraphData => {
 export const fetchContractFnEntries = async (
   bytecodeHash: string
 ): Promise<FnEntrySubgraphData[]> => {
-  const contractId = buildContractId(
-    process.env.ROSETTE_STONE_ADDRESS!,
-    bytecodeHash
-  );
+  const contractId = bytecodeHash;
+
+  // buildContractId(process.env.ROSETTE_STONE_ADDRESS!, bytecodeHash);
 
   try {
     const rawResponse = await fetchFromGraphQL(

@@ -10,7 +10,7 @@ export enum FnDescriptionStatus {
 export type FnEntryMetadata = {
   abi: string;
   bytecode: string;
-  id: string;
+  cid: string;
   notice: string;
 };
 

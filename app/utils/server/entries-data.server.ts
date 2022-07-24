@@ -7,7 +7,7 @@ export const fetchEntryMetadata = async (
   id: string
 ): Promise<FnEntryMetadata> => {
   const metadata = await arweave.json(id);
-  return { id, ...metadata } as FnEntryMetadata;
+  return { cid: id, ...metadata } as FnEntryMetadata;
 };
 
 export const fetchEntriesMetadata = async (
@@ -32,7 +32,7 @@ export const fetchEntries = async (
   );
 
   return fns.map((f) => {
-    const metadata = fnsEntriesMetadata.find(({ id }) => f.cid == id)!;
+    const metadata = fnsEntriesMetadata.find(({ cid }) => f.cid == cid)!;
     return {
       ...f,
       ...metadata,
