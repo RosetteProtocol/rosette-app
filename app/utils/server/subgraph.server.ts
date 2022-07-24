@@ -1,14 +1,12 @@
-import type { FnEntry } from "~/types";
+import type { FnEntrySubgraphData } from "~/types";
 import { FnDescriptionStatus } from "~/types";
 
 type FunctionResult = {
   id: string;
-  abi: string;
   cid: string;
   contract: {
     scope: string;
   };
-  notice: string;
   sigHash: string;
   submitter: string;
   upsertAt: number;
@@ -39,10 +37,10 @@ type QueryFnResult = {
 
 const gql = String.raw;
 
-const buildContractId = (
-  rosetteStoneAddress: string,
-  bytecodeHash: string
-): string => `${rosetteStoneAddress.toLowerCase()}-${bytecodeHash}`;
+// const buildContractId = (
+//   rosetteStoneAddress: string,
+//   bytecodeHash: string
+// ): string => `${rosetteStoneAddress.toLowerCase()}-${bytecodeHash}`;
 
 const fetchFromGraphQL = async (query: string) => {
   if (!process.env.SUBGRAPH_URI) {
@@ -58,16 +56,13 @@ const fetchFromGraphQL = async (query: string) => {
   });
 };
 
-const parseFnResult = (fnResult: FunctionResult): FnEntry => {
-  const { id, abi, cid, contract, notice, sigHash, submitter, upsertAt } =
-    fnResult;
+const parseFnResult = (fnResult: FunctionResult): FnEntrySubgraphData => {
+  const { id, cid, contract, sigHash, submitter, upsertAt } = fnResult;
 
   return {
     id,
-    abi,
     cid,
     contract: contract.scope,
-    notice,
     sigHash,
     status: FnDescriptionStatus.Added,
     submitter,
@@ -77,11 +72,10 @@ const parseFnResult = (fnResult: FunctionResult): FnEntry => {
 
 export const fetchContractFnEntries = async (
   bytecodeHash: string
-): Promise<FnEntry[]> => {
-  const contractId = buildContractId(
-    process.env.ROSETTE_STONE_ADDRESS!,
-    bytecodeHash
-  );
+): Promise<FnEntrySubgraphData[]> => {
+  const contractId = bytecodeHash;
+
+  // buildContractId(process.env.ROSETTE_STONE_ADDRESS!, bytecodeHash);
 
   try {
     const rawResponse = await fetchFromGraphQL(
@@ -94,7 +88,6 @@ export const fetchContractFnEntries = async (
               contract {
                 scope
               }
-              notice
               sigHash
               submitter
               upsertAt
@@ -125,19 +118,17 @@ export const fetchContractFnEntries = async (
   }
 };
 
-export const fetchFnEntries = async (): Promise<FnEntry[]> => {
+export const fetchFnEntries = async (): Promise<FnEntrySubgraphData[]> => {
   try {
     const rawResponse = await fetchFromGraphQL(
       gql`
         {
           functions {
             id
-            abi
             contract {
               scope
             }
             cid
-            notice
             sigHash
             submitter
             upsertAt
@@ -169,19 +160,17 @@ export const fetchFnEntries = async (): Promise<FnEntry[]> => {
 
 export const fetchFnEntry = async (
   entryId: string
-): Promise<FnEntry | undefined> => {
+): Promise<FnEntrySubgraphData | undefined> => {
   try {
     const rawResponse = await fetchFromGraphQL(
       gql`
         {
           function(id: "${entryId}") {
             id
-            abi
             contract {
               scope
             }
             cid
-            notice
             sigHash
             submitter
             upsertAt

@@ -23,7 +23,7 @@ import type { ContractData, FnEntry } from "~/types";
 import useRosetteActions from "./useRosetteActions";
 import { HelperFunctionsPicker } from "./HelperFunctionsPicker";
 import { FnDescriptorsCarousel } from "./FnDescriptorsCarousel";
-import type { IPFSData } from "~/routes/fn-descriptions-upload";
+import type { ArweaveData } from "~/routes/fn-descriptions-upload";
 import { FunctionDescriptorFilters } from "./FunctionDescriptorFilters";
 import debounce from "lodash.debounce";
 
@@ -44,10 +44,10 @@ type ContractDescriptorScreenProps = {
   currentFnEntries: FnEntry[];
 };
 
-const buildIPFSUploadData = (
+const buildBundlrUploadData = (
   fnDescriptorEntries: FnDescriptorEntry[],
   userFnDescriptions: Record<string, UserFnDescription>
-): IPFSData["functions"] => {
+): ArweaveData["functions"] => {
   return Object.keys(userFnDescriptions).map((sigHash) => {
     const fullName = fnDescriptorEntries.find(
       (e) => e.sigHash === sigHash
@@ -55,7 +55,7 @@ const buildIPFSUploadData = (
 
     if (!fullName) {
       throw new Error(
-        `Couldn't upload to IPFS: function ${sigHash} not found.`
+        `Couldn't upload to Bundlr: function ${sigHash} not found.`
       );
     }
 
@@ -98,7 +98,7 @@ export const ContractDescriptorScreen = ({
     (event) => {
       event.preventDefault();
 
-      const fnsData = buildIPFSUploadData(
+      const fnsData = buildBundlrUploadData(
         filteredFnDescriptorEntries,
         userFnDescriptions
       );

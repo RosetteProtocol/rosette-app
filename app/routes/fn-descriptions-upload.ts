@@ -1,10 +1,10 @@
 import type { ActionFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { ipfs } from "~/utils/server/ipfs.server";
+import { uploadFile as uploadFileToBundlr } from "~/utils/server/bundlr.server";
 
-type IPFSResponseData = Record<string, string>;
+type BundlrResponseData = Record<string, string>;
 
-export type IPFSData = {
+export type ArweaveData = {
   bytecodeHash: string;
   functions: {
     description: string;
@@ -22,7 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   const bytecodeHash = uploadData.get("bytecodeHash");
   const fnsString = uploadData.get("functions")!.toString();
-  const fnDescriptionsData = JSON.parse(fnsString) as IPFSData["functions"];
+  const fnDescriptionsData = JSON.parse(fnsString) as ArweaveData["functions"];
 
   const uploadRequests = fnDescriptionsData.map(({ description, fullName }) => {
     const descriptionJson = JSON.stringify({
@@ -31,7 +31,7 @@ export const action: ActionFunction = async ({ request }) => {
       notice: description,
     });
 
-    return ipfs.add(descriptionJson);
+    return uploadFileToBundlr(descriptionJson);
   });
 
   try {
@@ -39,9 +39,9 @@ export const action: ActionFunction = async ({ request }) => {
 
     const responseData = addResults.reduce((data, addResult, index) => {
       const fnDescription = fnDescriptionsData[index];
-      data[fnDescription.sigHash] = addResult.cid.toString();
+      data[fnDescription.sigHash] = addResult;
       return data;
-    }, {} as IPFSResponseData);
+    }, {} as BundlrResponseData);
 
     return json(responseData);
   } catch (err) {

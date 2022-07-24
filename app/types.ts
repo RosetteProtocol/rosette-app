@@ -7,17 +7,24 @@ export enum FnDescriptionStatus {
   Added = "added",
 }
 
-export type FnEntry = {
-  id: string;
+export type FnEntryMetadata = {
   abi: string;
+  bytecode: string;
+  cid: string;
+  notice: string;
+};
+
+export type FnEntrySubgraphData = {
+  id: string;
   cid: string;
   contract: string;
-  notice: string;
   sigHash: string;
   status: FnDescriptionStatus;
   submitter: string;
   upsertAt: number;
 };
+
+export type FnEntry = FnEntrySubgraphData & FnEntryMetadata;
 
 export type ContractData = {
   abi: string;

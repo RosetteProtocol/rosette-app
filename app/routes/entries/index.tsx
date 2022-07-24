@@ -7,10 +7,13 @@ import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
 import { StatusLabel } from "~/components/StatusLabel";
 import type { FnEntry } from "~/types";
+import { fetchEntries } from "~/utils/server/entries-data.server";
 import { fetchFnEntries } from "~/utils/server/subgraph.server";
 
 export const loader: LoaderFunction = async () => {
-  const fns = await fetchFnEntries();
+  const fnsSubgraphData = await fetchFnEntries();
+
+  const fns = await fetchEntries(fnsSubgraphData);
 
   return json({ fns });
 };

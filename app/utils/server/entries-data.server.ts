@@ -1,38 +1,41 @@
-import type { FnEntry } from "~/types";
-import { ipfsResolver } from "~/utils/ipfs";
+import type { FnEntry, FnEntryMetadata, FnEntrySubgraphData } from "~/types";
+import { arweaveResolver } from "~/utils/arweave";
 
-const ipfs = ipfsResolver();
+const arweave = arweaveResolver();
 
-export const getSanitizedEntriesData = async (
-  fns: FnEntry[]
-): Promise<FnEntry[]> => {
+export const fetchEntryMetadata = async (
+  id: string
+): Promise<FnEntryMetadata> => {
+  const metadata = await arweave.json(id);
+  return { cid: id, ...metadata } as FnEntryMetadata;
+};
+
+export const fetchEntriesMetadata = async (
+  ids: string[]
+): Promise<FnEntryMetadata[]> => {
   const responses = (await Promise.allSettled(
-    fns.filter((f) => !f.notice).map((f) => fetchFallbackData(f))
-  )) as PromiseSettledResult<FnEntry>[];
+    ids.map((id) => fetchEntryMetadata(id))
+  )) as PromiseSettledResult<FnEntryMetadata>[];
 
   const fulfilledResponses = responses.filter(
     (r) => r.status === "fulfilled"
-  ) as PromiseFulfilledResult<FnEntry>[];
+  ) as PromiseFulfilledResult<FnEntryMetadata>[];
 
-  const fnsWithFallbackData = fulfilledResponses.map((r) => r.value);
-
-  return fns.map((f) => {
-    const fnFallback = fnsWithFallbackData.find(
-      ({ sigHash }) => f.sigHash == sigHash
-    );
-    if (fnFallback) {
-      return fnFallback;
-    }
-    return f;
-  });
+  return fulfilledResponses.map((r) => r.value);
 };
 
-export const fetchFallbackData = async (f: FnEntry): Promise<FnEntry> => {
-  // fallback to fetch data from IPFS
-  const data = await ipfs.json(f.cid);
+export const fetchEntries = async (
+  fns: FnEntrySubgraphData[]
+): Promise<FnEntry[]> => {
+  const fnsEntriesMetadata = await fetchEntriesMetadata(
+    fns.map((fns) => fns.cid)
+  );
 
-  return {
-    ...f,
-    ...data,
-  };
+  return fns.map((f) => {
+    const metadata = fnsEntriesMetadata.find(({ cid }) => f.cid == cid)!;
+    return {
+      ...f,
+      ...metadata,
+    };
+  });
 };

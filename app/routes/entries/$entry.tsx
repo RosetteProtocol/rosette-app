@@ -3,7 +3,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
-import type { FnEntry } from "~/types";
+import type { FnEntrySubgraphData } from "~/types";
 import { fetchFnEntry } from "~/utils/server/subgraph.server";
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -22,7 +22,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 };
 
 type LoaderData = {
-  entry?: FnEntry;
+  entry?: FnEntrySubgraphData;
 };
 
 export default function EntryRoute() {
