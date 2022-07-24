@@ -40,8 +40,7 @@ export function arweaveResolver(
       return cacheStore?.get(url, fetchJson) || fetchJson();
     },
     async url(id: string): Promise<string> {
-      const url = urlTemplate.replace(/\{id\}/, id);
-      return url;
+      return urlTemplate.replace(/\{id\}/, id);
     },
   };
 }

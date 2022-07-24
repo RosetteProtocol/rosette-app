@@ -1,4 +1,4 @@
-import type { FnEntry } from "~/types";
+import type { FnEntrySubgraphData } from "~/types";
 import { FnDescriptionStatus } from "~/types";
 
 type FunctionResult = {
@@ -56,7 +56,7 @@ const fetchFromGraphQL = async (query: string) => {
   });
 };
 
-const parseFnResult = (fnResult: FunctionResult): FnEntry => {
+const parseFnResult = (fnResult: FunctionResult): FnEntrySubgraphData => {
   const { id, cid, contract, sigHash, submitter, upsertAt } = fnResult;
 
   return {
@@ -72,7 +72,7 @@ const parseFnResult = (fnResult: FunctionResult): FnEntry => {
 
 export const fetchContractFnEntries = async (
   bytecodeHash: string
-): Promise<FnEntry[]> => {
+): Promise<FnEntrySubgraphData[]> => {
   const contractId = buildContractId(
     process.env.ROSETTE_STONE_ADDRESS!,
     bytecodeHash
@@ -119,7 +119,7 @@ export const fetchContractFnEntries = async (
   }
 };
 
-export const fetchFnEntries = async (): Promise<FnEntry[]> => {
+export const fetchFnEntries = async (): Promise<FnEntrySubgraphData[]> => {
   try {
     const rawResponse = await fetchFromGraphQL(
       gql`
@@ -161,7 +161,7 @@ export const fetchFnEntries = async (): Promise<FnEntry[]> => {
 
 export const fetchFnEntry = async (
   entryId: string
-): Promise<FnEntry | undefined> => {
+): Promise<FnEntrySubgraphData | undefined> => {
   try {
     const rawResponse = await fetchFromGraphQL(
       gql`
