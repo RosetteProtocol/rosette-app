@@ -1,4 +1,10 @@
-import { Button, GU, LoadingRing, useViewport } from "@blossom-labs/rosette-ui";
+import {
+  Button,
+  GU,
+  LoadingRing,
+  RootPortal,
+  useViewport,
+} from "@blossom-labs/rosette-ui";
 import { useFetcher } from "@remix-run/react";
 import type { Fetcher } from "@remix-run/react";
 import { utils } from "ethers";
@@ -31,11 +37,14 @@ const FN_DESCRIPTOR_DEFAULT_HEIGHT = "527px";
 
 const debouncedOnWheel = debounce<WheelEventHandler>((e) => {
   e.stopPropagation();
+  e.preventDefault();
   if (e.deltaY < 0) {
     actions.goToPrevFn();
   } else {
     actions.goToNextFn();
   }
+
+  return false;
 }, 100);
 
 type ContractDescriptorScreenProps = {
@@ -93,6 +102,32 @@ export const ContractDescriptorScreen = ({
     callingContract;
   const submitDisabled =
     !accountData?.address || fnDescriptionsCounter === 0 || submittingEntries;
+
+  const SubmitButton = () => (
+    <SubmitContainer compactMode={compactMode}>
+      <InnerSubmitButton
+        label={
+          submittingEntries ? (
+            <div
+              style={{
+                display: "flex",
+                gap: 1 * GU,
+              }}
+            >
+              <LoadingRing mode="half-circle" />
+              Submitting entries…
+            </div>
+          ) : (
+            `Submit  (${fnDescriptionsCounter})`
+          )
+        }
+        type="submit"
+        mode="strong"
+        wide
+        disabled={submitDisabled}
+      />
+    </SubmitContainer>
+  );
 
   const handleSubmit = useCallback(
     (event) => {
@@ -161,12 +196,12 @@ export const ContractDescriptorScreen = ({
 
   return (
     <form style={{ height: "100%" }} onSubmit={handleSubmit}>
-      <Layout compactMode={compactMode} onWheel={debouncedOnWheel}>
+      <Layout compactMode={compactMode}>
         <FiltersContainer>
           <FunctionDescriptorFilters compactMode={compactMode} />
         </FiltersContainer>
         {filteredFnDescriptorEntries.length > 1 && (
-          <PaginationContainer>
+          <PaginationContainer onWheel={debouncedOnWheel}>
             <Pagination
               direction={compactMode ? "horizontal" : "vertical"}
               pages={filteredFnDescriptorEntries.length}
@@ -192,29 +227,13 @@ export const ContractDescriptorScreen = ({
         <FunctionsPickerContainer>
           <HelperFunctionsPicker popoverPlacement="left-start" />
         </FunctionsPickerContainer>
-        <SubmitContainer>
-          <SubmitButton
-            label={
-              submittingEntries ? (
-                <div
-                  style={{
-                    display: "flex",
-                    gap: 1 * GU,
-                  }}
-                >
-                  <LoadingRing mode="half-circle" />
-                  Submitting entries…
-                </div>
-              ) : (
-                `Submit  (${fnDescriptionsCounter})`
-              )
-            }
-            type="submit"
-            mode="strong"
-            wide
-            disabled={submitDisabled}
-          />
-        </SubmitContainer>
+        {compactMode ? (
+          <SubmitButton />
+        ) : (
+          <RootPortal>
+            <SubmitButton />
+          </RootPortal>
+        )}
       </Layout>
     </form>
   );
@@ -255,18 +274,9 @@ const Layout = styled.div<{ compactMode: boolean }>`
 
     ${SubmitContainer} {
       grid-area: submit;
-      ${
-        compactMode
-          ? `
-        width: 100%;
-      `
-          : `
-        width: 230px;
-      `
-      };
       place-self: end;
-
     }
+
    ${
      compactMode
        ? `grid: 
@@ -282,7 +292,6 @@ const Layout = styled.div<{ compactMode: boolean }>`
        : `grid: 
       [row1-start] "filters filters filters" 1.5fr [row1-end]
       [row2-start] "pagination carousel picker" 8fr [row2-end]
-      [row3-start] ". . submit" 1fr [row3-end]
       / 1fr minmax(200px,${FN_DESCRIPTOR_DEFAULT_HEIGHT}) 1fr;
     `
    }
@@ -317,9 +326,21 @@ const FunctionsPickerContainer = styled.div`
   justify-self: end;
 `;
 
-const SubmitContainer = styled.div``;
+const SubmitContainer = styled.div<{ compactMode: boolean }>`
+  ${({ compactMode }) =>
+    compactMode
+      ? `
+    width: 100%;
+  `
+      : `
+    width: 230px;
+    position: fixed;
+    bottom: ${3 * GU}px;
+    right: ${5 * GU}px;
+  `};
+`;
 
-const SubmitButton = styled(Button)`
+const InnerSubmitButton = styled(Button)`
   box-sizing: border-box;
   padding: ${3 * GU}px;
   ${({ wide }) => wide && "width: 100%;"};
