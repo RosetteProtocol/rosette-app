@@ -1,21 +1,20 @@
-import { Main } from "@1hive/1hive-ui";
+import { Main } from "@blossom-labs/rosette-ui";
 import {
-  json,
   Links,
   LiveReload,
   Meta,
-  Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
   useLoaderData,
-} from "remix";
-import type { MetaFunction } from "remix";
-import { App as InnerApp } from "./App";
+} from "@remix-run/react";
+import type { MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { App } from "~/App";
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Remix with Emotion",
+    title: "Rosette",
     charset: "utf-8",
     viewport: "width=device-width,initial-scale=1",
   };
@@ -26,6 +25,8 @@ export async function loader() {
     ENV: {
       CHAIN_ID: process.env.CHAIN_ID,
       RPC_URL: process.env.RPC_URL,
+      INFURA_PROJECT_ID: process.env.INFURA_PROJECT_ID,
+      ROSETTE_STONE_ADDRESS: process.env.ROSETTE_STONE_ADDRESS,
     },
   });
 }
@@ -40,8 +41,6 @@ const Document = ({ children }: DocumentProps) => {
   return (
     <html lang="en">
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
         <Meta />
         <Links />
         {typeof document === "undefined" ? "__STYLES__" : null}
@@ -61,18 +60,16 @@ const Document = ({ children }: DocumentProps) => {
   );
 };
 
-export default function App() {
+export default function WrapperApp() {
   return (
     <Document>
       <Main
         assetsUrl="/aragon-ui/"
         layout={false}
-        scrollView={false}
+        scrollView={true}
         theme="dark"
       >
-        <InnerApp>
-          <Outlet />
-        </InnerApp>
+        <App />
       </Main>
     </Document>
   );
@@ -103,21 +100,19 @@ export function CatchBoundary() {
   }
 
   return (
-    <Document>
-      <div>
-        <h1>
-          {caught.status}: {caught.statusText}
-        </h1>
-        {message}
-      </div>
-    </Document>
+    <div>
+      <h1>
+        {caught.status}: {caught.statusText}
+      </h1>
+      {message}
+    </div>
   );
 }
 
 export function ErrorBoundary({ error }: { error: Error }) {
   return (
-    <Document>
+    <div>
       <p>[ErrorBoundary]: There was an error: {error.message}</p>
-    </Document>
+    </div>
   );
 }

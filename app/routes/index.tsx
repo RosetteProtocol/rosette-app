@@ -1,17 +1,10 @@
-import styled from "styled-components";
-import { AppScreen } from "~/components/AppLayout/AppScreen";
+import { useEffect } from "react";
+import { useNavigate } from "@remix-run/react";
 
 export default function Index() {
-  return (
-    <AppScreen>
-      <MainContainer></MainContainer>
-    </AppScreen>
-  );
-}
+  const navigate = useNavigate();
 
-const MainContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-`;
+  useEffect(() => navigate("/home"), [navigate]);
+
+  return null;
+}

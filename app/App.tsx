@@ -1,19 +1,42 @@
-import { useTheme } from "@1hive/1hive-ui";
-import { ReactNode } from "react";
+import { useTheme } from "@blossom-labs/rosette-ui";
 import { ThemeProvider } from "styled-components";
-import { AppLayout } from "./components/AppLayout";
-import { AppReady } from "./providers/AppReady";
-import Wagmi from "./providers/Wagmi";
+import { useState } from "react";
 
-export const App = ({ children }: { children: ReactNode }) => {
+import { AppReady } from "~/providers/AppReady";
+import Wagmi from "~/providers/Wagmi";
+import { AppLayout } from "~/components/AppLayout";
+import { Outlet } from "@remix-run/react";
+import { RosetteStone } from "./providers/RosetteStone";
+
+export type AppContext = {
+  displayTopBar(display: boolean): void;
+  displayBottomBar(display: boolean): void;
+};
+
+export const App = () => {
   const theme = useTheme();
+
+  const [displayTopBar, setDisplayTopBar] = useState(true);
+  const [displayBottomBar, setDisplayBottomBar] = useState(true);
 
   return (
     <ThemeProvider theme={theme}>
       <Wagmi>
-        <AppReady>
-          <AppLayout>{children}</AppLayout>
-        </AppReady>
+        <RosetteStone>
+          <AppReady>
+            <AppLayout
+              displayTopBar={displayTopBar}
+              displayBottomBar={displayBottomBar}
+            >
+              <Outlet
+                context={{
+                  displayTopBar: setDisplayTopBar,
+                  displayBottomBar: setDisplayBottomBar,
+                }}
+              />
+            </AppLayout>
+          </AppReady>
+        </RosetteStone>
       </Wagmi>
     </ThemeProvider>
   );

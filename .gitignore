@@ -4,11 +4,14 @@ node_modules
 .env
 .vercel
 .output
+.yalc
 
 /build/
 /public/build
 /public/aragon-ui
 /api/index.js
+/api/index.js.map
+yalc.lock
 
 # Editor directories and files
 .vscode/*
@@ -20,3 +23,5 @@ node_modules
 *.njsproj
 *.sln
 *.sw?
+# Local Netlify folder
+.netlify

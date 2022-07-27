@@ -1,14 +1,11 @@
-import { springs } from "@1hive/1hive-ui";
+import { springs } from "@blossom-labs/rosette-ui";
 import styled from "styled-components";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { a, TransitionFn, useTransition } from "react-spring";
-import { BlossomLabsLogo } from "../components/BlossomLabsLogo";
+import { createContext, useContext, useState } from "react";
+import type { ReactNode } from "react";
+import { a, useTransition } from "@react-spring/web";
+import type { TransitionFn } from "@react-spring/web";
+
+import rosetteIcon from "~/assets/rosette-icon.png";
 
 export type AppReadyTransition = TransitionFn<
   boolean,
@@ -36,6 +33,7 @@ export function AppReady({ children }: AppReadyProps) {
 
   const appReadyTransition = useTransition(ready, {
     config: springs.lazy,
+    delay: 100,
     from: {
       progress: 0,
       topBarTransform: "translate3d(0, -100%, 0)",
@@ -57,40 +55,34 @@ export function AppReady({ children }: AppReadyProps) {
   });
 
   const splashTransition = useTransition(!ready, {
-    config: springs.swift,
+    config: springs.lazy,
     from: {
-      opacity: 1,
-      logoTransform: " rotate3d(0, 0, 1, 0deg)",
+      opacity: 0,
+      transform: " scale(0)",
     },
     enter: {
       opacity: 1,
-      logoTransform: "rotate3d(0, 0, 1, 360deg)",
+      transform: "scale(1)",
     },
     leave: {
       opacity: 0,
-      // logoTransform: "rotate3d(0, 0, 1, 360deg)",
+      transform: "scale(4)",
     },
+    onRest: () => setReady(true),
   });
-
-  useEffect(() => {
-    const id = setTimeout(() => setReady(true), 400);
-    return () => clearTimeout(id);
-  }, []);
 
   return (
     <AppReadyContext.Provider value={{ appReady: ready, appReadyTransition }}>
       {splashTransition(
-        ({ opacity, logoTransform }, loading) =>
+        (styles, loading) =>
           loading && (
-            <AnimatedSplashContainer
-              style={{ opacity, transform: logoTransform }}
-            >
-              <a.div
-                style={{
-                  height: "48px",
-                }}
-              >
-                <BlossomLabsLogo iconSize="40px" showIconOnly />
+            <AnimatedSplashContainer style={styles}>
+              <a.div>
+                <img
+                  style={{ width: "60px", height: "60px" }}
+                  src={rosetteIcon}
+                  alt=""
+                />
               </a.div>
             </AnimatedSplashContainer>
           )
@@ -106,7 +98,6 @@ export function useAppReady() {
 
 const AnimatedSplashContainer = styled(a.div)`
   position: fixed;
-  transition-duration: 500ms;
   z-index: 9;
   inset: 0;
   display: grid;

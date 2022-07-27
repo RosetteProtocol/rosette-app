@@ -1,14 +1,14 @@
-import { GU, useTheme } from "@1hive/1hive-ui";
-import { a } from "react-spring";
+import { GU, useTheme, useViewport } from "@blossom-labs/rosette-ui";
+import { a } from "@react-spring/web";
 import styled from "styled-components";
 import { useAppReady } from "~/providers/AppReady";
-import { BlossomLabsLogo } from "../../BlossomLabsLogo";
-
-const OPACITY = 0.65;
+import { BlossomLabsLogo } from "./BlossomLabsLogo";
 
 export const BottomBar = () => {
+  const { below } = useViewport();
   const theme = useTheme();
   const { appReadyTransition } = useAppReady();
+  const compactMode = below("large");
 
   return (
     <Container>
@@ -17,17 +17,11 @@ export const BottomBar = () => {
           ready && (
             <AnimatedContainer
               style={{ opacity: progress, transform: bottomBarTransform }}
+              $compactMode={compactMode}
             >
-              <div style={{ color: theme.surfaceContent, opacity: OPACITY }}>
-                Made by <BlossomLabsLogo /> with{" "}
-                <span
-                  style={{
-                    fontSize: "25px",
-                    color: theme.red.alpha(OPACITY),
-                  }}
-                >
-                  &hearts;
-                </span>
+              <div style={{ color: theme.surfaceContent }}>
+                <span style={{ opacity: 0.4 }}>powered by</span>{" "}
+                <BlossomLabsLogo />
               </div>
             </AnimatedContainer>
           )
@@ -38,13 +32,14 @@ export const BottomBar = () => {
 
 const Container = styled.div`
   position: relative;
-  height: ${7 * GU}px;
+  height: ${9 * GU}px;
 `;
 
-const AnimatedContainer = styled(a.div)`
-  position: absolute;
-  inset: 0;
+const AnimatedContainer = styled(a.div)<{ $compactMode: boolean }>`
   display: flex;
-  justify-content: flex-end;
-  padding-right: ${7 * GU}px;
+  z-index: 1;
+  padding: 0 ${7 * GU}px;
+
+  justify-content: ${({ $compactMode }) =>
+    $compactMode ? "center" : "flex-start"};
 `;

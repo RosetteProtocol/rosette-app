@@ -1,6 +1,8 @@
 import { providers } from "ethers";
-import { ReactNode, useMemo } from "react";
-import { allChains, Connector, WagmiProvider } from "wagmi";
+import { useMemo } from "react";
+import type { ReactNode } from "react";
+import { allChains, WagmiProvider } from "wagmi";
+import type { Connector } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { WalletConnectConnector } from "wagmi/connectors/walletConnect";
 
@@ -16,14 +18,13 @@ const getConnectors = (chainId: string): Connector[] => {
       chains: [chain],
       options: { shimDisconnect: true },
     }),
-    // new WalletConnectConnector({
-    //   chains: [CHAIN],
-    //   options: {
-    //     infuraId: "",
-    //     rpc: RPC_URL,
-    //     qrcode: true,
-    //   },
-    // }),
+    new WalletConnectConnector({
+      chains: [chain],
+      options: {
+        infuraId: window.ENV.INFURA_PROJECT_ID,
+        qrcode: true,
+      },
+    }),
   ];
 };
 
