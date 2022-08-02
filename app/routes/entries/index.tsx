@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { GU, textStyle, useViewport } from "@blossom-labs/rosette-ui";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
@@ -6,8 +7,22 @@ import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
 import { StatusLabel } from "~/components/StatusLabel";
+import { EntriesFilters } from "~/components/EntriesFilters";
+import { useFnEntriesFilters } from "~/providers/FnEntriesFilters";
 import type { FnEntry } from "~/types";
 import { fetchFnEntries } from "~/utils/server/subgraph.server";
+
+import dateStyles from "react-date-range/dist/styles.css";
+import defaultDateStyles from "react-date-range/dist/theme/default.css";
+import dateRangeCustomStyles from "../../components/EntryScreen/DateRangeCustom/style.css";
+
+export function links() {
+  return [
+    { rel: "stylesheet", href: dateStyles },
+    { rel: "stylesheet", href: defaultDateStyles },
+    { rel: "stylesheet", href: dateRangeCustomStyles },
+  ];
+}
 
 export const loader: LoaderFunction = async () => {
   const fns = await fetchFnEntries();
@@ -22,17 +37,60 @@ type LoaderData = {
 export default function Entries() {
   const { fns } = useLoaderData<LoaderData>();
   const { below, within } = useViewport();
+  console.log(useFnEntriesFilters);
+  const {
+    setEntries,
+    externalFilters,
+    internalFilters,
+    clearValues,
+    filteredEntries,
+  } = useFnEntriesFilters();
+  console.log(
+    setEntries,
+    externalFilters,
+    internalFilters,
+    clearValues,
+    filteredEntries
+  );
+
+  const { submitterFilter, statusFilter, dateRangeFilter, searchFilter } =
+    externalFilters;
+
+  const { sortingOption } = internalFilters;
+
+  const [, setSubmitterFilter] = submitterFilter;
+  const [, setStatusFilter] = statusFilter;
+  const [dateRangeFilterSelected, setDateRangeFilter] = dateRangeFilter;
+  const [searchFilterSelected, setSearchFilter] = searchFilter;
+
+  const [, setSortingOption] = sortingOption;
 
   const compactMode = below("medium");
   const tabletMode = within("medium", "large");
 
+  useEffect(() => {
+    setEntries(fns);
+  }, [fns, setEntries]);
+
   return (
     <AppScreen hideBottomBar>
       <SmoothDisplayContainer>
+        <EntriesFilters
+          compactMode={compactMode}
+          tabletMode={tabletMode}
+          search={searchFilterSelected}
+          dateRange={dateRangeFilterSelected}
+          setDateRange={setDateRangeFilter}
+          setSearch={setSearchFilter}
+          setStatusFilter={setStatusFilter}
+          setSorting={setSortingOption}
+          clearValues={clearValues}
+          setSubmitterFilter={setSubmitterFilter}
+        />
         <Container compactMode={compactMode} tabletMode={tabletMode}>
-          {fns.length ? (
+          {filteredEntries.length ? (
             <ListContainer compactMode={compactMode} tabletMode={tabletMode}>
-              {fns.map((f) => (
+              {filteredEntries.map((f) => (
                 <EntryCard key={f.id} fn={f} />
               ))}
             </ListContainer>

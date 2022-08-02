@@ -1,25 +1,31 @@
-import { BackButton, textStyle, IdentityBadge, GU, useViewport } from '@blossom-labs/rosette-ui'
-import { useEffect, useState } from 'react'
+import {
+  BackButton,
+  textStyle,
+  IdentityBadge,
+  GU,
+  useViewport,
+} from "@blossom-labs/rosette-ui";
+import { useEffect, useState } from "react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { StatusModule } from "~/components/EntryScreen/StatusModule";
-import { DescriptionHolder } from "~/components/EntryScreen/DescriptionHolder/index"
+import { DescriptionHolder } from "~/components/EntryScreen/DescriptionHolder/index";
 import type { FnEntry } from "~/types";
 import { fetchFnEntry } from "~/utils/server/subgraph.server";
 
 function formatRawDate(rawDate: Date) {
-  const string = rawDate.toString()
-  const dateArray = string.split(' ')
-  const formattedDate = `${dateArray[1]} ${dateArray[2]}, ${dateArray[3]}`
-  return formattedDate
+  const string = rawDate.toString();
+  const dateArray = string.split(" ");
+  const formattedDate = `${dateArray[1]} ${dateArray[2]}, ${dateArray[3]}`;
+  return formattedDate;
 }
 
 function formatAbi(abi: string) {
-  const formattedAbi = abi.replace('function ', '')
-  return formattedAbi
+  const formattedAbi = abi.replace("function ", "");
+  return formattedAbi;
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -37,8 +43,8 @@ export const loader: LoaderFunction = async ({ params }) => {
   // Contract name is not available in the subgraph
 
   if (entry) {
-    const abi = formatAbi(entry.abi)
-    entry.abi = abi
+    const abi = formatAbi(entry.abi);
+    entry.abi = abi;
   }
 
   return json({ entry });
@@ -50,19 +56,17 @@ type LoaderData = {
 
 export default function EntryRoute() {
   const { entry } = useLoaderData<LoaderData>();
-  const navigate = useNavigate()
-  const [date, setDate] = useState<string>()
-  const { below } = useViewport()
+  const navigate = useNavigate();
+  const [date, setDate] = useState<string>();
+  const { below } = useViewport();
   const compactMode = below("large");
 
-
   useEffect(() => {
-  if (entry) {
-    const rawDate = new Date(entry.upsertAt)
-    setDate(formatRawDate(rawDate))
-  }
-  }, [entry]) 
-  console.log(entry)
+    if (entry) {
+      const rawDate = new Date(entry.upsertAt);
+      setDate(formatRawDate(rawDate));
+    }
+  }, [entry]);
 
   return (
     <AppScreen hideBottomBar>
@@ -70,7 +74,7 @@ export default function EntryRoute() {
         <EntryInfoContainer>
           <BackButton onClick={() => navigate(`/entries`)} />
           <EntryTitle>{entry?.abi}</EntryTitle>
-          <ContractTitle>{`Contract ${''}`}</ContractTitle>
+          <ContractTitle>{`Contract ${""}`}</ContractTitle>
           <DateTitle>{`Publicated on  ${date?.toString()}`}</DateTitle>
           <SubmitterContainer>
             <SubmitterTitle>Submitter</SubmitterTitle>
@@ -90,19 +94,19 @@ const SubmitterTitle = styled.div`
   line-height: 24px;
   color: ${({ theme }) => theme.border};
   margin-bottom: ${1 * GU}px;
-`
+`;
 
 const SubmitterContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: ${4 * GU}px;
   margin-bottom: ${4 * GU}px;
-`
+`;
 
 const DateTitle = styled.div`
   ${textStyle("title3")};
   color: ${({ theme }) => theme.border};
-`
+`;
 
 const ContractTitle = styled.div`
   display: flex;
@@ -119,7 +123,7 @@ const EntryTitle = styled.div`
 font-weight: 400;
 font-size: 36px;
 color: ${({ theme }) => theme.content};}; 
-`
+`;
 
 const EntryInfoContainer = styled.div`
   display: flex;
@@ -128,7 +132,10 @@ const EntryInfoContainer = styled.div`
   align-items: start;
 `;
 
-const EntryContainer = styled.div<{ compactMode: boolean; tabletMode: boolean}>`
+const EntryContainer = styled.div<{
+  compactMode: boolean;
+  tabletMode: boolean;
+}>`
   display: flex;
   flex-direction: ${({ compactMode }) => (compactMode ? "column" : "row")};
   grid-gap: ${({ compactMode }) => (compactMode ? 10 * GU : 30 * GU)}px;

@@ -7,6 +7,7 @@ import Wagmi from "~/providers/Wagmi";
 import { AppLayout } from "~/components/AppLayout";
 import { Outlet } from "@remix-run/react";
 import { RosetteStone } from "./providers/RosetteStone";
+import { FnEntriesFilters } from "./providers/FnEntriesFilters";
 
 export type AppContext = {
   displayTopBar(display: boolean): void;
@@ -24,17 +25,19 @@ export const App = () => {
       <Wagmi>
         <RosetteStone>
           <AppReady>
-            <AppLayout
-              displayTopBar={displayTopBar}
-              displayBottomBar={displayBottomBar}
-            >
-              <Outlet
-                context={{
-                  displayTopBar: setDisplayTopBar,
-                  displayBottomBar: setDisplayBottomBar,
-                }}
-              />
-            </AppLayout>
+            <FnEntriesFilters>
+              <AppLayout
+                displayTopBar={displayTopBar}
+                displayBottomBar={displayBottomBar}
+              >
+                <Outlet
+                  context={{
+                    displayTopBar: setDisplayTopBar,
+                    displayBottomBar: setDisplayBottomBar,
+                  }}
+                />
+              </AppLayout>
+            </FnEntriesFilters>
           </AppReady>
         </RosetteStone>
       </Wagmi>
