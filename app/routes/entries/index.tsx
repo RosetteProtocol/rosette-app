@@ -1,4 +1,5 @@
 import { GU, textStyle, useViewport } from "@blossom-labs/rosette-ui";
+import { useEffect } from "react";
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
@@ -6,9 +7,24 @@ import styled from "styled-components";
 import { AppScreen } from "~/components/AppLayout/AppScreen";
 import { SmoothDisplayContainer } from "~/components/SmoothDisplayContainer";
 import { StatusLabel } from "~/components/StatusLabel";
+import { EntriesFilters } from "~/components/EntriesFilters";
+import { useFnEntriesFilters } from "~/providers/FnEntriesFilters";
 import type { FnEntry } from "~/types";
 import { fetchEntries } from "~/utils/server/entries-data.server";
 import { fetchFnEntries } from "~/utils/server/subgraph.server";
+
+// date range styles
+import dateStyles from "react-date-range/dist/styles.css";
+import defaultDateStyles from "react-date-range/dist/theme/default.css";
+import dateRangeCustomStyles from "../../components/EntriesFilters/DateRangeCustom/style.css";
+
+export function links() {
+  return [
+    { rel: "stylesheet", href: dateStyles },
+    { rel: "stylesheet", href: defaultDateStyles },
+    { rel: "stylesheet", href: dateRangeCustomStyles },
+  ];
+}
 
 export const loader: LoaderFunction = async () => {
   const fnsSubgraphData = await fetchFnEntries();
@@ -26,16 +42,35 @@ export default function Entries() {
   const { fns } = useLoaderData<LoaderData>();
   const { below, within } = useViewport();
 
+  const {
+    setEntries,
+    externalFilters,
+    internalFilters,
+    clearValues,
+    filteredEntries,
+  } = useFnEntriesFilters();
+
   const compactMode = below("medium");
   const tabletMode = within("medium", "large");
+
+  useEffect(() => {
+    setEntries(fns);
+  }, [fns, setEntries]);
 
   return (
     <AppScreen hideBottomBar>
       <SmoothDisplayContainer>
         <Container compactMode={compactMode} tabletMode={tabletMode}>
-          {fns.length ? (
+          <EntriesFilters
+            compactMode={compactMode}
+            tabletMode={tabletMode}
+            externalFilters={externalFilters}
+            internalFilters={internalFilters}
+            clearValues={clearValues}
+          />
+          {filteredEntries.length ? (
             <ListContainer compactMode={compactMode} tabletMode={tabletMode}>
-              {fns.map((f) => (
+              {filteredEntries.map((f) => (
                 <EntryCard key={f.id} fn={f} />
               ))}
             </ListContainer>
@@ -64,8 +99,9 @@ function EntryCard({ fn }: { fn: FnEntry }) {
 
 const Container = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   display: flex;
-  justify-content: center;
-  align-items: start;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
   padding-top: ${({ compactMode, tabletMode }) =>
     compactMode ? 3 * GU : tabletMode ? 5 * GU : 9 * GU}px;
   height: 100%;
