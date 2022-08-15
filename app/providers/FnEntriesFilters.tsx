@@ -1,4 +1,10 @@
-import React, { useContext } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FnDescriptionStatus } from "~/types";
 import type { FnEntry } from "~/types";
 
@@ -25,9 +31,9 @@ const FnEntriesFiltersContext =
   );
 
 export function FnEntriesFilters({ children }: { children: React.ReactNode }) {
-  const [entries, setEntries] = React.useState<FnEntry[]>([]);
-  const [sortingOption, setSortingOption] = React.useState<string | null>(null);
-  const [dateRange, setDateRange] = React.useState<any>({
+  const [entries, setEntries] = useState<FnEntry[]>([]);
+  const [sortingOption, setSortingOption] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<any>({
     startDate: new Date(),
     endDate: new Date(),
     key: "selection",
@@ -35,16 +41,16 @@ export function FnEntriesFilters({ children }: { children: React.ReactNode }) {
   });
 
   // todo: add types
-  const [submitterFilter, setSubmitterFilter] = React.useState<string>("");
-  const [statusFilter, setStatusFilter] = React.useState<string>("");
-  const [abiSearchFilter, setAbiSearchFilter] = React.useState<string>("");
+  const [submitterFilter, setSubmitterFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [abiSearchFilter, setAbiSearchFilter] = useState<string>("");
 
-  const [filteredEntries, setFilteredEntries] = React.useState<FnEntry[]>([]);
+  const [filteredEntries, setFilteredEntries] = useState<FnEntry[]>([]);
 
-  const sortingRef = React.useRef();
-  const statusRef = React.useRef();
+  const sortingRef = useRef();
+  const statusRef = useRef();
 
-  React.useEffect(() => {
+  useEffect(() => {
     let filtered = entries;
 
     const statusFiltering = () => {
@@ -57,6 +63,16 @@ export function FnEntriesFilters({ children }: { children: React.ReactNode }) {
         case FnDescriptionStatus.Available:
           filtered = filtered.filter(
             (e) => e.status === FnDescriptionStatus.Available
+          );
+          break;
+        case FnDescriptionStatus.Pending:
+          filtered = filtered.filter(
+            (e) => e.status === FnDescriptionStatus.Pending
+          );
+          break;
+        case FnDescriptionStatus.Challenged:
+          filtered = filtered.filter(
+            (e) => e.status === FnDescriptionStatus.Challenged
           );
           break;
         default:
@@ -134,22 +150,22 @@ export function FnEntriesFilters({ children }: { children: React.ReactNode }) {
     abiSearchFilter,
   ]);
 
-  const handleSortingOptionChange = React.useCallback((option: string) => {
+  const handleSortingOptionChange = useCallback((option: string) => {
     setSortingOption(option);
   }, []);
 
-  const handleSubmitterFilterChange = React.useCallback((newSubmitter: any) => {
+  const handleSubmitterFilterChange = useCallback((newSubmitter: any) => {
     setSubmitterFilter(newSubmitter);
   }, []);
 
-  const handleStatusFilterChange = React.useCallback(
+  const handleStatusFilterChange = useCallback(
     (status: FnDescriptionStatus | string) => {
       setStatusFilter(status);
     },
     []
   );
 
-  const handleSearchChange = React.useCallback((newSearch: any) => {
+  const handleSearchChange = useCallback((newSearch: any) => {
     setAbiSearchFilter(newSearch);
   }, []);
 

@@ -16,18 +16,6 @@ import type { FnEntryMetadata, FnEntrySubgraphData } from "~/types";
 import { fetchFnEntry } from "~/utils/server/subgraph.server";
 import { fetchEntryMetadata } from "~/utils/server/entries-data.server";
 
-function formatRawDate(rawDate: Date) {
-  const string = rawDate.toString();
-  const dateArray = string.split(" ");
-  const formattedDate = `${dateArray[1]} ${dateArray[2]}, ${dateArray[3]}`;
-  return formattedDate;
-}
-
-function formatAbi(abi: string) {
-  const formattedAbi = abi.replace("function ", "");
-  return formattedAbi;
-}
-
 export const loader: LoaderFunction = async ({ params }) => {
   const entryId = params.entry;
 
@@ -99,6 +87,18 @@ export default function EntryRoute() {
   );
 }
 
+function formatRawDate(rawDate: Date) {
+  const string = rawDate.toString();
+  const dateArray = string.split(" ");
+  const formattedDate = `${dateArray[1]} ${dateArray[2]}, ${dateArray[3]}`;
+  return formattedDate;
+}
+
+function formatAbi(abi: string) {
+  const formattedAbi = abi.replace("function ", "");
+  return formattedAbi;
+}
+
 const DescriptionContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -110,7 +110,7 @@ const DescriptionContent = styled.div`
   font-weight: 400;
   font-size: 20px;
   line-height: 32px;
-  color: #fde9bc;
+  color: ${({ theme }) => theme.positiveContent};
 `;
 
 const DescriptionTitle = styled.div`
@@ -119,7 +119,7 @@ const DescriptionTitle = styled.div`
   align-items: start;
   height: 100%;
   width: 100%;
-  color: #a2957a;
+  color: ${({ theme }) => theme.surfaceOpened};
   font-weight: 400;
   font-size: 24px;
   line-height: 24px;
@@ -129,20 +129,18 @@ const SubmitterTitle = styled.div`
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  color: ${({ theme }) => theme.border};
+  color: ${({ theme }) => theme.surfaceOpened};
   margin-bottom: ${1 * GU}px;
 `;
 
 const SubmitterContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: ${4 * GU}px;
-  margin-bottom: ${4 * GU}px;
 `;
 
 const DateTitle = styled.div`
-  ${textStyle("title3")};
-  color: ${({ theme }) => theme.border};
+  ${textStyle("title4")};
+  color: ${({ theme }) => theme.surfaceOpened};
 `;
 
 const ContractTitle = styled.div`
@@ -167,6 +165,8 @@ const EntryInfoContainer = styled.div`
   flex-direction: column;
   justify-content: start;
   align-items: start;
+  width: 650px;
+  gap: ${2 * GU}px;
 `;
 
 const EntryContainer = styled.div<{
@@ -175,7 +175,7 @@ const EntryContainer = styled.div<{
 }>`
   display: flex;
   flex-direction: ${({ compactMode }) => (compactMode ? "column" : "row")};
-  grid-gap: ${({ compactMode }) => (compactMode ? 10 * GU : 30 * GU)}px;
+  grid-gap: ${({ compactMode }) => (compactMode ? 10 * GU : 10 * GU)}px;
   justify-content: center;
   align-items: ${({ compactMode }) => (compactMode ? "center" : "start")};
   padding-top: ${({ compactMode, tabletMode }) =>

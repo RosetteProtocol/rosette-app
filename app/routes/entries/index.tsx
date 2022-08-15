@@ -16,13 +16,13 @@ import { fetchFnEntries } from "~/utils/server/subgraph.server";
 // date range styles
 import dateStyles from "react-date-range/dist/styles.css";
 import defaultDateStyles from "react-date-range/dist/theme/default.css";
-import dateRangeCustomStyles from "../../components/EntriesFilters/DateRangeCustom/style.css";
+import customDateStyles from "../../components/EntriesFilters/DateRangeCustom/style.css";
 
 export function links() {
   return [
     { rel: "stylesheet", href: dateStyles },
     { rel: "stylesheet", href: defaultDateStyles },
-    { rel: "stylesheet", href: dateRangeCustomStyles },
+    { rel: "stylesheet", href: customDateStyles },
   ];
 }
 

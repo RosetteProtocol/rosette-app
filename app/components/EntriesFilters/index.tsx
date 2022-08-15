@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Button,
   GU,
@@ -25,7 +25,7 @@ export function EntriesFilters({
   tabletMode: any;
 }) {
   const theme = useTheme();
-  const [toggleDate, setToggleDate] = React.useState(false);
+  const [toggleDate, setToggleDate] = useState(false);
 
   const { submitterFilter, statusFilter, dateRangeFilter, searchFilter } =
     externalFilters;
@@ -92,7 +92,7 @@ export function EntriesFilters({
           <Select
             ref={sortingRef}
             placeholder={"Sort by"}
-            styles={getStyles(compactMode, tabletMode, theme)}
+            styles={getSelectStyles(compactMode, tabletMode, theme)}
             options={[
               { label: "Newest", value: "newest" },
               { label: "Relevance", value: "relevance" },
@@ -104,11 +104,13 @@ export function EntriesFilters({
           <Select
             ref={statusRef}
             placeholder={"Status"}
-            styles={getStyles(compactMode, tabletMode, theme)}
+            styles={getSelectStyles(compactMode, tabletMode, theme)}
             options={[
               { label: "All", value: "" },
               { label: "Available", value: "available" },
               { label: "Added", value: "added" },
+              { label: "Pending", value: "pending" },
+              { label: "Challenged", value: "challenged" },
             ]}
             onChange={handleStatusFilterChange}
           />
@@ -164,12 +166,12 @@ const SubmitterFilter = ({
   value,
   onChange,
 }: any) => {
-  const [showInput, setShowInput] = React.useState(false);
-  const ref = React.useRef(null);
+  const [showInput, setShowInput] = useState(false);
+  const ref = useRef(null);
 
   useOnClickOutside(ref, () => setShowInput(false));
 
-  React.useEffect(() => {
+  useEffect(() => {
     const focusOnElement = (ref: any): void => {
       ref.current.focus();
     };
@@ -279,7 +281,11 @@ const FiltersContainer = styled.div`
 `;
 
 // should tweak this to look acording to the theme
-const getStyles = (compactMode: boolean, tabletMode: boolean, theme: any) => {
+const getSelectStyles = (
+  compactMode: boolean,
+  tabletMode: boolean,
+  theme: any
+) => {
   const customStyles = {
     option: (base: any, state: any) => ({
       ...base,
@@ -292,7 +298,7 @@ const getStyles = (compactMode: boolean, tabletMode: boolean, theme: any) => {
       padding: "5px 10px",
       fontSize: 18,
       fontWeight: "bold",
-      color: theme.positiveContent,
+      color: `${theme.positiveContent}`,
       cursor: "pointer",
       "&:hover": {
         backgroundColor: state.isSelected
@@ -307,7 +313,7 @@ const getStyles = (compactMode: boolean, tabletMode: boolean, theme: any) => {
       borderRadius: 8,
       backgroundColor: "rgba(14, 13, 13)",
       padding: "5px 0",
-      width: "100%",
+      width: "110%",
     }),
     control: (base: any, state: any) => ({
       ...base,
