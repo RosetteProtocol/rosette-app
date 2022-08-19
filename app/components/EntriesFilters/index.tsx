@@ -9,23 +9,30 @@ import {
 import styled from "styled-components";
 import Select from "react-select";
 import DateRangeCustom from "~/components/EntriesFilters/DateRangeCustom";
+import { useFnEntriesFilters } from "~/providers/FnEntriesFilters";
 import { useOnClickOutside } from "~/hooks/useOutsideAlerter";
 
-export function EntriesFilters({
-  externalFilters,
-  internalFilters,
-  clearValues,
+type EntriesFiltersProps = {
+  compactMode: boolean;
+  tabletMode: boolean;
+};
+
+type SubmitterFilterProps = {
+  tabletMode: boolean;
+  compactMode: boolean;
+  placeholder: string;
+  value: string;
+  onChange: (e: any) => void;
+};
+
+export const EntriesFilters = ({
   compactMode,
   tabletMode,
-}: {
-  externalFilters: any;
-  internalFilters: any;
-  clearValues: any;
-  compactMode: any;
-  tabletMode: any;
-}) {
+}: EntriesFiltersProps) => {
   const theme = useTheme();
   const [toggleDate, setToggleDate] = useState(false);
+  const { externalFilters, internalFilters, clearValues } =
+    useFnEntriesFilters();
 
   const { submitterFilter, statusFilter, dateRangeFilter, searchFilter } =
     externalFilters;
@@ -56,17 +63,11 @@ export function EntriesFilters({
   };
 
   const handleDateRangeChange = (ranges: any) => {
-    if (ranges.selection) {
+    if (ranges.selection || ranges.range1) {
+      const range = ranges.selection || ranges.range1;
       setDateRange({
-        startDate: ranges.selection.startDate,
-        endDate: ranges.selection.endDate,
-        active: true,
-      });
-    }
-    if (ranges.range1) {
-      setDateRange({
-        startDate: ranges.range1.startDate,
-        endDate: ranges.range1.endDate,
+        startDate: range.startDate,
+        endDate: range.endDate,
         active: true,
       });
     }
@@ -84,7 +85,7 @@ export function EntriesFilters({
               background: "rgba(14, 13, 13, 0.5)",
               width: tabletMode ? "335px" : compactMode ? "300px" : "250px",
               height: "48px",
-              color: "#FDE9BC",
+              color: theme.content,
             }}
           />
         </Filter>
@@ -92,19 +93,18 @@ export function EntriesFilters({
           <Select
             ref={sortingRef}
             placeholder={"Sort by"}
-            styles={getSelectStyles(compactMode, tabletMode, theme)}
             options={[
               { label: "Newest", value: "newest" },
               { label: "Relevance", value: "relevance" },
             ]}
             onChange={handleSortingOptionChange}
+            styles={getSelectStyles(compactMode, tabletMode, theme)}
           />
         </Filter>
         <Filter>
           <Select
             ref={statusRef}
             placeholder={"Status"}
-            styles={getSelectStyles(compactMode, tabletMode, theme)}
             options={[
               { label: "All", value: "" },
               { label: "Available", value: "available" },
@@ -113,32 +113,34 @@ export function EntriesFilters({
               { label: "Challenged", value: "challenged" },
             ]}
             onChange={handleStatusFilterChange}
+            styles={getSelectStyles(compactMode, tabletMode, theme)}
           />
         </Filter>
         <Filter>
           <SubmitterFilter
             tabletMode={tabletMode}
             compactMode={compactMode}
-            placeholder={"Paste here submitter address"}
+            placeholder={"Paste address here"}
             value={submitterFilterValue}
             onChange={handleSubmitterFilterChange}
           />
         </Filter>
         <Filter>
           <Button
-            style={{
-              width: tabletMode ? "100%" : compactMode ? "100%" : "",
-              border: "1px solid #8A8069",
-              height: "48px",
-              display: "flex",
-              justifyContent: "center",
-            }}
             label={`${dateRange.startDate
               .toString()
               .substring(3, 15)} | ${dateRange.endDate
               .toString()
               .substring(3, 15)}`}
             onClick={() => setToggleDate(true)}
+            style={{
+              display: "flex",
+              width: tabletMode || compactMode ? "100%" : "",
+              height: "48px",
+              justifyContent: "start",
+              paddingLeft: tabletMode || compactMode ? "30px" : "10px",
+              border: `1px solid ${theme.borderDark}`,
+            }}
           />
           <DateRangeCustom
             show={toggleDate}
@@ -157,7 +159,7 @@ export function EntriesFilters({
       </Filters>
     </FiltersContainer>
   );
-}
+};
 
 const SubmitterFilter = ({
   tabletMode,
@@ -165,7 +167,7 @@ const SubmitterFilter = ({
   placeholder,
   value,
   onChange,
-}: any) => {
+}: SubmitterFilterProps) => {
   const [showInput, setShowInput] = useState(false);
   const ref = useRef(null);
 
@@ -221,9 +223,9 @@ const SubmitterContainer = styled.div<{
   background: #0e0d0d80;
   height: 48px;
   width: ${({ tabletMode, compactMode }) =>
-    tabletMode ? "100%" : compactMode ? "100%" : "140px"};
+    tabletMode || compactMode ? "100%" : "140px"};
   padding-left: ${({ tabletMode, compactMode }) =>
-    tabletMode ? "30px" : compactMode ? "30px" : "10px"};
+    tabletMode || compactMode ? "30px" : "10px"};
 
   border:  ${({ showInput, theme }) =>
     showInput ? `2px solid ${theme.focus}` : `1px solid ${theme.borderDark}`};
@@ -242,7 +244,7 @@ const ClearButton = styled(Button)<{
 }>`
   color: ${({ theme }) => theme.positiveContent};
   width: ${({ tabletMode, compactMode }) =>
-    tabletMode ? "100%" : compactMode ? "100%" : "140px"};
+    tabletMode || compactMode ? "100%" : "140px"};
   height: 48px;
   background: linear-gradient(#0e0d0d, #0e0d0d) padding-box,
     linear-gradient(45deg, #fac758, #f7513e) border-box;
@@ -257,19 +259,17 @@ const Filter = styled.div`
 
 const Filters = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   display: ${({ compactMode, tabletMode }) =>
-    compactMode ? "grid" : tabletMode ? "grid" : "flex"};
+    compactMode || tabletMode ? "grid" : "flex"};
   grid-gap: ${({ compactMode, tabletMode }) =>
-    compactMode ? 1 * GU : tabletMode ? 1 * GU : 0}px;
+    compactMode || tabletMode ? 1 * GU : 0}px;
   grid-template-columns: ${({ compactMode, tabletMode }) =>
     `repeat(${compactMode ? "1" : tabletMode ? "2" : "1"}, ${
       compactMode ? "300" : tabletMode ? `336` : ""
     }px)`};
-  margin: ${({ compactMode, tabletMode }) =>
-    compactMode ? `auto` : tabletMode ? `` : ``};
   justify-content: ${({ compactMode, tabletMode }) =>
-    compactMode ? "start" : tabletMode ? "start" : "space-between"};
+    compactMode || tabletMode ? "start" : "space-between"};
   width: ${({ compactMode, tabletMode }) =>
-    compactMode ? "" : tabletMode ? "" : "1200px"};
+    compactMode || tabletMode ? "" : "1200px"};
   margin-bottom: ${5 * GU}px;
 `;
 
@@ -306,7 +306,7 @@ const getSelectStyles = (
           : "rgba(138, 128, 105, 0.2)",
       },
     }),
-    menu: (base: any, state: any) => ({
+    menu: (base: any) => ({
       ...base,
       border: "1px solid #ccc",
       boxShadow: "0 2px 12px rgba(0, 0, 0, 0.1)",
@@ -323,23 +323,23 @@ const getSelectStyles = (
         ? `2px solid ${theme.focus}`
         : `1px solid ${theme.borderDark}`,
       borderRadius: "8px",
-      boxShadow: state.isFocused ? 0 : 0,
+      boxShadow: "0",
       background: "rgba(14, 13, 13, 0.5)",
       "&:hover": {
-        borderColor: state.isFocused ? "none" : "none",
+        borderColor: "none",
       },
     }),
-    placeholder: (base: any, state: any) => ({
+    placeholder: (base: any) => ({
       ...base,
-      color: "#FDE9BC",
+      color: `${theme.content}`,
     }),
-    indicatorSeparator: (base: any, state: any) => ({
+    indicatorSeparator: (base: any) => ({
       ...base,
       display: "none",
     }),
-    singleValue: (base: any, state: any) => ({
+    singleValue: (base: any) => ({
       ...base,
-      color: state.isSelected ? "#FDE9BC" : "#FDE9BC",
+      color: `${theme.content}`,
     }),
   };
 
@@ -356,10 +356,10 @@ const getSelectStyles = (
           ? `2px solid ${theme.focus}`
           : `1px solid ${theme.borderDark}`,
         borderRadius: "8px",
-        boxShadow: state.isFocused ? 0 : 0,
+        boxShadow: "0",
         background: "rgba(14, 13, 13, 0.5)",
         "&:hover": {
-          borderColor: state.isFocused ? "none" : "none",
+          borderColor: "none",
         },
       }),
     };
@@ -376,10 +376,10 @@ const getSelectStyles = (
           ? `2px solid ${theme.focus}`
           : `1px solid ${theme.borderDark}`,
         borderRadius: "8px",
-        boxShadow: state.isFocused ? 0 : 0,
+        boxShadow: "0",
         background: "rgba(14, 13, 13, 0.5)",
         "&:hover": {
-          borderColor: state.isFocused ? "none" : "none",
+          borderColor: "none",
         },
       }),
     };

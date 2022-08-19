@@ -42,13 +42,7 @@ export default function Entries() {
   const { fns } = useLoaderData<LoaderData>();
   const { below, within } = useViewport();
 
-  const {
-    setEntries,
-    externalFilters,
-    internalFilters,
-    clearValues,
-    filteredEntries,
-  } = useFnEntriesFilters();
+  const { setEntries, filteredEntries } = useFnEntriesFilters();
 
   const compactMode = below("medium");
   const tabletMode = within("medium", "large");
@@ -61,13 +55,7 @@ export default function Entries() {
     <AppScreen hideBottomBar>
       <SmoothDisplayContainer>
         <Container compactMode={compactMode} tabletMode={tabletMode}>
-          <EntriesFilters
-            compactMode={compactMode}
-            tabletMode={tabletMode}
-            externalFilters={externalFilters}
-            internalFilters={internalFilters}
-            clearValues={clearValues}
-          />
+          <EntriesFilters compactMode={compactMode} tabletMode={tabletMode} />
           {filteredEntries.length ? (
             <ListContainer compactMode={compactMode} tabletMode={tabletMode}>
               {filteredEntries.map((f) => (
@@ -102,34 +90,34 @@ const Container = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   flex-direction: column;
   justify-content: start;
   align-items: center;
-  padding-top: ${({ compactMode, tabletMode }) =>
-    compactMode ? 3 * GU : tabletMode ? 5 * GU : 9 * GU}px;
   height: 100%;
   width: 100%;
+  padding-top: ${({ compactMode, tabletMode }) =>
+    compactMode ? 3 * GU : tabletMode ? 5 * GU : 9 * GU}px;
 `;
 
 const ListContainer = styled.div<{ compactMode: boolean; tabletMode: boolean }>`
   display: grid;
-  grid-gap: ${({ compactMode, tabletMode }) =>
-    compactMode ? 3 * GU : tabletMode ? 3 * GU : 5 * GU}px;
   grid-template-columns: ${({ compactMode, tabletMode }) =>
     `repeat(${compactMode ? "1" : tabletMode ? "2" : "3"}, ${
       compactMode ? "327" : tabletMode ? "336" : "350"
     }px)`};
+  grid-gap: ${({ compactMode, tabletMode }) =>
+    compactMode ? 3 * GU : tabletMode ? 3 * GU : 5 * GU}px;
   margin-bottom: ${5 * GU}px;
 `;
 
 const EntryContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 223px;
   padding: ${3 * GU}px;
   background: ${(props) => props.theme.surface};
   border: 1px solid ${(props) => props.theme.border};
   border-radius: ${2.5 * GU}px;
   box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.15);
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 223px;
 `;
 
 const NoticeContainer = styled.div`
@@ -146,8 +134,8 @@ const InfoContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid ${(props) => props.theme.border};
   padding-top: ${4 * GU}px;
+  border-top: 1px solid ${(props) => props.theme.border};
 `;
 
 const Hash = styled.div`

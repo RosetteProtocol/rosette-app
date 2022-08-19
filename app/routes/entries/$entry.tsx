@@ -107,9 +107,7 @@ const DescriptionContainer = styled.div`
 const DescriptionContent = styled.div`
   font-family: "Avenir";
   font-style: normal;
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 32px;
+  ${textStyle("title4")};
   color: ${({ theme }) => theme.positiveContent};
 `;
 
@@ -119,18 +117,14 @@ const DescriptionTitle = styled.div`
   align-items: start;
   height: 100%;
   width: 100%;
+  ${textStyle("title3")};
   color: ${({ theme }) => theme.surfaceOpened};
-  font-weight: 400;
-  font-size: 24px;
-  line-height: 24px;
 `;
 
 const SubmitterTitle = styled.div`
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  color: ${({ theme }) => theme.surfaceOpened};
   margin-bottom: ${1 * GU}px;
+  ${textStyle("body2")};
+  color: ${({ theme }) => theme.surfaceOpened};
 `;
 
 const SubmitterContainer = styled.div`
@@ -149,15 +143,14 @@ const ContractTitle = styled.div`
   align-items: start;
   height: 100%;
   width: 100%;
+  ${textStyle("title4")};
   color: ${({ theme }) => theme.content};
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 24px;
 `;
+
 const EntryTitle = styled.div`
-font-weight: 400;
-font-size: 36px;
-color: ${({ theme }) => theme.content};}; 
+  font-weight: 400;
+  font-size: 36px;
+  color: ${({ theme }) => theme.content};}; 
 `;
 
 const EntryInfoContainer = styled.div`
@@ -175,11 +168,11 @@ const EntryContainer = styled.div<{
 }>`
   display: flex;
   flex-direction: ${({ compactMode }) => (compactMode ? "column" : "row")};
-  grid-gap: ${({ compactMode }) => (compactMode ? 10 * GU : 10 * GU)}px;
   justify-content: center;
   align-items: ${({ compactMode }) => (compactMode ? "center" : "start")};
-  padding-top: ${({ compactMode, tabletMode }) =>
-    compactMode ? 3 * GU : tabletMode ? 5 * GU : 9 * GU}px;
   height: 100%;
   width: 100%;
+  grid-gap: ${10 * GU}px;
+  padding-top: ${({ compactMode, tabletMode }) =>
+    compactMode ? 3 * GU : tabletMode ? 5 * GU : 9 * GU}px;
 `;

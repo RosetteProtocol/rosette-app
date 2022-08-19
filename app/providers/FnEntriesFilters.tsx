@@ -8,18 +8,31 @@ import React, {
 import { FnDescriptionStatus } from "~/types";
 import type { FnEntry } from "~/types";
 
+export type ExternalFilters = {
+  submitterFilter: [string, (submitter: string) => void];
+  statusFilter: [
+    FnDescriptionStatus | "",
+    (status: FnDescriptionStatus | "") => void,
+    React.Ref<any>
+  ];
+  dateRangeFilter: [any, (dateRange: any) => void];
+  searchFilter: [string, (searchTerm: string) => void];
+};
+
+type DateRangeSelection = {
+  startDate: Date;
+  endDate: Date;
+  key: string;
+  active: boolean;
+};
+
 type FnEntriesFiltersContextProps = {
   entries: FnEntry[];
   setEntries: (entries: FnEntry[]) => void;
   filteredEntries: FnEntry[];
-  externalFilters: {
-    submitterFilter: [string, (submitter: string) => void];
-    statusFilter: [string, (status: string) => void, any];
-    dateRangeFilter: [any, (dateRange: any) => void];
-    searchFilter: [string, (query: string) => void];
-  };
+  externalFilters: ExternalFilters;
   internalFilters: {
-    sortingOption: [string | null, (option: string) => void, any];
+    sortingOption: [string | null, (option: string) => void, React.Ref<any>];
   };
   clearValues: () => void;
   loading: boolean;
@@ -33,7 +46,7 @@ const FnEntriesFiltersContext =
 export function FnEntriesFilters({ children }: { children: React.ReactNode }) {
   const [entries, setEntries] = useState<FnEntry[]>([]);
   const [sortingOption, setSortingOption] = useState<string | null>(null);
-  const [dateRange, setDateRange] = useState<any>({
+  const [dateRange, setDateRange] = useState<DateRangeSelection>({
     startDate: new Date(),
     endDate: new Date(),
     key: "selection",
@@ -42,7 +55,9 @@ export function FnEntriesFilters({ children }: { children: React.ReactNode }) {
 
   // todo: add types
   const [submitterFilter, setSubmitterFilter] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<FnDescriptionStatus | "">(
+    ""
+  );
   const [abiSearchFilter, setAbiSearchFilter] = useState<string>("");
 
   const [filteredEntries, setFilteredEntries] = useState<FnEntry[]>([]);
@@ -159,7 +174,7 @@ export function FnEntriesFilters({ children }: { children: React.ReactNode }) {
   }, []);
 
   const handleStatusFilterChange = useCallback(
-    (status: FnDescriptionStatus | string) => {
+    (status: FnDescriptionStatus | "") => {
       setStatusFilter(status);
     },
     []
