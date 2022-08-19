@@ -1,0 +1,26 @@
+.rdrCalendarWrapper {
+    background-color: #FDE9BC;    
+    border: 2px solid #CFC7B5;
+    border-radius: 12px;
+}
+
+.rdrDateDisplayWrapper {
+    background-color: #A2957A;
+    border-radius: 10px 10px 0 0 ;
+}
+
+.rdrDateDisplayItemActive {
+    border: 2px solid #F86E38;
+}
+
+.rdrDateDisplayItem input {
+    background-color: #2B2727;
+    color: #FDE9BC;
+    font-size: 16px;
+    border-radius: 3px;
+}
+
+.rdrDateDisplayItem {
+    box-shadow: none;
+    background-color: transparent;
+}

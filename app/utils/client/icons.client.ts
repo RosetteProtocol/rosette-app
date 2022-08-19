@@ -1,4 +1,4 @@
-import { IconCheck } from "@blossom-labs/rosette-ui";
+import { IconCheck, IconClock, IconWarning } from "@blossom-labs/rosette-ui";
 import type { FunctionComponent } from "react";
 import ethereum from "~/assets/ethereum.svg";
 import gnosisChain from "~/assets/gnosis-chain.svg";
@@ -35,5 +35,17 @@ export const getFnEntryStatusIconData = (
         Icon: IconCheck,
         color: "#8DCE3A",
       };
+    case FnDescriptionStatus.Pending:
+      return {
+        Icon: IconClock,
+        color: "#F5A623",
+      }
+    case FnDescriptionStatus.Challenged:
+      return {
+        Icon: IconWarning,
+        color: "#F7513E"
+      }
+    case FnDescriptionStatus.Available:
+      return undefined;
   }
 };

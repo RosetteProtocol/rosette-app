@@ -4,6 +4,8 @@ export type ValueOrArray<T> = T | ValueOrArray<T>[];
 
 export enum FnDescriptionStatus {
   Available = "available",
+  Challenged = "challenged",
+  Pending = "pending",
   Added = "added",
 }
 
